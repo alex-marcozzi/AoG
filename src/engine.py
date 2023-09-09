@@ -1,4 +1,5 @@
 import pyglet
+from src.gameplay_sreen import GameplayScreen
 
 class Engine:
     def __init__(self, window):
@@ -6,31 +7,20 @@ class Engine:
             "STARTUP": "startup_screen_class_goes_here",
             "TITLE": "title_screen_class_goes_here",
             "PAUSE": "pause_screen_class_goes_here",
-            "GAME": "game_screen_class_goes_here",
+            "GAME": GameplayScreen(window),
         }
 
-        self.current_screen = ""
+        self.current_screen = "GAME"
         self.window = window
-        self.label = "engine test"
     
     def tick(self):
-        #self.screen_mapping[self.current_screen].tick()
-        self.label = self.label
-        pass
+        self.screen_mapping[self.current_screen].tick()
 
     def draw(self):
-        #self.screen_mapping[self.current_screen].draw()
-        pyglet.text.Label(self.label,
-                          font_name='Times New Roman',
-                          font_size=36,
-                          x=self.window.width//2, y=self.window.height//2,
-                          anchor_x='center', anchor_y='center').draw()
+        self.screen_mapping[self.current_screen].draw()
 
     def handle_key_press(self, symbol, modifiers):
-        #pass input to screens
-        self.label = self.label + "1"
-        pass
+        self.screen_mapping[self.current_screen].handle_key_press(symbol, modifiers)
 
     def handle_key_release(self, symbol, modifiers):
-        #pass input to screens
-        pass
+        self.screen_mapping[self.current_screen].handle_key_release(symbol, modifiers)
