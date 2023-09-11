@@ -1,35 +1,34 @@
 import pyglet
 from src.helpers.level_builders import build_level1
-from src.helpers.utils import is_down_collision
+from src.helpers.utils import is_down_collision, block_width, std_speed, gravity
 from src.entity import Entity
 
 class GameplayScreen:
-    def __init__(self, window):
-        block_w = window.width / 15
+    def __init__(self, window: pyglet.window.Window):
         self.window = window
+        self.block_w = block_width(window)
+        self.standard_speed = std_speed(window)
         self.level = build_level1(window)
-        self.player = Entity(window, "assets/images/orange.png", global_pos=(0, 200), velocity=(0,0), acceleration=(0, (-0.98 / 10) * (block_w / 10)), width=window.width / 15, height = window.width / 15)
+        self.player = Entity(window,
+                             "assets/images/orange.png",
+                             global_pos=(0, 200),
+                             velocity=(0, 0),
+                             acceleration=(0, gravity(window)),
+                             width=self.block_w,
+                             height = self.block_w * 2)
         self.loaded_indexes = [int(0), int(30)]
         self.keys_down = {}
         self.keys_usable = {}
     
     def tick(self):
-        block_w = block_h = self.window.width / 15
-        #self.screen_mapping[self.current_screen].tick()
         self.player.velocity = (0, self.player.velocity[1])
-        if self.keys_down.get(pyglet.window.key.A, False):
-            self.player.velocity = (self.player.velocity[0] - (block_w / 8), self.player.velocity[1])
-        if self.keys_down.get(pyglet.window.key.D, False):
-            self.player.velocity = (self.player.velocity[0] + (block_w / 8), self.player.velocity[1])
-        if self.keys_down.get(pyglet.window.key.SPACE, False) and self.keys_usable[pyglet.window.key.SPACE]:
-            self.player.velocity = (self.player.velocity[0], self.player.velocity[1] + (block_w / 5))
-            self.keys_usable[pyglet.window.key.SPACE] = False
+        
+        self.check_keys()
 
         self.handle_collisions()
 
         self.player.tick(self.player.global_pos)
-        block_w = block_h = self.window.width / 15
-        player_block_pos = (self.player.global_pos[0] / block_w, self.player.global_pos[1] / block_h)
+        player_block_pos = (self.player.global_pos[0] / self.block_w, self.player.global_pos[1] / self.block_w)
         self.loaded_indexes = (int(player_block_pos[0] - 12), int(player_block_pos[0] + 12))
 
         # print(self.loaded_indexes)
@@ -62,13 +61,42 @@ class GameplayScreen:
             block = self.level[int(loc[0])][int(loc[1])]
             if type(block) is Entity and "collidable" in block.modifiers:
                 print(f"{loc} is an entity")
-                print(f"{self.player.global_pos[1]}, {block.global_pos[1] + block_w}")
+                print(f"{self.player.global_pos}, {block.global_pos[1] + block_w}")
                 next_player_pos = (self.player.global_pos[0], self.player.global_pos[1] + self.player.velocity[1])
                 if is_down_collision(next_player_pos, block.global_pos, block_w):
                     print("GETTING CAUGHT***************")
                     self.player.global_pos = (self.player.global_pos[0], block.global_pos[1] + block_w)
                     self.player.velocity = (self.player.velocity[0], 0)
                     self.keys_usable[pyglet.window.key.SPACE] = True
+    
+    def check_keys(self):
+        if self.keys_down.get(pyglet.window.key.A, False):
+            self.player.velocity = (self.player.velocity[0] - self.standard_speed, self.player.velocity[1])
+        if self.keys_down.get(pyglet.window.key.D, False):
+            self.player.velocity = (self.player.velocity[0] + self.standard_speed, self.player.velocity[1])
+        if self.keys_down.get(pyglet.window.key.SPACE, False) and self.keys_usable[pyglet.window.key.SPACE]:
+            self.player.velocity = (self.player.velocity[0], self.player.velocity[1] + (self.block_w / 5))
+            self.keys_usable[pyglet.window.key.SPACE] = False
+
+
+        # if self.keys_down.get(pyglet.window.key.A, False):
+        #     self.player.velocity = (self.player.velocity[0] - (self.block_w / 8), self.player.velocity[1])
+        # if self.keys_down.get(pyglet.window.key.D, False):
+        #     self.player.velocity = (self.player.velocity[0] + (self.block_w / 8), self.player.velocity[1])
+        # if self.keys_down.get(pyglet.window.key.SPACE, False) and self.keys_usable[pyglet.window.key.SPACE]:
+        #     self.player.velocity = (self.player.velocity[0], self.player.velocity[1] + (self.block_w / 5))
+        #     self.keys_usable[pyglet.window.key.SPACE] = False
+
+        # BELOW: has accelleration physics, now that I think about it we could just set the acceleration
+        # if not (self.keys_down.get(pyglet.window.key.A, False) or self.keys_down.get(pyglet.window.key.D, False)):
+        #     self.player.velocity = (max(self.player.velocity[0] - 3, 0), self.player.velocity[1])
+        # if self.keys_down.get(pyglet.window.key.A, False):
+        #     self.player.velocity = (max(self.player.velocity[0] - 1, -1 * (self.block_w / 8)), self.player.velocity[1])
+        # if self.keys_down.get(pyglet.window.key.D, False):
+        #     self.player.velocity = (min(self.player.velocity[0] + 1, self.block_w / 8), self.player.velocity[1])
+        # if self.keys_down.get(pyglet.window.key.SPACE, False) and self.keys_usable[pyglet.window.key.SPACE]:
+        #     self.player.velocity = (self.player.velocity[0], self.player.velocity[1] + (self.block_w / 5))
+        #     self.keys_usable[pyglet.window.key.SPACE] = False
 
     
     # TODO:

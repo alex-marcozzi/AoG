@@ -1,5 +1,6 @@
 import pyglet
 from src.entity import Entity
+from src.helpers.interfaces import Pair
 
 
 def initialize_level_base(x_width, y_height):
@@ -7,7 +8,7 @@ def initialize_level_base(x_width, y_height):
 
 # sets the squares in "level_array" specified in a line from "from_pos" to "to_pos" to the "entity" object
 # note: inclusive beginning, inclusive end
-def set_line(level_array: list, from_pos: tuple, to_pos: tuple, entity: Entity, block_w, block_h):
+def set_line(level_array: list, from_pos: Pair, to_pos: Pair, entity: Entity, block_w, block_h):
     for x in range(from_pos[0], to_pos[0] + 1):
         for y in range(from_pos[1], to_pos[1] + 1):
             this_entity = entity.copy()

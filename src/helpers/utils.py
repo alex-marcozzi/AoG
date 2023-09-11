@@ -1,4 +1,14 @@
 import pyglet
+import src.helpers.globals as globals
+
+def block_width(window: pyglet.window.Window):
+    return window.width * globals.BLOCK_SIZE_RATE
+
+def std_speed(window: pyglet.window.Window):
+    return block_width(window) * globals.SPEED_RATE
+
+def gravity(window: pyglet.window.Window):
+    return block_width(window) * globals.GRAVITY_RATE
 
 def add_tuples(t1: tuple, t2: tuple):
     return tuple(map(lambda x, y: x + y, t1, t2))
