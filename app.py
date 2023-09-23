@@ -3,7 +3,7 @@ import pyglet
 from src.engine import Engine
 from src.entity import Entity
 
-window = pyglet.window.Window(fullscreen=True)
+window = pyglet.window.Window(fullscreen=False)
 
 engine = Engine(window)
 

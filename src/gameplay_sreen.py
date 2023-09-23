@@ -1,6 +1,6 @@
 import pyglet
 from src.helpers.level_builders import build_level1
-from src.helpers.utils import is_down_collision, block_width, std_speed, gravity
+from src.helpers.utils import is_down_collision, is_right_collision, is_left_collision, block_width, std_speed, gravity
 from src.helpers.interfaces import Pair
 from src.entity import Entity
 
@@ -60,19 +60,85 @@ class GameplayScreen:
         # the three squares below the player
         to_check = [Pair(player_block_pos.first - 1, player_block_pos.second - 1),  # behind and below
                     Pair(player_block_pos.first, player_block_pos.second - 1),  # straight below
-                    Pair(player_block_pos.first + 1, player_block_pos.second - 1)]  # infront and below
+                    Pair(player_block_pos.first + 1, player_block_pos.second - 1),
+                    Pair(player_block_pos.first - 1, player_block_pos.second),  # behind and below
+                    Pair(player_block_pos.first, player_block_pos.second),  # straight below
+                    Pair(player_block_pos.first + 1, player_block_pos.second),  # infront and below
+                    ]
         
         for loc in to_check:
             block = self.level[int(loc.first)][int(loc.second)]
             if type(block) is Entity and "collidable" in block.modifiers:
-                print(f"{loc} is an entity")
-                print(f"{self.player.global_pos}, {block.global_pos.second + block_w}")
+                # print(f"{loc} is an entity")
+                # print(f"{self.player.global_pos}, {block.global_pos.second + block_w}")
                 next_player_pos = Pair(self.player.global_pos.first, self.player.global_pos.second + self.player.velocity.second)
                 if is_down_collision(next_player_pos, block.global_pos, block_w):
-                    print("GETTING CAUGHT***************")
+                    # print("GETTING CAUGHT***************")
                     self.player.global_pos = Pair(self.player.global_pos.first, block.global_pos.second + block_w)
                     self.player.velocity = Pair(self.player.velocity.first, 0)
                     self.keys_usable[pyglet.window.key.SPACE] = True
+                # if is_right_collision(next_player_pos, block.global_pos, block_w):
+                #     print("GETTING CAUGHT***************")
+        
+        to_check = [Pair(player_block_pos.first + 1, player_block_pos.second),
+                    Pair(player_block_pos.first + 1, player_block_pos.second + 1),
+                    Pair(player_block_pos.first + 1, player_block_pos.second - 1)]
+        
+        # for loc in to_check:
+        #     block = self.level[int(loc.first)][int(loc.second)]
+        #     if type(block) is Entity and "collidable" in block.modifiers:
+        #         # print(f"{loc} is an entity")
+        #         # print(f"{self.player.global_pos}, {block.global_pos.second + block_w}")
+        #         next_player_pos = Pair(self.player.global_pos.first + self.player.velocity.first, self.player.global_pos.second + self.player.velocity.second)
+        #         # if is_down_collision(next_player_pos, block.global_pos, block_w):
+        #         #     # print("GETTING CAUGHT***************")
+        #         #     self.player.global_pos = Pair(self.player.global_pos.first, block.global_pos.second + block_w)
+        #         #     self.player.velocity = Pair(self.player.velocity.first, 0)
+        #         #     self.keys_usable[pyglet.window.key.SPACE] = True
+        #         if is_right_collision(next_player_pos, block.global_pos, block_w):
+        #             print("! RIGHT COLLISION")
+        
+        # to_check = [Pair(player_block_pos.first, player_block_pos.second - 1),
+        #             Pair(player_block_pos.first, player_block_pos.second),
+        #             Pair(player_block_pos.first, player_block_pos.second + 1)]
+        
+        # for loc in to_check:
+        #     block = self.level[int(loc.first)][int(loc.second)]
+        #     if type(block) is Entity and "collidable" in block.modifiers:
+        #         # print(f"{loc} is an entity")
+        #         # print(f"{self.player.global_pos}, {block.global_pos.second + block_w}")
+        #         next_player_pos = Pair(self.player.global_pos.first + self.player.velocity.first, self.player.global_pos.second + self.player.velocity.second)
+        #         # if is_down_collision(next_player_pos, block.global_pos, block_w):
+        #         #     # print("GETTING CAUGHT***************")
+        #         #     self.player.global_pos = Pair(self.player.global_pos.first, block.global_pos.second + block_w)
+        #         #     self.player.velocity = Pair(self.player.velocity.first, 0)
+        #         #     self.keys_usable[pyglet.window.key.SPACE] = True
+        #         if is_left_collision(next_player_pos, block.global_pos, block_w):
+        #             print("! LEFT COLLISION")
+        
+
+        # the three squares below the player
+        to_check = [Pair(player_block_pos.first - 1, player_block_pos.second + 1),  # behind and below
+                    Pair(player_block_pos.first, player_block_pos.second + 1),  # straight below
+                    Pair(player_block_pos.first + 1, player_block_pos.second + 1),
+                    Pair(player_block_pos.first - 1, player_block_pos.second),  # behind and below
+                    Pair(player_block_pos.first, player_block_pos.second),  # straight below
+                    Pair(player_block_pos.first + 1, player_block_pos.second),  # infront and below
+                    ]
+        
+        for loc in to_check:
+            block = self.level[int(loc.first)][int(loc.second)]
+            if type(block) is Entity and "collidable" in block.modifiers:
+                # print(f"{loc} is an entity")
+                # print(f"{self.player.global_pos}, {block.global_pos.second + block_w}")
+                next_player_pos = Pair(self.player.global_pos.first + self.player.velocity.first, self.player.global_pos.second + self.player.velocity.second)
+                # if is_down_collision(next_player_pos, block.global_pos, block_w):
+                #     # print("GETTING CAUGHT***************")
+                #     self.player.global_pos = Pair(self.player.global_pos.first, block.global_pos.second + block_w)
+                #     self.player.velocity = Pair(self.player.velocity.first, 0)
+                #     self.keys_usable[pyglet.window.key.SPACE] = True
+                if is_left_collision(next_player_pos, block.global_pos, block_w):
+                    print("! UP COLLISION")
     
     def check_keys(self):
         if self.keys_down.get(pyglet.window.key.A, False):
@@ -106,7 +172,20 @@ class GameplayScreen:
     
     # TODO:
     #   X0. make a "globals" file where you define our constants, like block_width, speed ratios (have a normalized system), etc.
-    #   00. use the globals file to make movement independent of screen size and framerate, it should always display the same
+    #   X00. use the globals file to make movement independent of screen size and framerate, it should always display the same
+    #   4.5. move entity colision checking out of gameplay_screen and into entity. pass a reference to the level_list
+    #   4.55 make a physics class that gets passed around and contains the level map.
+    #           - it could have a tick function
+    #           - it could check if blocks are coliding and return which direction they are
+    #           - this direction could be passed to the Entity class's "interact" function, which could be super readable
+    #           - imagine this: 
+    #               Entity1.interact(Entity2, dir="right"):
+    #                   if dir == "right":
+    #                       if "dangerous" in Entity2.modifiers:
+    #                           Entity1.take_damage()
+    #                       elif "collidable" in Entity2.modifiers:
+    #                           Entity1.global_pos = Pair(Entity2.global_pos.first - block_w, Entity1.second)
+    #                   etc.
     #   1. add side and top collisions
     #   2. add handling for when you fall (catch exception or just check if loadable)
     #   3. create other types of entities, every used object should be a subclass of Entity, never use Entity directly. 
