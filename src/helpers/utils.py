@@ -1,6 +1,7 @@
 import pyglet
 import src.helpers.globals as globals
 from src.helpers.interfaces import Pair
+from src.entity import Entity
 
 def block_width(window: pyglet.window.Window):
     return window.width * globals.BLOCK_SIZE_RATE
@@ -11,8 +12,8 @@ def std_speed(window: pyglet.window.Window):
 def gravity(window: pyglet.window.Window):
     return block_width(window) * globals.GRAVITY_RATE
 
-def add_tuples(t1: tuple, t2: tuple):
-    return tuple(map(lambda x, y: x + y, t1, t2))
+def add_tuples(entity1: tuple, entity2: tuple):
+    return tuple(map(lambda x, y: x + y, entity1, entity2))
 
 ############################################################
 #                                                          #
@@ -26,80 +27,97 @@ def add_tuples(t1: tuple, t2: tuple):
 ############################################################
 
 # VERIFIED WORKING
-# t1 is the checker, t2 is the checkee
-def is_down_collision(t1: Pair, t2: Pair, block_w: float):
-    t1_bottom_left = t1.copy()
-    t1_bottom_right = Pair(t1.first + block_w, t1.second)
-    t1_top_left = Pair(t1.first, t1.second + block_w)
-    t1_top_right = Pair(t1.first + block_w, t1.second + block_w)
-    t2_bottom_left = t2.copy()
-    t2_bottom_right = Pair(t2.first + block_w, t2.second)
-    t2_top_left = Pair(t2.first, t2.second + block_w)
-    t2_top_right = Pair(t2.first + block_w, t2.second + block_w)
+# entity1 is the checker, entity2 is the checkee
+def is_down_collision(entity1: Entity, entity2: Entity):
+    e1_next_pos = entity1.nextPos()
+    e2_next_pos = entity2.nextPos()
+
+    entity1_bottom_left = e1_next_pos.copy()
+    entity1_bottom_right = Pair(e1_next_pos.first + entity1.sprite.width, e1_next_pos.second)
+    entity1_top_left = Pair(e1_next_pos.first, e1_next_pos.second + entity1.sprite.height)
+    entity1_top_right = Pair(e1_next_pos.first + entity1.sprite.width, e1_next_pos.second + entity1.sprite.height)
+    entity2_bottom_left = e2_next_pos.copy()
+    entity2_bottom_right = Pair(e2_next_pos.first + entity2.sprite.width, e2_next_pos.second)
+    entity2_top_left = Pair(e2_next_pos.first, e2_next_pos.second + entity2.sprite.height)
+    entity2_top_right = Pair(e2_next_pos.first + entity2.sprite.width, e2_next_pos.second + entity2.sprite.height)
     
-    # # first check if t1 is above t2
-    if t2_top_left.first < t1_top_right.first and t2_top_right.first > t1_bottom_left.first:
+    # # first check if entity1 is above entity2
+    if entity2_top_left.first <= entity1_top_right.first and entity2_top_right.first >= entity1_bottom_left.first:
         # then check if they are colliding
-        if t1_bottom_left.second <= t2_top_left.second:
+        if entity1_bottom_left.second <= entity2_top_left.second and entity1_bottom_left.second >= entity2_bottom_left.second:
             return True
     
     return False
 
 # VERIFIED WORKING
-# t1 is the checker, t2 is the checkee
-def is_right_collision(t1: Pair, t2: Pair, block_w: float):
-    t1_bottom_left = t1.copy()
-    t1_bottom_right = Pair(t1.first + block_w, t1.second)
-    t1_top_left = Pair(t1.first, t1.second + block_w)
-    t1_top_right = Pair(t1.first + block_w, t1.second + block_w)
-    t2_bottom_left = t2.copy()
-    t2_bottom_right = Pair(t2.first + block_w, t2.second)
-    t2_top_left = Pair(t2.first, t2.second + block_w)
-    t2_top_right = Pair(t2.first + block_w, t2.second + block_w)
+# entity1 is the checker, entity2 is the checkee
+def is_right_collision(entity1: Entity, entity2: Entity):
+    e1_next_pos = entity1.nextPos()
+    e2_next_pos = entity2.nextPos()
 
-    # first check if t1 is level with t2
-    if t1_bottom_right.second < t2_top_left.second and t1_top_right.second > t2_bottom_left.second:
+    entity1_bottom_left = e1_next_pos
+    entity1_bottom_right = Pair(e1_next_pos.first + entity1.sprite.width, e1_next_pos.second)
+    entity1_top_left = Pair(e1_next_pos.first, e1_next_pos.second + entity1.sprite.height)
+    entity1_top_right = Pair(e1_next_pos.first + entity1.sprite.width, e1_next_pos.second + entity1.sprite.height)
+    entity2_bottom_left = e2_next_pos
+    entity2_bottom_right = Pair(e2_next_pos.first + entity2.sprite.width, e2_next_pos.second)
+    entity2_top_left = Pair(e2_next_pos.first, e2_next_pos.second + entity2.sprite.height)
+    entity2_top_right = Pair(e2_next_pos.first + entity2.sprite.width, e2_next_pos.second + entity2.sprite.height)
+
+    # first check if entity1 is level with entity2
+    if entity1_bottom_right.second < entity2_top_left.second and entity1_top_right.second > entity2_bottom_left.second:
         # then check if they are colliding
-        if t1_top_right.first >= t2_top_left.first:
+        if entity1_top_right.first >= entity2_top_left.first:
             return True
     
     return False
 
 # VERIFIED WORKING
-# t1 is the checker, t2 is the checkee
-def is_left_collision(t1: Pair, t2: Pair, block_w: float):
-    t1_bottom_left = t1.copy()
-    t1_bottom_right = Pair(t1.first + block_w, t1.second)
-    t1_top_left = Pair(t1.first, t1.second + block_w)
-    t1_top_right = Pair(t1.first + block_w, t1.second + block_w)
-    t2_bottom_left = t2.copy()
-    t2_bottom_right = Pair(t2.first + block_w, t2.second)
-    t2_top_left = Pair(t2.first, t2.second + block_w)
-    t2_top_right = Pair(t2.first + block_w, t2.second + block_w)
+# entity1 is the checker, entity2 is the checkee
+def is_left_collision(entity1: Entity, entity2: Entity):
+    e1_next_pos = entity1.nextPos()
+    e2_next_pos = entity2.nextPos()
 
-    # first check if t1 is level with t2
-    if t1_bottom_left.second < t2_top_right.second and t1_top_left.second > t2_bottom_right.second:
+    entity1_bottom_left = e1_next_pos
+    entity1_bottom_right = Pair(e1_next_pos.first + entity1.sprite.width, e1_next_pos.second)
+    entity1_top_left = Pair(e1_next_pos.first, e1_next_pos.second + entity1.sprite.height)
+    entity1_top_right = Pair(e1_next_pos.first + entity1.sprite.width, e1_next_pos.second + entity1.sprite.height)
+    entity2_bottom_left = e2_next_pos
+    entity2_bottom_right = Pair(e2_next_pos.first + entity2.sprite.width, e2_next_pos.second)
+    entity2_top_left = Pair(e2_next_pos.first, e2_next_pos.second + entity2.sprite.height)
+    entity2_top_right = Pair(e2_next_pos.first + entity2.sprite.width, e2_next_pos.second + entity2.sprite.height)
+
+    # first check if entity1 is level with entity2
+    if entity1_bottom_left.second < entity2_top_right.second and entity1_top_left.second > entity2_bottom_right.second:
         # then check if they are colliding
-        if t1_top_left.first <= t2_top_right.first:
+        if entity1_top_left.first <= entity2_top_right.first:
             return True
     
     return False
 
-# t1 is the checker, t2 is the checkee
-def is_up_collision(t1: Pair, t2: Pair, block_w: float):
-    t1_bottom_left = t1.copy()
-    t1_bottom_right = Pair(t1.first + block_w, t1.second)
-    t1_top_left = Pair(t1.first, t1.second + block_w)
-    t1_top_right = Pair(t1.first + block_w, t1.second + block_w)
-    t2_bottom_left = t2.copy()
-    t2_bottom_right = Pair(t2.first + block_w, t2.second)
-    t2_top_left = Pair(t2.first, t2.second + block_w)
-    t2_top_right = Pair(t2.first + block_w, t2.second + block_w)
+# entity1 is the checker, entity2 is the checkee
+def is_up_collision(entity1: Entity, entity2: Entity):
+    e1_next_pos = entity1.nextPos()
+    e2_next_pos = entity2.nextPos()
 
-    # first check if t1 is level with t2
-    if t1_top_left.first < t2_bottom_right.first and t1_top_right.first > t2_bottom_left.first:
+    print(e1_next_pos.first)
+    print(e1_next_pos.second)
+    print(e2_next_pos.first)
+    print(e2_next_pos.second)
+    
+    entity1_bottom_left = e1_next_pos
+    entity1_bottom_right = Pair(e1_next_pos.first + entity1.sprite.width, e1_next_pos.second)
+    entity1_top_left = Pair(e1_next_pos.first, e1_next_pos.second + entity1.sprite.height)
+    entity1_top_right = Pair(e1_next_pos.first + entity1.sprite.width, e1_next_pos.second + entity1.sprite.height)
+    entity2_bottom_left = e2_next_pos
+    entity2_bottom_right = Pair(e2_next_pos.first + entity2.sprite.width, e2_next_pos.second)
+    entity2_top_left = Pair(e2_next_pos.first, e2_next_pos.second + entity2.sprite.height)
+    entity2_top_right = Pair(e2_next_pos.first + entity2.sprite.width, e2_next_pos.second + entity2.sprite.height)
+
+    # first check if entity1 is level with entity2
+    if entity1_top_left.first < entity2_bottom_right.first and entity1_top_right.first > entity2_bottom_left.first:
         # then check if they are colliding
-        if t1_top_left.second >= t2_bottom_left.second:
+        if entity1_top_left.second >= entity2_bottom_left.second:
             return True
     
     return False

@@ -12,7 +12,7 @@ class GameplayScreen:
         self.level = build_level1(window)
         self.player = Entity(window,
                              "assets/images/goose.png",
-                             global_pos=Pair(0, 200),
+                             global_pos=Pair(0, 300),
                              velocity=Pair(0, 0),
                              acceleration=Pair(0, gravity(window)),
                              width=self.block_w,
@@ -24,9 +24,9 @@ class GameplayScreen:
     def tick(self):
         self.player.velocity = Pair(0, self.player.velocity.second)
         
-        self.check_keys()
 
         self.handle_collisions()
+        self.check_keys()
 
         self.player.tick(self.player.global_pos)
         player_block_pos = Pair(self.player.global_pos.first / self.block_w, self.player.global_pos.second / self.block_w)
@@ -55,89 +55,59 @@ class GameplayScreen:
 
     def handle_collisions(self):
         block_w = block_h = self.window.width / 15
-        player_block_pos = Pair(self.player.global_pos.first // block_w, self.player.global_pos.second // block_h)
+        player_block_pos = Pair(self.player.global_pos.first // self.block_w, self.player.global_pos.second // self.block_w)
 
         # the three squares below the player
-        to_check = [Pair(player_block_pos.first - 1, player_block_pos.second - 1),  # behind and below
+        to_check = [
+                    Pair(player_block_pos.first - 1, player_block_pos.second - 1),  # behind and below
                     Pair(player_block_pos.first, player_block_pos.second - 1),  # straight below
                     Pair(player_block_pos.first + 1, player_block_pos.second - 1),
-                    Pair(player_block_pos.first - 1, player_block_pos.second),  # behind and below
-                    Pair(player_block_pos.first, player_block_pos.second),  # straight below
-                    Pair(player_block_pos.first + 1, player_block_pos.second),  # infront and below
+                    # Pair(player_block_pos.first - 1, player_block_pos.second),  # behind and below
+                    # Pair(player_block_pos.first, player_block_pos.second),  # straight below
+                    # Pair(player_block_pos.first + 1, player_block_pos.second),  # infront and below
                     ]
+        
         
         for loc in to_check:
             block = self.level[int(loc.first)][int(loc.second)]
             if type(block) is Entity and "collidable" in block.modifiers:
-                # print(f"{loc} is an entity")
-                # print(f"{self.player.global_pos}, {block.global_pos.second + block_w}")
-                next_player_pos = Pair(self.player.global_pos.first, self.player.global_pos.second + self.player.velocity.second)
-                if is_down_collision(next_player_pos, block.global_pos, block_w):
-                    # print("GETTING CAUGHT***************")
+                if is_down_collision(self.player, block):
                     self.player.global_pos = Pair(self.player.global_pos.first, block.global_pos.second + block_w)
                     self.player.velocity = Pair(self.player.velocity.first, 0)
                     self.keys_usable[pyglet.window.key.SPACE] = True
-                # if is_right_collision(next_player_pos, block.global_pos, block_w):
-                #     print("GETTING CAUGHT***************")
         
         to_check = [Pair(player_block_pos.first + 1, player_block_pos.second),
                     Pair(player_block_pos.first + 1, player_block_pos.second + 1),
                     Pair(player_block_pos.first + 1, player_block_pos.second - 1)]
         
-        # for loc in to_check:
-        #     block = self.level[int(loc.first)][int(loc.second)]
-        #     if type(block) is Entity and "collidable" in block.modifiers:
-        #         # print(f"{loc} is an entity")
-        #         # print(f"{self.player.global_pos}, {block.global_pos.second + block_w}")
-        #         next_player_pos = Pair(self.player.global_pos.first + self.player.velocity.first, self.player.global_pos.second + self.player.velocity.second)
-        #         # if is_down_collision(next_player_pos, block.global_pos, block_w):
-        #         #     # print("GETTING CAUGHT***************")
-        #         #     self.player.global_pos = Pair(self.player.global_pos.first, block.global_pos.second + block_w)
-        #         #     self.player.velocity = Pair(self.player.velocity.first, 0)
-        #         #     self.keys_usable[pyglet.window.key.SPACE] = True
-        #         if is_right_collision(next_player_pos, block.global_pos, block_w):
-        #             print("! RIGHT COLLISION")
+        for loc in to_check:
+            block = self.level[int(loc.first)][int(loc.second)]
+            if type(block) is Entity and "collidable" in block.modifiers:
+                if is_right_collision(self.player, block):
+                    print("! RIGHT COLLISION")
         
-        # to_check = [Pair(player_block_pos.first, player_block_pos.second - 1),
-        #             Pair(player_block_pos.first, player_block_pos.second),
-        #             Pair(player_block_pos.first, player_block_pos.second + 1)]
+        to_check = [Pair(player_block_pos.first, player_block_pos.second - 1),
+                    Pair(player_block_pos.first, player_block_pos.second),
+                    Pair(player_block_pos.first, player_block_pos.second + 1)]
         
-        # for loc in to_check:
-        #     block = self.level[int(loc.first)][int(loc.second)]
-        #     if type(block) is Entity and "collidable" in block.modifiers:
-        #         # print(f"{loc} is an entity")
-        #         # print(f"{self.player.global_pos}, {block.global_pos.second + block_w}")
-        #         next_player_pos = Pair(self.player.global_pos.first + self.player.velocity.first, self.player.global_pos.second + self.player.velocity.second)
-        #         # if is_down_collision(next_player_pos, block.global_pos, block_w):
-        #         #     # print("GETTING CAUGHT***************")
-        #         #     self.player.global_pos = Pair(self.player.global_pos.first, block.global_pos.second + block_w)
-        #         #     self.player.velocity = Pair(self.player.velocity.first, 0)
-        #         #     self.keys_usable[pyglet.window.key.SPACE] = True
-        #         if is_left_collision(next_player_pos, block.global_pos, block_w):
-        #             print("! LEFT COLLISION")
+        for loc in to_check:
+            block = self.level[int(loc.first)][int(loc.second)]
+            if type(block) is Entity and "collidable" in block.modifiers:
+                if is_left_collision(self.player, block):
+                    print("! LEFT COLLISION")
         
 
         # the three squares below the player
-        to_check = [Pair(player_block_pos.first - 1, player_block_pos.second + 1),  # behind and below
-                    Pair(player_block_pos.first, player_block_pos.second + 1),  # straight below
-                    Pair(player_block_pos.first + 1, player_block_pos.second + 1),
-                    Pair(player_block_pos.first - 1, player_block_pos.second),  # behind and below
-                    Pair(player_block_pos.first, player_block_pos.second),  # straight below
-                    Pair(player_block_pos.first + 1, player_block_pos.second),  # infront and below
+        to_check = [
+                    Pair(player_block_pos.first - 1, player_block_pos.second + 2),  # behind and below
+                    Pair(player_block_pos.first, player_block_pos.second + 2),  # straight below
+                    Pair(player_block_pos.first + 1, player_block_pos.second + 2),  # infront and below
                     ]
         
         for loc in to_check:
             block = self.level[int(loc.first)][int(loc.second)]
             if type(block) is Entity and "collidable" in block.modifiers:
-                # print(f"{loc} is an entity")
-                # print(f"{self.player.global_pos}, {block.global_pos.second + block_w}")
-                next_player_pos = Pair(self.player.global_pos.first + self.player.velocity.first, self.player.global_pos.second + self.player.velocity.second)
-                # if is_down_collision(next_player_pos, block.global_pos, block_w):
-                #     # print("GETTING CAUGHT***************")
-                #     self.player.global_pos = Pair(self.player.global_pos.first, block.global_pos.second + block_w)
-                #     self.player.velocity = Pair(self.player.velocity.first, 0)
-                #     self.keys_usable[pyglet.window.key.SPACE] = True
-                if is_left_collision(next_player_pos, block.global_pos, block_w):
+                if is_left_collision(self.player, block):
                     print("! UP COLLISION")
     
     def check_keys(self):
@@ -173,8 +143,7 @@ class GameplayScreen:
     # TODO:
     #   X0. make a "globals" file where you define our constants, like block_width, speed ratios (have a normalized system), etc.
     #   X00. use the globals file to make movement independent of screen size and framerate, it should always display the same
-    #   4.5. move entity colision checking out of gameplay_screen and into entity. pass a reference to the level_list
-    #   4.55 make a physics class that gets passed around and contains the level map.
+    #   4.55 make a *World* class that gets passed around and contains the level map.
     #           - it could have a tick function
     #           - it could check if blocks are coliding and return which direction they are
     #           - this direction could be passed to the Entity class's "interact" function, which could be super readable

@@ -31,3 +31,6 @@ class Entity:
 
     def draw(self):
         self.sprite.draw()
+
+    def nextPos(self):
+        return Pair(self.global_pos.first + self.velocity.first, self.global_pos.second + self.velocity.second)
