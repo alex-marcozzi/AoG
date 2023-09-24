@@ -29,7 +29,7 @@ class Entity:
 
     def tick_pos_only(self):
         self.global_pos.add(self.velocity)
-        self.velocity.add(self.acceleration)
+        # self.velocity.add(self.acceleration)
 
     def tick(self, camera_pos: Pair):
         self.global_pos.add(self.velocity)

@@ -60,6 +60,35 @@ def is_down_collision(entity1: Entity, entity2: Entity):
     
     return False
 
+# pointer moves along the vector line in normalized steps
+# from start to end
+def is_down_collision_new(entity1: Entity, entity2: Entity):
+    if entity1.velocity.second > 0:
+        return False
+    
+    e1_next = entity1.copy()
+    e2_next = entity2.copy()
+
+    e1_next.tick_pos_only()  # move to next position
+    e2_next.tick_pos_only()
+    
+    e1_pointer = entity1.copy()
+    e2_pointer = entity2.copy()
+    
+    e1_pointer.velocity = normalize_vector(entity1.velocity)
+    e2_pointer.velocity = normalize_vector(entity2.velocity)
+
+    # loop and move pointer until we reach the end
+
+    while not float_eq(e1_pointer.bottomRight().second, e1_next.bottomRight().second):
+        if e1_pointer.bottomLeft().first < e2_pointer.topRight().first and e1_pointer.bottomRight().first > e2_pointer.topLeft().first:
+            if float_eq(e1_pointer.bottomLeft().second, e2_pointer.topRight().second):
+                return True
+            
+        e1_pointer.tick_pos_only()
+    
+    return False
+
 # VERIFIED WORKING
 # entity1 is the checker, entity2 is the checkee
 def is_right_collision(entity1: Entity, entity2: Entity):
@@ -153,9 +182,7 @@ def is_left_collision_new(entity1: Entity, entity2: Entity):
 
     # loop and move pointer until we reach the end
     while not float_eq(e1_pointer.bottomRight().first, e1_next.bottomRight().first):
-        # if entity1_bottom_left.second < entity2_top_right.second and entity1_top_left.second > entity2_bottom_right.second:
         if e1_pointer.bottomLeft().second < e2_pointer.topRight().second and e1_pointer.topLeft().second > e2_pointer.bottomRight().second:
-            print("HEREEEEE")
             if float_eq(e1_pointer.bottomLeft().first, e2_pointer.bottomRight().first):
                 return True
         e1_pointer.tick_pos_only()
@@ -166,11 +193,6 @@ def is_left_collision_new(entity1: Entity, entity2: Entity):
 def is_up_collision(entity1: Entity, entity2: Entity):
     e1_next_pos = entity1.nextPos()
     e2_next_pos = entity2.nextPos()
-
-    print(e1_next_pos.first)
-    print(e1_next_pos.second)
-    print(e2_next_pos.first)
-    print(e2_next_pos.second)
     
     entity1_bottom_left = e1_next_pos
     entity1_bottom_right = Pair(e1_next_pos.first + entity1.sprite.width, e1_next_pos.second)
@@ -186,5 +208,33 @@ def is_up_collision(entity1: Entity, entity2: Entity):
         # then check if they are colliding
         if entity1_top_left.second >= entity2_bottom_left.second:
             return True
+    
+    return False
+
+# pointer moves along the vector line in normalized steps
+# from start to end
+def is_up_collision_new(entity1: Entity, entity2: Entity):
+    if entity1.velocity.second <= 0:
+        return False
+    
+    e1_next = entity1.copy()
+    e2_next = entity2.copy()
+
+    e1_next.tick_pos_only()  # move to next position
+    e2_next.tick_pos_only()
+    
+    e1_pointer = entity1.copy()
+    e2_pointer = entity2.copy()
+    
+    e1_pointer.velocity = normalize_vector(entity1.velocity)
+    e2_pointer.velocity = normalize_vector(entity2.velocity)
+
+    # loop and move pointer until we reach the end
+    while not float_eq(e1_pointer.bottomRight().second, e1_next.bottomRight().second):
+        if e1_pointer.topLeft().first < e2_pointer.bottomRight().first and e1_pointer.topRight().first > e2_pointer.bottomLeft().first:
+            if float_eq(e1_pointer.topLeft().second, e2_pointer.bottomLeft().second):
+                return True
+            
+        e1_pointer.tick_pos_only()
     
     return False
