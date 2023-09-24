@@ -12,14 +12,24 @@ class Entity:
         self.sprite_filename = sprite_filename
         self.sprite.width = width
         self.sprite.height = height
-        self.global_pos = global_pos
-        self.velocity = velocity
-        self.acceleration = acceleration
+        self.global_pos = global_pos.copy()
+        self.velocity = velocity.copy()
+        self.acceleration = acceleration.copy()
         self.modifiers = ["collidable"]
 
     def copy(self):
-        new_copy = Entity(self.window, self.sprite_filename, self.global_pos, self.velocity, self.acceleration, self.sprite.width, self.sprite.height)
+        new_copy = Entity(window=self.window,
+                          sprite_filename=self.sprite_filename,
+                          global_pos=self.global_pos,
+                          velocity=self.velocity,
+                          acceleration=self.acceleration,
+                          width=self.sprite.width,
+                          height=self.sprite.height)
         return new_copy
+
+    def tick_pos_only(self):
+        self.global_pos.add(self.velocity)
+        self.velocity.add(self.acceleration)
 
     def tick(self, camera_pos: Pair):
         self.global_pos.add(self.velocity)
@@ -34,3 +44,15 @@ class Entity:
 
     def nextPos(self):
         return Pair(self.global_pos.first + self.velocity.first, self.global_pos.second + self.velocity.second)
+    
+    def bottomLeft(self):
+        return self.global_pos
+    
+    def bottomRight(self):
+        return Pair(self.global_pos.first + self.sprite.width, self.global_pos.second)
+    
+    def topLeft(self):
+        return Pair(self.global_pos.first, self.global_pos.second + self.sprite.height)
+    
+    def topRight(self):
+        return Pair(self.global_pos.first + self.sprite.width, self.global_pos.second + self.sprite.height)

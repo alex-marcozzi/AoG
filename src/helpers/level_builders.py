@@ -23,7 +23,7 @@ def build_level1(window):
     set_line(level1, Pair(15,2), Pair(17, 2), block, window.width / 15, window.width / 15)
     set_line(level1, Pair(19,2), Pair(23, 2), block, window.width / 15, window.width / 15)
     set_line(level1, Pair(25,3), Pair(27, 3), block, window.width / 15, window.width / 15)
-    set_line(level1, Pair(7,2), Pair(7, 6), block, window.width / 15, window.width / 15)
+    set_line(level1, Pair(7,4), Pair(7, 6), block, window.width / 15, window.width / 15)
     set_line(level1, Pair(3,5), Pair(3, 5), block, window.width / 15, window.width / 15)
     set_line(level1, Pair(5,6), Pair(5, 6), block, window.width / 15, window.width / 15)
     # set_line(level1, Pair(10,0), Pair(10, 2), block, window.width / 15, window.width / 15)
