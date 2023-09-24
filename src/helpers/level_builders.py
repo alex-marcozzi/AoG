@@ -19,6 +19,7 @@ def set_line(level_array: list, from_pos: Pair, to_pos: Pair, entity: Entity, bl
 def build_level1(window):
     block = Entity(window, "assets/images/orange.png", global_pos=Pair(0, 0), velocity=Pair(0,0), acceleration=Pair(0,0), width=window.width / 15, height = window.width / 15)
     level1 = initialize_level_base(100, 100)
+    set_line(level1, Pair(0,2), Pair(0, 4), block, window.width / 15, window.width / 15)
     set_line(level1, Pair(0,2), Pair(10, 2), block, window.width / 15, window.width / 15)
     set_line(level1, Pair(15,2), Pair(17, 2), block, window.width / 15, window.width / 15)
     set_line(level1, Pair(19,2), Pair(23, 2), block, window.width / 15, window.width / 15)

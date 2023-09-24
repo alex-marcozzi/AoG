@@ -1,6 +1,6 @@
 import pyglet
 from src.helpers.level_builders import build_level1
-from src.helpers.utils import is_down_collision, is_right_collision, is_right_collision_new, is_left_collision, block_width, std_speed, gravity
+from src.helpers.utils import is_down_collision, is_right_collision, is_right_collision_new, is_left_collision, is_left_collision_new, block_width, std_speed, gravity
 from src.helpers.interfaces import Pair
 from src.entity import Entity
 
@@ -92,15 +92,26 @@ class GameplayScreen:
                     self.player.velocity = Pair(0, self.player.velocity.second)
                     print("! RIGHT COLLISION")
         
-        to_check = [Pair(player_block_pos.first, player_block_pos.second - 1),
+        to_check = [
+                    Pair(player_block_pos.first, player_block_pos.second - 1),
                     Pair(player_block_pos.first, player_block_pos.second),
-                    Pair(player_block_pos.first, player_block_pos.second + 1)]
+                    Pair(player_block_pos.first, player_block_pos.second + 1),
+                    Pair(player_block_pos.first, player_block_pos.second + 2),
+                    Pair(player_block_pos.first, player_block_pos.second + 3),
+                    Pair(player_block_pos.first - 1, player_block_pos.second - 1),
+                    Pair(player_block_pos.first - 1, player_block_pos.second),
+                    Pair(player_block_pos.first - 1, player_block_pos.second + 1),
+                    Pair(player_block_pos.first - 1, player_block_pos.second + 2),
+                    Pair(player_block_pos.first - 1, player_block_pos.second + 3),
+                    ]
         
         for loc in to_check:
             block = self.level[int(loc.first)][int(loc.second)]
             if type(block) is Entity and "collidable" in block.modifiers:
-                if is_left_collision(self.player, block):
+                if is_left_collision_new(self.player, block):
                     print("! LEFT COLLISION")
+                    self.player.global_pos = Pair(block.global_pos.first + block.sprite.width, self.player.global_pos.second)
+                    self.player.velocity = Pair(0, self.player.velocity.second)
         
 
         # # the three squares below the player
