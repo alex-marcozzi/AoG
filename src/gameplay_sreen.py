@@ -1,8 +1,11 @@
 import pyglet
 from src.helpers.level_builders import build_level1
-from src.helpers.utils import is_down_collision, is_down_collision_new, is_up_collision, is_up_collision_new, is_right_collision, is_right_collision_new, is_left_collision, is_left_collision_new, block_width, std_speed, gravity
+from src.helpers.utils import block_width, std_speed, gravity
+from src.helpers.physics import is_down_collision, is_up_collision, is_right_collision, is_left_collision
 from src.helpers.interfaces import Pair
 from src.entity import Entity
+from src.entity_classes.player import Player
+from src.world import World
 
 class GameplayScreen:
     def __init__(self, window: pyglet.window.Window):
@@ -10,152 +13,160 @@ class GameplayScreen:
         self.block_w = block_width(window)
         self.standard_speed = std_speed(window)
         self.level = build_level1(window)
-        self.player = Entity(window,
+        self.player = Player(window,
                              "assets/images/goose.png",
                              global_pos=Pair(0, 500),
                              velocity=Pair(0, 0),
                              acceleration=Pair(0, gravity(window)),
                              width=self.block_w,
                              height=self.block_w * 2)
+        self.world = World(window, build_level1(window), self.player)
         self.loaded_indexes = Pair(int(0), int(30))
-        self.keys_down = {}
-        self.keys_usable = {}
+        # self.keys_down = {}
+        # self.keys_usable = {}
     
     def tick(self):
 
         self.player.velocity = Pair(0, self.player.velocity.second)
-        self.check_keys()
+        # self.check_keys()
+        self.player.check_keys()
+        
 
-        self.handle_collisions()
-        self.player.tick(self.player.global_pos)
-        player_block_pos = Pair(self.player.global_pos.first / self.block_w, self.player.global_pos.second / self.block_w)
-        self.loaded_indexes = Pair(int(player_block_pos.first - 12), int(player_block_pos.first + 12))
+        # self.handle_collisions()
+        self.loaded_indexes = Pair(max(0, int(self.player.block_pos.first - 12)), min(len(self.world.level), int(self.player.block_pos.first + 12)))
 
-        for x in range(self.loaded_indexes.first, self.loaded_indexes.second):
-            for y in range(len(self.level[0])):
-                if type(self.level[x][y]) is Entity:
-                    self.level[x][y].tick(self.player.global_pos)
+        self.world.do_physics(self.loaded_indexes.first, self.loaded_indexes.second)
+        # self.player.tick(self.player.global_pos)
+        # player_block_pos = Pair(self.player.global_pos.first / self.block_w, self.player.global_pos.second / self.block_w)
+
+        # for x in range(self.loaded_indexes.first, self.loaded_indexes.second):
+        #     for y in range(len(self.level[0])):
+        #         if type(self.level[x][y]) is Entity:
+        #             self.level[x][y].tick(self.player.global_pos)
 
     def draw(self):
         self.player.draw()
         for x in range(self.loaded_indexes.first, self.loaded_indexes.second):
-            for y in range(len(self.level[0])):
-                if type(self.level[x][y]) is Entity:
-                    self.level[x][y].draw()
+            for y in range(len(self.world.level[0])):
+                # if type(self.world.level[x][y]) is Entity:
+                if issubclass(type(self.world.level[x][y]), Entity):
+                    self.world.level[x][y].draw()
         pass
 
     def handle_key_press(self, symbol, modifiers):
         print(f"* pressing key {symbol}")
-        self.keys_down[symbol] = True
+        self.player.handle_key_press(symbol, modifiers)
+        # self.keys_down[symbol] = True
 
     def handle_key_release(self, symbol, modifiers):
         print(f"^ releasing key {symbol}")
-        self.keys_down[symbol] = False
+        self.player.handle_key_release(symbol, modifiers)
+        # self.keys_down[symbol] = False
 
-    def handle_collisions(self):
-        block_w = block_h = self.window.width / 15
-        player_block_pos = Pair(self.player.global_pos.first // self.block_w, self.player.global_pos.second // self.block_w)
+    # def handle_collisions(self):
+    #     block_w = block_h = self.window.width / 15
+    #     player_block_pos = Pair(self.player.global_pos.first // self.block_w, self.player.global_pos.second // self.block_w)
 
-        # the three squares below the player
-        to_check = [
-                    # Pair(player_block_pos.first - 1, player_block_pos.second),  # behind and below
-                    Pair(player_block_pos.first, player_block_pos.second),  # straight below
-                    Pair(player_block_pos.first + 1, player_block_pos.second),
-                    # Pair(player_block_pos.first - 1, player_block_pos.second - 1),  # behind and below
-                    Pair(player_block_pos.first, player_block_pos.second - 1),  # straight below
-                    Pair(player_block_pos.first + 1, player_block_pos.second - 1),
-                    # Pair(player_block_pos.first - 1, player_block_pos.second - 2),  # behind and below
-                    Pair(player_block_pos.first, player_block_pos.second - 2),  # straight below
-                    Pair(player_block_pos.first + 1, player_block_pos.second - 2),
-                    # Pair(player_block_pos.first - 1, player_block_pos.second + 1),  # behind and below
-                    Pair(player_block_pos.first, player_block_pos.second + 1),  # straight below
-                    Pair(player_block_pos.first + 1, player_block_pos.second + 1),
-                    # Pair(player_block_pos.first - 1, player_block_pos.second),  # behind and below
-                    # Pair(player_block_pos.first, player_block_pos.second),  # straight below
-                    # Pair(player_block_pos.first + 1, player_block_pos.second),  # infront and below
-                    ]
+    #     # the three squares below the player
+    #     to_check = [
+    #                 # Pair(player_block_pos.first - 1, player_block_pos.second),  # behind and below
+    #                 Pair(player_block_pos.first, player_block_pos.second),  # straight below
+    #                 Pair(player_block_pos.first + 1, player_block_pos.second),
+    #                 # Pair(player_block_pos.first - 1, player_block_pos.second - 1),  # behind and below
+    #                 Pair(player_block_pos.first, player_block_pos.second - 1),  # straight below
+    #                 Pair(player_block_pos.first + 1, player_block_pos.second - 1),
+    #                 # Pair(player_block_pos.first - 1, player_block_pos.second - 2),  # behind and below
+    #                 Pair(player_block_pos.first, player_block_pos.second - 2),  # straight below
+    #                 Pair(player_block_pos.first + 1, player_block_pos.second - 2),
+    #                 # Pair(player_block_pos.first - 1, player_block_pos.second + 1),  # behind and below
+    #                 Pair(player_block_pos.first, player_block_pos.second + 1),  # straight below
+    #                 Pair(player_block_pos.first + 1, player_block_pos.second + 1),
+    #                 # Pair(player_block_pos.first - 1, player_block_pos.second),  # behind and below
+    #                 # Pair(player_block_pos.first, player_block_pos.second),  # straight below
+    #                 # Pair(player_block_pos.first + 1, player_block_pos.second),  # infront and below
+    #                 ]
         
         
-        for loc in to_check:
-            block = self.level[int(loc.first)][int(loc.second)]
-            if type(block) is Entity and "collidable" in block.modifiers:
-                if is_down_collision_new(self.player, block):
-                    self.player.global_pos = Pair(self.player.global_pos.first, block.global_pos.second + block.sprite.height)
-                    self.player.velocity = Pair(self.player.velocity.first, 0)
-                    self.keys_usable[pyglet.window.key.SPACE] = True
-                    print("! DOWN COLLISION")
+    #     for loc in to_check:
+    #         block = self.level[int(loc.first)][int(loc.second)]
+    #         if type(block) is Entity and "collidable" in block.modifiers:
+    #             if is_down_collision(self.player, block):
+    #                 self.player.global_pos = Pair(self.player.global_pos.first, block.global_pos.second + block.sprite.height)
+    #                 self.player.velocity = Pair(self.player.velocity.first, 0)
+    #                 self.keys_usable[pyglet.window.key.SPACE] = True
+    #                 print("! DOWN COLLISION")
         
-        to_check = [Pair(player_block_pos.first + 1, player_block_pos.second),
-                    Pair(player_block_pos.first + 1, player_block_pos.second + 1),
-                    Pair(player_block_pos.first + 1, player_block_pos.second + 2),
-                    Pair(player_block_pos.first + 1, player_block_pos.second + 3),
-                    Pair(player_block_pos.first + 1, player_block_pos.second - 1),
-                    Pair(player_block_pos.first + 1, player_block_pos.second - 2),
-                    Pair(player_block_pos.first + 1, player_block_pos.second - 3)
-                    ]
+    #     to_check = [Pair(player_block_pos.first + 1, player_block_pos.second),
+    #                 Pair(player_block_pos.first + 1, player_block_pos.second + 1),
+    #                 Pair(player_block_pos.first + 1, player_block_pos.second + 2),
+    #                 Pair(player_block_pos.first + 1, player_block_pos.second + 3),
+    #                 Pair(player_block_pos.first + 1, player_block_pos.second - 1),
+    #                 Pair(player_block_pos.first + 1, player_block_pos.second - 2),
+    #                 Pair(player_block_pos.first + 1, player_block_pos.second - 3)
+    #                 ]
         
-        for loc in to_check:
-            block = self.level[int(loc.first)][int(loc.second)]
-            if type(block) is Entity and "collidable" in block.modifiers:
-                if is_right_collision_new(self.player, block):
-                    self.player.global_pos = Pair(block.global_pos.first - self.player.sprite.width, self.player.global_pos.second)
-                    self.player.velocity = Pair(0, self.player.velocity.second)
-                    print("! RIGHT COLLISION")
+    #     for loc in to_check:
+    #         block = self.level[int(loc.first)][int(loc.second)]
+    #         if type(block) is Entity and "collidable" in block.modifiers:
+    #             if is_right_collision(self.player, block):
+    #                 self.player.global_pos = Pair(block.global_pos.first - self.player.sprite.width, self.player.global_pos.second)
+    #                 self.player.velocity = Pair(0, self.player.velocity.second)
+    #                 print("! RIGHT COLLISION")
         
-        to_check = [
-                    Pair(player_block_pos.first, player_block_pos.second - 1),
-                    Pair(player_block_pos.first, player_block_pos.second),
-                    Pair(player_block_pos.first, player_block_pos.second + 1),
-                    Pair(player_block_pos.first, player_block_pos.second + 2),
-                    Pair(player_block_pos.first, player_block_pos.second + 3),
-                    Pair(player_block_pos.first - 1, player_block_pos.second - 1),
-                    Pair(player_block_pos.first - 1, player_block_pos.second),
-                    Pair(player_block_pos.first - 1, player_block_pos.second + 1),
-                    Pair(player_block_pos.first - 1, player_block_pos.second + 2),
-                    Pair(player_block_pos.first - 1, player_block_pos.second + 3),
-                    ]
+    #     to_check = [
+    #                 Pair(player_block_pos.first, player_block_pos.second - 1),
+    #                 Pair(player_block_pos.first, player_block_pos.second),
+    #                 Pair(player_block_pos.first, player_block_pos.second + 1),
+    #                 Pair(player_block_pos.first, player_block_pos.second + 2),
+    #                 Pair(player_block_pos.first, player_block_pos.second + 3),
+    #                 Pair(player_block_pos.first - 1, player_block_pos.second - 1),
+    #                 Pair(player_block_pos.first - 1, player_block_pos.second),
+    #                 Pair(player_block_pos.first - 1, player_block_pos.second + 1),
+    #                 Pair(player_block_pos.first - 1, player_block_pos.second + 2),
+    #                 Pair(player_block_pos.first - 1, player_block_pos.second + 3),
+    #                 ]
         
-        for loc in to_check:
-            block = self.level[int(loc.first)][int(loc.second)]
-            if type(block) is Entity and "collidable" in block.modifiers:
-                if is_left_collision_new(self.player, block):
-                    print("! LEFT COLLISION")
-                    self.player.global_pos = Pair(block.global_pos.first + block.sprite.width, self.player.global_pos.second)
-                    self.player.velocity = Pair(0, self.player.velocity.second)
+    #     for loc in to_check:
+    #         block = self.level[int(loc.first)][int(loc.second)]
+    #         if type(block) is Entity and "collidable" in block.modifiers:
+    #             if is_left_collision(self.player, block):
+    #                 print("! LEFT COLLISION")
+    #                 self.player.global_pos = Pair(block.global_pos.first + block.sprite.width, self.player.global_pos.second)
+    #                 self.player.velocity = Pair(0, self.player.velocity.second)
         
 
-        # the three squares below the player
-        to_check = [
-                    Pair(player_block_pos.first - 1, player_block_pos.second),
-                    Pair(player_block_pos.first, player_block_pos.second),
-                    Pair(player_block_pos.first + 1, player_block_pos.second),
-                    Pair(player_block_pos.first - 1, player_block_pos.second + 1),
-                    Pair(player_block_pos.first, player_block_pos.second + 1),
-                    Pair(player_block_pos.first + 1, player_block_pos.second + 1),
-                    Pair(player_block_pos.first - 1, player_block_pos.second + 2),
-                    Pair(player_block_pos.first, player_block_pos.second + 2),
-                    Pair(player_block_pos.first + 1, player_block_pos.second + 2),
-                    Pair(player_block_pos.first - 1, player_block_pos.second + 3),
-                    Pair(player_block_pos.first, player_block_pos.second + 3),
-                    Pair(player_block_pos.first + 1, player_block_pos.second + 3),
-                    ]
+    #     # the three squares below the player
+    #     to_check = [
+    #                 Pair(player_block_pos.first - 1, player_block_pos.second),
+    #                 Pair(player_block_pos.first, player_block_pos.second),
+    #                 Pair(player_block_pos.first + 1, player_block_pos.second),
+    #                 Pair(player_block_pos.first - 1, player_block_pos.second + 1),
+    #                 Pair(player_block_pos.first, player_block_pos.second + 1),
+    #                 Pair(player_block_pos.first + 1, player_block_pos.second + 1),
+    #                 Pair(player_block_pos.first - 1, player_block_pos.second + 2),
+    #                 Pair(player_block_pos.first, player_block_pos.second + 2),
+    #                 Pair(player_block_pos.first + 1, player_block_pos.second + 2),
+    #                 Pair(player_block_pos.first - 1, player_block_pos.second + 3),
+    #                 Pair(player_block_pos.first, player_block_pos.second + 3),
+    #                 Pair(player_block_pos.first + 1, player_block_pos.second + 3),
+    #                 ]
         
-        for loc in to_check:
-            block = self.level[int(loc.first)][int(loc.second)]
-            if type(block) is Entity and "collidable" in block.modifiers:
-                if is_up_collision_new(self.player, block):
-                    print("! UP COLLISION")
-                    self.player.global_pos = Pair(self.player.global_pos.first, block.global_pos.second - self.player.sprite.height)
-                    self.player.velocity = Pair(self.player.velocity.first, 0)
+    #     for loc in to_check:
+    #         block = self.level[int(loc.first)][int(loc.second)]
+    #         if type(block) is Entity and "collidable" in block.modifiers:
+    #             if is_up_collision(self.player, block):
+    #                 print("! UP COLLISION")
+    #                 self.player.global_pos = Pair(self.player.global_pos.first, block.global_pos.second - self.player.sprite.height)
+    #                 self.player.velocity = Pair(self.player.velocity.first, 0)
     
-    def check_keys(self):
-        if self.keys_down.get(pyglet.window.key.A, False):
-            self.player.velocity = Pair(self.player.velocity.first - self.standard_speed, self.player.velocity.second)
-        if self.keys_down.get(pyglet.window.key.D, False):
-            self.player.velocity = Pair(self.player.velocity.first + self.standard_speed, self.player.velocity.second)
-        if self.keys_down.get(pyglet.window.key.SPACE, False) and self.keys_usable[pyglet.window.key.SPACE]:
-            self.player.velocity = Pair(self.player.velocity.first, self.player.velocity.second + (self.block_w / 5))
-            self.keys_usable[pyglet.window.key.SPACE] = False
+    # def check_keys(self):
+    #     if self.keys_down.get(pyglet.window.key.A, False):
+    #         self.player.velocity = Pair(self.player.velocity.first - self.standard_speed, self.player.velocity.second)
+    #     if self.keys_down.get(pyglet.window.key.D, False):
+    #         self.player.velocity = Pair(self.player.velocity.first + self.standard_speed, self.player.velocity.second)
+    #     if self.keys_down.get(pyglet.window.key.SPACE, False) and self.keys_usable.get(pyglet.window.key.SPACE, True):
+    #         self.player.velocity = Pair(self.player.velocity.first, self.player.velocity.second + (self.block_w / 5))
+    #         # self.keys_usable[pyglet.window.key.SPACE] = False
 
 
         # if self.keys_down.get(pyglet.window.key.A, False):
