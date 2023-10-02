@@ -45,12 +45,23 @@ class GameplayScreen:
         #             self.level[x][y].tick(self.player.global_pos)
 
     def draw(self):
-        self.player.draw()
+        for character in self.world.characters:
+            if abs(character.block_pos.first - self.player.block_pos.first) < 12:
+                character.draw()
+        # self.player.draw()
         for x in range(self.loaded_indexes.first, self.loaded_indexes.second):
             for y in range(len(self.world.level[0])):
                 # if type(self.world.level[x][y]) is Entity:
                 if issubclass(type(self.world.level[x][y]), Entity):
                     self.world.level[x][y].draw()
+        
+        label = pyglet.text.Label(str(self.world.player.hp),
+                          font_name='Times New Roman',
+                          font_size=36,
+                          x=self.block_w * 3, y=self.window.height - self.block_w,
+                          anchor_x='center', anchor_y='center')
+        label.draw()
+        
         pass
 
     def handle_key_press(self, symbol, modifiers):

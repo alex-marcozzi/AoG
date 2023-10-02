@@ -1,6 +1,6 @@
 import pyglet
 from src.helpers.interfaces import Pair
-from src.helpers.utils import block_width
+from src.helpers.utils import block_width, std_speed
 from src.helpers.globals import Direction
 
 loaded_images = {}  # key: filename, value: image
@@ -8,6 +8,7 @@ loaded_images = {}  # key: filename, value: image
 class Entity:
     def __init__(self, window, sprite_filename: str, global_pos: Pair, velocity: Pair, acceleration: Pair, width: float, height: float):
         self.window = window
+        self.standard_speed = std_speed(window)
         self.block_w = block_width(window)
         if not sprite_filename in loaded_images.keys():
             loaded_images[sprite_filename] = pyglet.resource.image(sprite_filename)
@@ -42,7 +43,7 @@ class Entity:
         # camera_pos == player.global_pos (middle of screen)
         self.sprite.x = self.global_pos.first - (camera_pos.first - (self.window.width / 2))
         self.sprite.y = self.global_pos.second - (camera_pos.second - (self.window.height / 2))
-        self.block_pos = Pair(self.global_pos.first // self.block_w, self.global_pos.second // self.block_w)
+        self.block_pos = Pair(self.global_pos.first // self.block_w, (self.global_pos.second + 10) // self.block_w)
 
     def draw(self):
         self.sprite.draw()
