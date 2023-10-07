@@ -4,24 +4,25 @@ from src.helpers.physics import is_down_collision, is_right_collision, is_left_c
 from src.helpers.interfaces import Pair
 from src.entity import Entity
 from src.entity_classes.character import Character
+from src.entity_classes.player import Player
 from src.helpers.globals import Direction
 
 # this is basically all of the level information, like a context
 class World:
-    def __init__(self, window: pyglet.window.Window, level: list, player: Entity) -> None:
+    def __init__(self, window: pyglet.window.Window, level: list, batch) -> None:
         self.window = window
         self.block_w = block_width(window)
         self.standard_speed = std_speed(window)
         self.level = level
-        # self.player = Entity(window,
-        #                      "assets/images/goose.png",
-        #                      global_pos=Pair(0, 200),
-        #                      velocity=Pair(0, 0),
-        #                      acceleration=Pair(0, gravity(window)),
-        #                      width=self.block_w,
-        #                      height=self.block_w * 2)
-        self.characters = [player]
-        self.player = player
+        self.player = Player(window,
+                             "assets/images/goose.png",
+                             global_pos=Pair(0, 500),
+                             velocity=Pair(0, 0),
+                             acceleration=Pair(0, gravity(window)),
+                             width=self.block_w,
+                             height=self.block_w * 2,
+                             batch=batch)
+        self.characters = [self.player]
         self.extract_characters(self.level)
 
     # def tick(self):
@@ -31,6 +32,7 @@ class World:
         for x in range(len(level)):
             for y in range(len(level[x])):
                 if issubclass(type(level[x][y]), Entity):
+                    level[x][y].tick(self.player.global_pos)  # first tick is necessary to set the entities' positions
                     # print(f"{x}, {y}: {type(level[x][y])}")
                     if issubclass(type(level[x][y]), Character):
                         # print("HERE")
@@ -40,13 +42,16 @@ class World:
     def do_physics(self, from_loc: int, to_loc: int):
         index = 0
         for character in self.characters:
-            if abs(character.block_pos.first - self.player.block_pos.first) >= 12:
-                continue
+            # if abs(character.block_pos.first - self.player.block_pos.first) >= 12:
+            #     continue
             if issubclass(type(character), Character):
                 character.pre_tick()
                 collisions = self.check_collisions(character)
 
+                character.on_ground = False
                 for collision in collisions:
+                    if collision.second == Direction.DOWN:
+                        character.on_ground = True
                     character.interact(collision.first, collision.second)
 
                 if not character.tick(self.player.global_pos):

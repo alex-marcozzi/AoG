@@ -5,12 +5,14 @@ from src.entity import Entity
 from src.helpers.globals import Direction 
 
 class Character(Entity):
-    def __init__(self, window, sprite_filename: str, global_pos: Pair, velocity: Pair, acceleration: Pair, width: float, height: float, hp: int):
-        super().__init__(window, sprite_filename, global_pos, velocity, acceleration, width, height)
+    def __init__(self, window, sprite_filename: str, global_pos: Pair, velocity: Pair, acceleration: Pair, width: float, height: float, batch, hp: int):
+        super().__init__(window, sprite_filename, global_pos, velocity, acceleration, width, height, batch)
 
         self.hp = hp
         self.width_in_blocks = width // block_width(window)
         # self.standard_speed = std_speed(window)
+        # self.block_below = None
+        self.on_ground = False
 
     def pre_tick(self):
         self.velocity = Pair(0, self.velocity.second)
@@ -32,7 +34,10 @@ class Character(Entity):
     def interact_collidable(self, entity: Entity, direction):
         if direction == Direction.DOWN:
             self.global_pos = Pair(self.global_pos.first, entity.global_pos.second + entity.sprite.height)
-            self.velocity = Pair(self.velocity.first, 0)
+            self.velocity = Pair(self.velocity.first + entity.velocity.first, 0)
+        #     self.on_ground = True
+        # else:
+        #     self.on_ground = False
         if direction == Direction.RIGHT:
             if not issubclass(type(entity), Character) and self.block_pos.second - 1 == entity.block_pos.second:
                 return

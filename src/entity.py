@@ -6,13 +6,14 @@ from src.helpers.globals import Direction
 loaded_images = {}  # key: filename, value: image
 
 class Entity:
-    def __init__(self, window, sprite_filename: str, global_pos: Pair, velocity: Pair, acceleration: Pair, width: float, height: float):
+    def __init__(self, window, sprite_filename: str, global_pos: Pair, velocity: Pair, acceleration: Pair, width: float, height: float, batch=None):
         self.window = window
         self.standard_speed = std_speed(window)
         self.block_w = block_width(window)
         if not sprite_filename in loaded_images.keys():
             loaded_images[sprite_filename] = pyglet.resource.image(sprite_filename)
-        self.sprite = pyglet.sprite.Sprite(img=loaded_images[sprite_filename])
+        self.batch = batch
+        self.sprite = pyglet.sprite.Sprite(img=loaded_images[sprite_filename], batch=batch)
         self.sprite_filename = sprite_filename
         self.sprite.width = width
         self.sprite.height = height
@@ -29,7 +30,8 @@ class Entity:
                           velocity=self.velocity,
                           acceleration=self.acceleration,
                           width=self.sprite.width,
-                          height=self.sprite.height)
+                          height=self.sprite.height,
+                          batch=self.batch)
         return new_copy
 
     def tick_pos_only(self):
