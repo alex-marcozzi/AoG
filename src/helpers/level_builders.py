@@ -33,6 +33,7 @@ def build_level1(window):
     bear = Bear(window)
     level1 = initialize_level_base(100, 100)
     set_line(level1, Pair(0,2), Pair(30, 2), block, block_w, block_w)
+    # set_line(level1, Pair(15,2), Pair(15, 3), block, block_w, block_w)
     set_line(level1, Pair(30,2), Pair(30, 3), block, block_w, block_w)
     set_line(level1, Pair(32,3), Pair(40, 3), block, block_w, block_w)
     

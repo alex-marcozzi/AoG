@@ -3,7 +3,8 @@ from src.helpers.utils import std_speed
 from src.helpers.interfaces import Pair
 from src.entity import Entity
 from src.entity_classes.character import Character
-from src.helpers.globals import Direction 
+from src.helpers.globals import Direction
+import time
 
 class Player(Character):
     def __init__(self, window, sprite_filename: str, global_pos: Pair, velocity: Pair, acceleration: Pair, width: float, height: float):
@@ -12,7 +13,13 @@ class Player(Character):
         # self.standard_speed = std_speed(window)
         self.keys_down = {}
         self.keys_usable = {}
+        self.immunity_start = None
+        self.immunity_duration_seconds = 1
     
+    def pre_tick(self):
+        super().pre_tick()
+        self.check_keys()
+
     # def tick(self, camera_pos: Pair):
     #     super().tick(camera_pos)
 
@@ -22,12 +29,10 @@ class Player(Character):
             if direction == Direction.DOWN:
                 self.keys_usable[pyglet.window.key.SPACE] = True
         if "dangerous" in entity.modifiers:
-            self.interact_dangerous(entity, direction)
-    
-    def interact_dangerous(self, entity: Entity, direction):
-        print("DANGER DANGER DANGER")
-        self.hp = max(self.hp - 1, 0)
-
+            now = time.time()
+            if not self.immunity_start or now - self.immunity_start > self.immunity_duration_seconds:
+                self.interact_dangerous(entity, direction)
+                self.immunity_start = time.time()  # epoch time
     
     def handle_key_press(self, symbol, modifiers):
         self.keys_down[symbol] = True

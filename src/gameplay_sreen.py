@@ -27,9 +27,9 @@ class GameplayScreen:
     
     def tick(self):
 
-        self.player.velocity = Pair(0, self.player.velocity.second)
+        # self.player.velocity = Pair(0, self.player.velocity.second)
         # self.check_keys()
-        self.player.check_keys()
+        # self.player.check_keys()
         
 
         # self.handle_collisions()

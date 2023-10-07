@@ -17,7 +17,7 @@ class Entity:
         self.sprite.width = width
         self.sprite.height = height
         self.global_pos = global_pos.copy()
-        self.block_pos = Pair(self.global_pos.first // self.block_w, self.global_pos.second // self.block_w)
+        self.block_pos = Pair(self.global_pos.first // self.block_w, (self.global_pos.second + 10) // self.block_w)
         self.velocity = velocity.copy()
         self.acceleration = acceleration.copy()
         self.modifiers = ["collidable"]

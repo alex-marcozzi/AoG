@@ -41,7 +41,8 @@ class World:
     def do_physics(self, from_loc: int, to_loc: int):
         index = 0
         for character in self.characters:
-            if issubclass(type(character), Entity):
+            if issubclass(type(character), Character):
+                character.pre_tick()
                 collisions = self.check_collisions(character)
 
                 for collision in collisions:

@@ -10,6 +10,11 @@ class Character(Entity):
 
         self.hp = hp
         # self.standard_speed = std_speed(window)
+
+    def pre_tick(self):
+        self.velocity = Pair(0, self.velocity.second)
+        # self.check_keys()
+        # self.player.check_keys()
     
     def tick(self, camera_pos: Pair):
         super().tick(camera_pos)
@@ -43,3 +48,7 @@ class Character(Entity):
             print("! UP COLLISION")
             self.global_pos = Pair(self.global_pos.first, entity.global_pos.second - self.sprite.height)
             self.velocity = Pair(self.velocity.first, 0)
+            
+    def interact_dangerous(self, entity: Entity, direction):
+        print("DANGER DANGER DANGER")
+        self.hp = max(self.hp - 1, 0)
