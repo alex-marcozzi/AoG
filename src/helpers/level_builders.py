@@ -19,18 +19,14 @@ def set_line(level_array: list, from_pos: Pair, to_pos: Pair, entity: Entity, bl
             level_array[x][y] = this_entity
 
 def set_bear(level_array: list, pos: Pair, window, block_w):
-    x = pos.first
-    y = pos.second
-    bear = Bear(window)
-    bear.global_pos = Pair(x * block_w, y * block_w)
-    print(f"TYPE: {type(bear)}")
+    global_pos = Pair(pos.first * block_w, pos.second * block_w)
+    bear = Bear(window, global_pos)
     level_array[pos.first][pos.second] = bear
 
 
 def build_level1(window):
     block_w = block_width(window)
     block = Entity(window, "assets/images/orange.png", global_pos=Pair(0, 0), velocity=Pair(0,0), acceleration=Pair(0,0), width=window.width / 15, height = window.width / 15)
-    bear = Bear(window)
     level1 = initialize_level_base(100, 100)
     set_line(level1, Pair(0,2), Pair(30, 2), block, block_w, block_w)
     # set_line(level1, Pair(15,2), Pair(15, 3), block, block_w, block_w)

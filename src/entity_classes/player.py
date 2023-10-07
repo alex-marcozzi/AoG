@@ -15,6 +15,7 @@ class Player(Character):
         self.keys_usable = {}
         self.immunity_start = None
         self.immunity_duration_seconds = 1
+        self.modifiers = ["collidable"]
     
     def pre_tick(self):
         super().pre_tick()

@@ -1,5 +1,5 @@
 import pyglet
-from src.helpers.utils import std_speed
+from src.helpers.utils import std_speed, block_width
 from src.helpers.interfaces import Pair
 from src.entity import Entity
 from src.helpers.globals import Direction 
@@ -9,6 +9,7 @@ class Character(Entity):
         super().__init__(window, sprite_filename, global_pos, velocity, acceleration, width, height)
 
         self.hp = hp
+        self.width_in_blocks = width // block_width(window)
         # self.standard_speed = std_speed(window)
 
     def pre_tick(self):
@@ -33,13 +34,13 @@ class Character(Entity):
             self.global_pos = Pair(self.global_pos.first, entity.global_pos.second + entity.sprite.height)
             self.velocity = Pair(self.velocity.first, 0)
         if direction == Direction.RIGHT:
-            if not issubclass(type(entity), Character) and self.block_pos.first + 1 == entity.block_pos.first and self.block_pos.second - 1 == entity.block_pos.second:
+            if not issubclass(type(entity), Character) and self.block_pos.second - 1 == entity.block_pos.second:
                 return
             print("! RIGHT COLLISION")
             self.global_pos = Pair(entity.global_pos.first - self.sprite.width, self.global_pos.second)
             self.velocity = Pair(0, self.velocity.second)
         if direction == Direction.LEFT:
-            if not issubclass(type(entity), Character) and self.block_pos.first - 1 == entity.block_pos.first and self.block_pos.second - 1 == entity.block_pos.second:
+            if not issubclass(type(entity), Character) and self.block_pos.second - 1 == entity.block_pos.second:
                 return
             print("! LEFT COLLISION")
             self.global_pos = Pair(entity.global_pos.first + entity.sprite.width, self.global_pos.second)
@@ -48,7 +49,7 @@ class Character(Entity):
             print("! UP COLLISION")
             self.global_pos = Pair(self.global_pos.first, entity.global_pos.second - self.sprite.height)
             self.velocity = Pair(self.velocity.first, 0)
-            
+
     def interact_dangerous(self, entity: Entity, direction):
         print("DANGER DANGER DANGER")
         self.hp = max(self.hp - 1, 0)

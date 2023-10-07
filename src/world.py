@@ -23,7 +23,6 @@ class World:
         self.characters = [player]
         self.player = player
         self.extract_characters(self.level)
-        print(len(self.characters))
 
     # def tick(self):
     #     self.do_physics
@@ -32,21 +31,22 @@ class World:
         for x in range(len(level)):
             for y in range(len(level[x])):
                 if issubclass(type(level[x][y]), Entity):
-                    print(f"{x}, {y}: {type(level[x][y])}")
+                    # print(f"{x}, {y}: {type(level[x][y])}")
                     if issubclass(type(level[x][y]), Character):
-                        print("HERE")
+                        # print("HERE")
                         self.characters.append(level[x][y])
                         level[x][y] = None
     
     def do_physics(self, from_loc: int, to_loc: int):
         index = 0
         for character in self.characters:
+            if abs(character.block_pos.first - self.player.block_pos.first) >= 12:
+                continue
             if issubclass(type(character), Character):
                 character.pre_tick()
                 collisions = self.check_collisions(character)
 
                 for collision in collisions:
-                    # self.handle_collision(character, collision.first, collision.second)
                     character.interact(collision.first, collision.second)
 
                 if not character.tick(self.player.global_pos):
@@ -64,16 +64,6 @@ class World:
                     #     block.interact(collision.first, collision.second)
 
                     block.tick(self.player.global_pos)
-                    
-
-                
-
-
-    # def handle_collision(self, entity1: Entity, entity2: Entity, direction):
-    #     if direction == Direction.DOWN:
-    #         entity1.interact(entity2, direction)
-
-
 
     def check_collisions(self, entity: Entity):
         collisions = []
