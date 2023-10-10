@@ -1,6 +1,7 @@
 import pyglet
 from src.gameplay_sreen import GameplayScreen
 
+
 class Engine:
     def __init__(self, window):
         self.screen_mapping = {
@@ -12,7 +13,7 @@ class Engine:
 
         self.current_screen = "GAME"
         self.window = window
-    
+
     def tick(self):
         self.screen_mapping[self.current_screen].tick()
 
