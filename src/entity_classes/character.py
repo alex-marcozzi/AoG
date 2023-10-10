@@ -3,6 +3,7 @@ from src.helpers.utils import std_speed, block_width
 from src.helpers.interfaces import Pair
 from src.entity import Entity
 from src.helpers.globals import Direction 
+import time
 
 class Character(Entity):
     def __init__(self, window, sprite_filename: str, global_pos: Pair, velocity: Pair, acceleration: Pair, width: float, height: float, batch, hp: int):
@@ -13,6 +14,8 @@ class Character(Entity):
         # self.standard_speed = std_speed(window)
         # self.block_below = None
         self.on_ground = False
+        self.immunity_start = time.time()
+        self.immunity_duration_seconds = 1
 
     def pre_tick(self):
         self.velocity = Pair(0, self.velocity.second)
@@ -56,5 +59,8 @@ class Character(Entity):
             self.velocity = Pair(self.velocity.first, 0)
 
     def interact_dangerous(self, entity: Entity, direction):
-        print("DANGER DANGER DANGER")
-        self.hp = max(self.hp - 1, 0)
+        now = time.time()
+        if direction == Direction.OVERLAP and now - self.immunity_start > self.immunity_duration_seconds:
+            print("DANGER DANGER DANGER")
+            self.hp = max(self.hp - 1, 0)
+            self.immunity_start = time.time()  # epoch time

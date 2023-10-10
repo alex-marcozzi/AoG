@@ -1,6 +1,6 @@
 import pyglet
 from src.helpers.utils import std_speed, gravity, block_width
-from src.helpers.physics import is_down_collision, is_right_collision, is_left_collision, is_up_collision
+from src.helpers.physics import is_down_collision, is_right_collision, is_left_collision, is_up_collision, is_overlap
 from src.helpers.interfaces import Pair
 from src.entity import Entity
 from src.entity_classes.character import Character
@@ -52,6 +52,8 @@ class World:
                 for collision in collisions:
                     if collision.second == Direction.DOWN:
                         character.on_ground = True
+                    if collision.second == Direction.OVERLAP and character == self.player:
+                        print("PLAYER")
                     character.interact(collision.first, collision.second)
 
                 if not character.tick(self.player.global_pos):
@@ -90,6 +92,10 @@ class World:
             if is_up_collision(entity, character):
                 print("CHARACTER UP COLLISION")
                 collisions.append(Pair(character, Direction.UP))
+            if is_overlap(entity, character):
+                if entity == self.player:
+                    print("CHARACTER OVERLAP")
+                collisions.append(Pair(character, Direction.OVERLAP))
 
         to_check = []
 

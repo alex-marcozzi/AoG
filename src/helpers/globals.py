@@ -11,3 +11,4 @@ class Direction:
     LEFT = "left"
     UP = "up"
     DOWN = "down"
+    OVERLAP = "overlap"

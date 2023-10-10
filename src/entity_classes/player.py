@@ -13,9 +13,7 @@ class Player(Character):
         # self.standard_speed = std_speed(window)
         self.keys_down = {}
         self.keys_usable = {}
-        self.immunity_start = time.time()
-        self.immunity_duration_seconds = 1
-        self.modifiers = ["collidable"]
+        self.modifiers = []
     
     def pre_tick(self):
         super().pre_tick()
@@ -30,10 +28,9 @@ class Player(Character):
             if direction == Direction.DOWN:
                 self.keys_usable[pyglet.window.key.SPACE] = True
         if "dangerous" in entity.modifiers:
-            now = time.time()
-            if now - self.immunity_start > self.immunity_duration_seconds:
-                self.interact_dangerous(entity, direction)
-                self.immunity_start = time.time()  # epoch time
+            # now = time.time()
+            # if now - self.immunity_start > self.immunity_duration_seconds:
+            self.interact_dangerous(entity, direction)
     
     def handle_key_press(self, symbol, modifiers):
         self.keys_down[symbol] = True

@@ -11,7 +11,7 @@ class Bear(Character):
         self.speed = std_speed(window) / 2.0
         super().__init__(window, "assets/images/bear.png", global_pos, Pair(-1 * self.speed, 0), Pair(0, gravity(window)), block_width(window) * 2, block_width(window) * 2, batch, hp=1)
 
-        self.modifiers = ["collidable", "dangerous"]
+        self.modifiers = ["dangerous"]
         self.move_loop_start = time.time()
         self.left = True
 

@@ -140,3 +140,14 @@ def is_up_collision(entity1: Entity, entity2: Entity):
         e2_pointer.tick_pos_only()
     
     return False
+
+def is_overlap(entity1: Entity, entity2: Entity):
+    if entity1.topLeft().second >= entity2.bottomRight().second:
+        if entity1.topLeft().first <= entity2.bottomRight().first and entity1.topRight().first >= entity2.bottomLeft().first:
+            return True
+    
+    if entity2.topLeft().second >= entity1.bottomRight().second:
+        if entity2.topLeft().first <= entity1.bottomRight().first and entity2.topRight().first >= entity1.bottomLeft().first:
+            return True
+
+    return False
