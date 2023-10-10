@@ -39,10 +39,11 @@ class Player(Character):
                 hitboxes=[
                     Hitbox(pos=Pair(0, 0), width=hitbox_width * 2, height=hitbox_height)
                 ],
-                duration=1,
+                duration=0.1,
                 damage=1,
+                cooldown=0.10,
             ),
-            attack_sprite_filename="assets/images/bear.png"
+            attack_sprite_filename="assets/images/goose.png"
         )
 
         # self.standard_speed = std_speed(window)
@@ -72,7 +73,7 @@ class Player(Character):
         self.keys_down[symbol] = False
 
     def check_keys(self):
-        if self.can_move():
+        # if self.can_move():
             if self.keys_down.get(pyglet.window.key.A, False):
                 self.velocity = Pair(
                     self.velocity.first - self.standard_speed, self.velocity.second
@@ -85,7 +86,7 @@ class Player(Character):
                 self.velocity = Pair(
                     self.velocity.first, self.velocity.second + (self.block_w / 5)
                 )
-            if self.keys_down.get(pyglet.window.key.F, False):# and not self.attack.inProgress():
+            if self.keys_down.get(pyglet.window.key.F, False) and self.attack.isUsable():# and not self.attack.inProgress():
                 print(">> THROWING ATTACK")
                 self.attack.Throw()
 

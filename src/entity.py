@@ -77,6 +77,7 @@ class Entity:
             self.global_pos.first // self.block_w,
             (self.global_pos.second + 10) // self.block_w,
         )
+        self.hitbox.pos = self.global_pos.copy()
 
     # def draw(self):
     #     self.sprite.draw()

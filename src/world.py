@@ -46,7 +46,6 @@ class World:
                     level[x][y].tick(
                         self.player.global_pos
                     )  # first tick is necessary to set the entities' positions
-                    # print(f"{x}, {y}: {type(level[x][y])}")
                     if issubclass(type(level[x][y]), Character):
                         # print("HERE")
                         self.characters.append(level[x][y])
@@ -145,14 +144,10 @@ class World:
             if other_character == character:
                 continue
 
-            print("CHECKING IF BEAR WAS HIT")
             for attack_hitbox in character.attack.hitboxes:
                 pos = Pair(character.global_pos.first + attack_hitbox.pos.first,
                                          character.global_pos.second + attack_hitbox.pos.second)
                 true_hitbox = Hitbox(pos=pos, width=attack_hitbox.width, height=attack_hitbox.width)
-                print(f"{pos.first}, {pos.second}")
-                print(f"{other_character.global_pos.first}, {other_character.global_pos.second}")
                 if is_overlap(true_hitbox, other_character.hitbox):
-                    print("YES")
                     # character.attack.Hit(other_character)
                     other_character.takeHit(character.attack)

@@ -190,30 +190,11 @@ def is_overlap(entity1: Entity, entity2: Entity):
     # return False
 
 def is_overlap(hitbox1: Hitbox, hitbox2: Hitbox):
-    print(f"TL: {hitbox1.topLeft().first}, {hitbox2.topLeft().first}")
-    print(f"TR: {hitbox1.topRight().first}, {hitbox2.topRight().first}")
-    print(f"BL: {hitbox1.bottomLeft().first}, {hitbox2.bottomLeft().first}")
-    print(f"BR: {hitbox1.bottomRight().first}, {hitbox2.bottomRight().first}")
     if hitbox1.topLeft().second >= hitbox2.bottomRight().second and hitbox1.bottomLeft().second <= hitbox2.topRight().second:
         if (
             hitbox1.topLeft().first <= hitbox2.bottomRight().first
             and hitbox1.topRight().first >= hitbox2.bottomLeft().first
         ):
             return True
-        
-    # need to add checking for the other 2 points as well. Will need 4 if statements, 1 for each point
-    if hitbox1.bottomLeft().second <= hitbox2.topLeft().second and hitbox1.bottomRight().second <= hitbox2.topLeft().second:
-        if (
-            hitbox1.bottomLeft().first >= hitbox2.topRight().first
-            and hitbox1.bottomRight().first <= hitbox2.topLeft().first
-        ):
-            return True
-
-    # if hitbox2.topLeft().second >= hitbox1.bottomRight().second:
-    #     if (
-    #         hitbox2.topLeft().first <= hitbox1.bottomRight().first
-    #         and hitbox2.topRight().first >= hitbox1.bottomLeft().first
-    #     ):
-    #         return True
 
     return False

@@ -11,6 +11,7 @@ from src.helpers.interfaces import Pair
 from src.entity import Entity
 from src.entity_classes.player import Player
 from src.world import World
+import time
 
 
 class GameplayScreen:
@@ -73,6 +74,23 @@ class GameplayScreen:
             anchor_y="center",
         )
         label.draw()
+
+        if self.world.player.attack.thrown_time:
+            cd = int((self.world.player.attack.thrown_time + self.world.player.attack.duration + self.world.player.attack.cooldown) - time.time())
+
+            if cd <= 0:
+                cd = 0
+
+            cd_label = pyglet.text.Label(
+                str(cd),
+                font_name="Times New Roman",
+                font_size=36,
+                x=self.block_w * 3,
+                y=self.window.height - (self.block_w * 3),
+                anchor_x="center",
+                anchor_y="center",
+            )
+            cd_label.draw()
 
         pass
 

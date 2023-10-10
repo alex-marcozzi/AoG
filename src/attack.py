@@ -8,10 +8,12 @@ class Attack:
         hitboxes: list,
         duration: float,
         damage: int,
+        cooldown: int
     ):
         self.hitboxes = hitboxes
         self.duration = duration
         self.damage = damage
+        self.cooldown = cooldown
 
         self.thrown_time = None
 
@@ -28,6 +30,13 @@ class Attack:
             return True
         
         return False
+    
+    def isUsable(self):
+        if not self.thrown_time:
+            return True
+
+        now = time.time()
+        return now > self.thrown_time + self.duration + self.cooldown
 
     # def Hit(self, character: Character):
     #     # when we add modifiers later we could do checking here:
