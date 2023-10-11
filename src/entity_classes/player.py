@@ -1,9 +1,10 @@
 import pyglet
-from src.helpers.utils import std_speed
+from src.helpers.utils import block_width, std_speed, make_sprite
 from src.helpers.interfaces import Pair
 from src.entity import Entity
 from src.attack import Attack
 from src.hitbox import Hitbox
+from src.SpriteCollection import SpriteCollection
 from src.entity_classes.character import Character
 from src.helpers.globals import Direction
 import time
@@ -23,14 +24,22 @@ class Player(Character):
         hitbox_height: float,
         batch,
     ):
+        sprites = SpriteCollection(idle=make_sprite(sprite_filename="assets/images/goose.png",
+                                                    width=block_width(window),
+                                                    height=block_width(window),
+                                                    visible=True,
+                                                    batch=batch),
+                                    attack=make_sprite(sprite_filename="assets/images/bear.png",
+                                                    width=block_width(window) * 2,
+                                                    height=block_width(window),
+                                                    visible=False,
+                                                    batch=batch),)
         super().__init__(
             window,
-            sprite_filename,
+            sprites,
             global_pos,
             velocity,
             acceleration,
-            sprite_width,
-            sprite_height,
             hitbox_width,
             hitbox_height,
             batch,
@@ -43,7 +52,7 @@ class Player(Character):
                 damage=1,
                 cooldown=0.10,
             ),
-            attack_sprite_filename="assets/images/goose.png"
+            # attack_sprite_filename="assets/images/goose.png"
         )
 
         # self.standard_speed = std_speed(window)

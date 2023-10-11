@@ -1,6 +1,7 @@
 import pyglet
 import src.helpers.globals as globals
 
+loaded_images = {}  # key: filename, value: image
 
 def block_width(window: pyglet.window.Window):
     return window.width * globals.BLOCK_SIZE_RATE
@@ -16,6 +17,29 @@ def gravity(window: pyglet.window.Window):
 
 def add_tuples(entity1: tuple, entity2: tuple):
     return tuple(map(lambda x, y: x + y, entity1, entity2))
+
+def make_sprite(sprite_filename: str, width: float, height: float, visible: float, batch):
+        if not sprite_filename in loaded_images.keys():
+            loaded_images[sprite_filename] = pyglet.resource.image(sprite_filename)
+        sprite = pyglet.sprite.Sprite(
+            img=loaded_images[sprite_filename], batch=batch
+        )
+        sprite.width = width
+        sprite.height = height
+        sprite.visible = visible
+
+        return sprite
+
+def copy_sprite(other_sprite: pyglet.sprite.Sprite):
+    new_copy = pyglet.sprite.Sprite(
+         img=other_sprite.image,
+         x=other_sprite.x,
+         y=other_sprite.y,
+    )
+    new_copy.width=other_sprite.width
+    new_copy.height=other_sprite.height
+    
+    return new_copy
 
 
 # def normalize_vector(v: Pair):

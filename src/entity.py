@@ -1,10 +1,10 @@
 import pyglet
 from src.helpers.interfaces import Pair
-from src.helpers.utils import block_width, std_speed
+from src.helpers.utils import block_width, std_speed, make_sprite
 from src.helpers.globals import Direction
 from src.hitbox import Hitbox
 
-loaded_images = {}  # key: filename, value: image
+# loaded_images = {}  # key: filename, value: image
 
 
 class Entity:
@@ -24,15 +24,19 @@ class Entity:
         self.window = window
         self.standard_speed = std_speed(window)
         self.block_w = block_width(window)
-        if not sprite_filename in loaded_images.keys():
-            loaded_images[sprite_filename] = pyglet.resource.image(sprite_filename)
         self.batch = batch
-        self.sprite = pyglet.sprite.Sprite(
-            img=loaded_images[sprite_filename], batch=batch
-        )
-        self.sprite_filename = sprite_filename
-        self.sprite.width = sprite_width
-        self.sprite.height = sprite_height
+        # if not sprite_filename in loaded_images.keys():
+        #     loaded_images[sprite_filename] = pyglet.resource.image(sprite_filename)
+        # self.sprite = pyglet.sprite.Sprite(
+        #     img=loaded_images[sprite_filename], batch=batch
+        # )
+        if sprite_filename:
+            self.sprite = make_sprite(sprite_filename=sprite_filename, width=sprite_width, height=sprite_height, visible=True, batch=batch)
+            self.sprite_filename = sprite_filename
+        else:
+            self.sprite = None
+        # self.sprite.width = sprite_width
+        # self.sprite.height = sprite_height
         self.hitbox = Hitbox(pos=global_pos, width=hitbox_width, height=hitbox_height)
         self.global_pos = global_pos.copy()
         self.block_pos = Pair(
@@ -67,12 +71,13 @@ class Entity:
         self.velocity.add(self.acceleration)
 
         # camera_pos == player.global_pos (middle of screen)
-        self.sprite.x = self.global_pos.first - (
-            camera_pos.first - (self.window.width / 2)
-        )
-        self.sprite.y = self.global_pos.second - (
-            camera_pos.second - (self.window.height / 2)
-        )
+        if self.sprite:
+            self.sprite.x = self.global_pos.first - (
+                camera_pos.first - (self.window.width / 2)
+            )
+            self.sprite.y = self.global_pos.second - (
+                camera_pos.second - (self.window.height / 2)
+            )
         self.block_pos = Pair(
             self.global_pos.first // self.block_w,
             (self.global_pos.second + 10) // self.block_w,

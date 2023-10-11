@@ -1,8 +1,9 @@
 import pyglet
-from src.helpers.utils import std_speed, block_width
+from src.helpers.utils import std_speed, block_width, make_sprite
 from src.helpers.interfaces import Pair
 from src.entity import Entity
 from src.attack import Attack
+from src.SpriteCollection import SpriteCollection
 from src.helpers.globals import Direction
 import time
 
@@ -12,27 +13,29 @@ class Character(Entity):
     def __init__(
         self,
         window,
-        sprite_filename: str,
+        sprites: SpriteCollection,
         global_pos: Pair,
         velocity: Pair,
         acceleration: Pair,
-        sprite_width: float,
-        sprite_height: float,
+        # sprite_width: float,
+        # sprite_height: float,
         hitbox_width: float,
         hitbox_height: float,
         batch,
         hp: int,
         attack: Attack = None,
-        attack_sprite_filename: str = None,
     ):
+        # self.sprites = SpriteCollection(idle=self.sprite)
+        self.sprites = sprites
+        
         super().__init__(
             window,
-            sprite_filename,
+            None,
             global_pos,
             velocity,
             acceleration,
-            sprite_width,
-            sprite_height,
+            None,
+            None,
             hitbox_width,
             hitbox_height,
             batch,
@@ -46,17 +49,52 @@ class Character(Entity):
         self.immunity_start = time.time()
         self.immunity_duration_seconds = 1
         self.attack = attack
+
+        # self.sprites = [self.sprite,
+        #                 make_sprite(sprite_filename=)
+        #                 ]
+
+        # pyglet.sprite.Sprite(
+        #     img=loaded_images[sprite_filename], batch=batch
+        # )
         
-        self.attack_sprite_filename = attack_sprite_filename
-        if attack_sprite_filename:
-            if not attack_sprite_filename in loaded_images.keys():
-                loaded_images[attack_sprite_filename] = pyglet.resource.image(attack_sprite_filename)
-            self.attack_sprite = pyglet.sprite.Sprite(
-                img=loaded_images[attack_sprite_filename], batch=batch
-            )
-            self.attack_sprite.width = self.attack.hitboxes[0].width
-            self.attack_sprite.height = self.attack.hitboxes[0].height
-            self.attack_sprite.visible = False
+        # self.attack_sprite_filename = attack_sprite_filename
+        # if attack_sprite_filename:
+        #     if not attack_sprite_filename in loaded_images.keys():
+        #         loaded_images[attack_sprite_filename] = pyglet.resource.image(attack_sprite_filename)
+        #     self.attack_sprite = pyglet.sprite.Sprite(
+        #         img=loaded_images[attack_sprite_filename], batch=batch
+        #     )
+        #     self.attack_sprite.width = self.attack.hitboxes[0].width
+        #     self.attack_sprite.height = self.attack.hitboxes[0].height
+        #     self.attack_sprite.visible = False
+
+    def copy(self):
+        new_copy = Character(window=self.window,
+                             sprites=self.sprites.copy(),
+                             global_pos=self.global_pos,
+                             velocity=self.velocity,
+                             acceleration=self.acceleration,
+                             hitbox_width=self.hitbox.width,
+                             hitbox_height=self.hitbox.height,
+                             batch=self.batch,
+                             hp=self.hp,
+                             attack=self.attack)
+        
+        return new_copy
+        # (
+        #     window=self.window,
+        #     sprite_filename=self.sprite_filename,
+        #     global_pos=self.global_pos,
+        #     velocity=self.velocity,
+        #     acceleration=self.acceleration,
+        #     sprite_width=self.sprite.width,
+        #     sprite_height=self.sprite.height,
+        #     hitbox_width=self.hitbox.width,
+        #     hitbox_height=self.hitbox.height,
+        #     batch=self.batch,
+        # )
+        # return new_copy
 
     def pre_tick(self):
         self.velocity = Pair(0, self.velocity.second)
@@ -65,10 +103,19 @@ class Character(Entity):
 
     def tick(self, camera_pos: Pair):
         super().tick(camera_pos)
+        
+        self.sprites.idle.x = self.global_pos.first - (
+            camera_pos.first - (self.window.width / 2)
+        )
+        self.sprites.idle.y = self.global_pos.second - (
+            camera_pos.second - (self.window.height / 2)
+        )
+
         if self.attack:
             if self.attack.inProgress():
-                self.sprite.visible = False
-                self.attack_sprite.visible = True
+                self.sprites.SetVisible("attack")
+                # self.sprite.idle.visible = False
+                # self.sprites.attack.visible = True
                 # if self.current_sprite_filename != self.attack_sprite_filename:
                 #     if not self.attack_sprite_filename in loaded_images.keys():
                 #         loaded_images[self.attack_sprite_filename] = pyglet.resource.image(self.attack_sprite_filename)
@@ -80,15 +127,16 @@ class Character(Entity):
 
                 # self.attack_sprite.draw()
             else:
-                self.sprite.visible = True
-                self.attack_sprite.visible = False
+                self.sprites.SetVisible("idle")
+                # self.sprite.visible = True
+                # self.attack_sprite.visible = False
 
         
-        if self.attack_sprite_filename:
-            self.attack_sprite.x = self.global_pos.first - (
+        if self.sprites.attack:
+            self.sprites.attack.x = self.global_pos.first - (
                 camera_pos.first - (self.window.width / 2)
             )
-            self.attack_sprite.y = self.global_pos.second - (
+            self.sprites.attack.y = self.global_pos.second - (
                 camera_pos.second - (self.window.height / 2)
             )
 
@@ -124,7 +172,7 @@ class Character(Entity):
                 return
             print("! RIGHT COLLISION")
             self.global_pos = Pair(
-                entity.global_pos.first - self.hitbox.width, self.global_pos.second
+                entity.hitbox.pos.first - self.hitbox.width, self.global_pos.second
             )
             self.velocity = Pair(0, self.velocity.second)
         if direction == Direction.LEFT:
@@ -141,7 +189,7 @@ class Character(Entity):
         if direction == Direction.UP:
             print("! UP COLLISION")
             self.global_pos = Pair(
-                self.global_pos.first, entity.global_pos.second - self.sprite.height
+                self.global_pos.first, entity.hitbox.pos.second - self.hitbox.height
             )
             self.velocity = Pair(self.velocity.first, 0)
 
@@ -164,3 +212,10 @@ class Character(Entity):
         #       etc.
 
         self.takeDamage(amount=attack.damage)
+
+    # # sprite_data:
+    # #       key: filename
+    # #       value: Pair(width, height)
+    # def initializeSprites(self, sprite_data: dict):
+    #     for filename, sizing in sprite_data:
+            
