@@ -96,13 +96,13 @@ class Character(Entity):
         # )
         # return new_copy
 
-    def pre_tick(self):
+    def pre_tick(self, dt: float):
         self.velocity = Pair(0, self.velocity.second)
         # self.check_keys()
         # self.player.check_keys()
 
-    def tick(self, camera_pos: Pair):
-        super().tick(camera_pos)
+    def tick(self, dt: float, camera_pos: Pair):
+        super().tick(dt, camera_pos)
         
         self.sprites.idle.x = self.global_pos.first - (
             camera_pos.first - (self.window.width / 2)

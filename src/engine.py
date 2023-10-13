@@ -14,8 +14,8 @@ class Engine:
         self.current_screen = "GAME"
         self.window = window
 
-    def tick(self):
-        self.screen_mapping[self.current_screen].tick()
+    def tick(self, dt: float):
+        self.screen_mapping[self.current_screen].tick(dt)
 
     def draw(self):
         self.screen_mapping[self.current_screen].draw()

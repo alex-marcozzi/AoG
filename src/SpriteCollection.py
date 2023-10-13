@@ -3,6 +3,7 @@ from src.helpers.utils import make_sprite, copy_sprite
 
 class SpriteCollection():
     def __init__(self,
+                 # ****** need directional sprites
                  idle: pyglet.sprite.Sprite,
                  slow_move: pyglet.sprite.Sprite = None,
                  fast_move: pyglet.sprite.Sprite = None,

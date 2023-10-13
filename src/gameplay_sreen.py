@@ -38,7 +38,7 @@ class GameplayScreen:
         # self.keys_down = {}
         # self.keys_usable = {}
 
-    def tick(self):
+    def tick(self, dt: float):
 
         # self.player.velocity = Pair(0, self.player.velocity.second)
         # self.check_keys()
@@ -50,7 +50,7 @@ class GameplayScreen:
             min(len(self.world.level), int(self.world.player.block_pos.first + 12)),
         )
 
-        self.world.do_physics(self.loaded_indexes.first, self.loaded_indexes.second)
+        self.world.do_physics(dt, self.loaded_indexes.first, self.loaded_indexes.second)
 
     def draw(self):
         self.background.draw()

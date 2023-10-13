@@ -62,13 +62,16 @@ class Entity:
         )
         return new_copy
 
-    def tick_pos_only(self):
-        self.global_pos.add(self.velocity)
+    def tick_pos_only(self, dt: float):
+        self.global_pos.add(Pair(self.velocity.first * dt, self.velocity.second * dt))
         # self.velocity.add(self.acceleration)
 
-    def tick(self, camera_pos: Pair):
-        self.global_pos.add(self.velocity)
-        self.velocity.add(self.acceleration)
+    def tick(self, dt: float, camera_pos: Pair):
+        if self.acceleration.second != 0:
+            print(self.acceleration.second * dt)
+        self.global_pos.add(Pair(self.velocity.first * dt, self.velocity.second * dt))
+        self.velocity.add(Pair(self.acceleration.first * dt, self.acceleration.second * dt))
+        # self.global_pos.add
 
         # camera_pos == player.global_pos (middle of screen)
         if self.sprite:

@@ -1,5 +1,5 @@
 import pyglet
-from src.helpers.utils import block_width, std_speed, make_sprite
+from src.helpers.utils import block_width, std_speed, make_sprite, gravity
 from src.helpers.interfaces import Pair
 from src.entity import Entity
 from src.attack import Attack
@@ -29,7 +29,7 @@ class Player(Character):
                                                     height=block_width(window),
                                                     visible=True,
                                                     batch=batch),
-                                    attack=make_sprite(sprite_filename="assets/images/bear.png",
+                                    attack=make_sprite(sprite_filename="assets/images/goose.png",
                                                     width=block_width(window) * 2,
                                                     height=block_width(window),
                                                     visible=False,
@@ -39,7 +39,7 @@ class Player(Character):
             sprites,
             global_pos,
             velocity,
-            acceleration,
+            Pair(0, gravity(window)), #acceleration,
             hitbox_width,
             hitbox_height,
             batch,
@@ -60,8 +60,8 @@ class Player(Character):
         self.keys_usable = {}
         self.modifiers = []
 
-    def pre_tick(self):
-        super().pre_tick()
+    def pre_tick(self, dt: float):
+        super().pre_tick(dt)
         self.check_keys()
 
     # def tick(self, camera_pos: Pair):
@@ -93,7 +93,7 @@ class Player(Character):
                 )
             if self.keys_down.get(pyglet.window.key.SPACE, False) and self.on_ground:
                 self.velocity = Pair(
-                    self.velocity.first, self.velocity.second + (self.block_w / 5)
+                    self.velocity.first, self.velocity.second + (self.standard_speed * 1.3) #(self.block_w / 5)
                 )
             if self.keys_down.get(pyglet.window.key.F, False) and self.attack.isUsable():# and not self.attack.inProgress():
                 print(">> THROWING ATTACK")

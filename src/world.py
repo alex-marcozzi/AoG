@@ -43,22 +43,20 @@ class World:
         for x in range(len(level)):
             for y in range(len(level[x])):
                 if issubclass(type(level[x][y]), Entity):
-                    level[x][y].tick(
-                        self.player.global_pos
-                    )  # first tick is necessary to set the entities' positions
+                    level[x][y].tick(0, self.player.global_pos)  # first tick is necessary to set the entities' positions
                     if issubclass(type(level[x][y]), Character):
                         # print("HERE")
                         self.characters.append(level[x][y])
                         level[x][y] = None
 
-    def do_physics(self, from_loc: int, to_loc: int):
+    def do_physics(self, dt: float, from_loc: int, to_loc: int):
         index = 0
         for character in self.characters:
             # if abs(character.block_pos.first - self.player.block_pos.first) >= 12:
             #     continue
             if issubclass(type(character), Character):
-                character.pre_tick()
-                collisions = self.check_collisions(character)
+                character.pre_tick(dt)
+                collisions = self.check_collisions(dt, character)
 
                 character.on_ground = False
                 for collision in collisions:
@@ -69,9 +67,9 @@ class World:
                 
                 # some characters don't have an attack
                 if character.attack:
-                    self.check_attacks(character)
+                    self.check_attacks(dt, character)
 
-                if not character.tick(self.player.global_pos):
+                if not character.tick(dt, self.player.global_pos):
                     self.characters.pop(index)
             index += 1
 
@@ -85,9 +83,9 @@ class World:
                     #     # self.handle_collision(block, collision.first, collision.second)
                     #     block.interact(collision.first, collision.second)
 
-                    block.tick(self.player.global_pos)
+                    block.tick(dt, self.player.global_pos)
 
-    def check_collisions(self, entity: Entity):
+    def check_collisions(self, dt: float, entity: Entity):
         collisions = []
 
         for character in self.characters:
@@ -95,19 +93,19 @@ class World:
                 continue
             # print(f"Entity: {entity.global_pos.first}, {entity.global_pos.second}")
             # print(f"Charac: {character.global_pos.first}, {character.global_pos.second}")
-            if is_down_collision(entity, character):
+            if is_down_collision(dt, entity, character):
                 print("CHARACTER DOWN COLLISION")
                 collisions.append(Pair(character, Direction.DOWN))
-            if is_right_collision(entity, character):
+            if is_right_collision(dt, entity, character):
                 print("CHARACTER RIGHT COLLISION")
                 collisions.append(Pair(character, Direction.RIGHT))
-            if is_left_collision(entity, character):
+            if is_left_collision(dt, entity, character):
                 print("CHARACTER LEFT COLLISION")
                 collisions.append(Pair(character, Direction.LEFT))
-            if is_up_collision(entity, character):
+            if is_up_collision(dt, entity, character):
                 print("CHARACTER UP COLLISION")
                 collisions.append(Pair(character, Direction.UP))
-            if is_overlap(entity, character):
+            if is_overlap(dt, entity, character):
                 if entity == self.player:
                     print("CHARACTER OVERLAP")
                 collisions.append(Pair(character, Direction.OVERLAP))
@@ -124,18 +122,18 @@ class World:
         for loc in to_check:
             block = self.level[int(loc.first)][int(loc.second)]
             if issubclass(type(block), Entity):
-                if is_down_collision(entity, block):
+                if is_down_collision(dt, entity, block):
                     collisions.append(Pair(block, Direction.DOWN))
-                if is_right_collision(entity, block):
+                if is_right_collision(dt, entity, block):
                     collisions.append(Pair(block, Direction.RIGHT))
-                if is_left_collision(entity, block):
+                if is_left_collision(dt, entity, block):
                     collisions.append(Pair(block, Direction.LEFT))
-                if is_up_collision(entity, block):
+                if is_up_collision(dt, entity, block):
                     collisions.append(Pair(block, Direction.UP))
 
         return collisions
 
-    def check_attacks(self, character: Character):
+    def check_attacks(self, dt: float, character: Character):
         if not character.attack.inProgress():
             return []
         
@@ -148,6 +146,6 @@ class World:
                 pos = Pair(character.global_pos.first + attack_hitbox.pos.first,
                                          character.global_pos.second + attack_hitbox.pos.second)
                 true_hitbox = Hitbox(pos=pos, width=attack_hitbox.width, height=attack_hitbox.width)
-                if is_overlap(true_hitbox, other_character.hitbox):
+                if is_overlap(dt, true_hitbox, other_character.hitbox):
                     # character.attack.Hit(other_character)
                     other_character.takeHit(character.attack)

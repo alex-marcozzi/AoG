@@ -28,15 +28,15 @@ def float_eq(f1: float, f2: float, margin: float = 1):
 
 # pointer moves along the vector line in normalized steps
 # from start to end
-def is_down_collision(entity1: Entity, entity2: Entity):
+def is_down_collision(dt: float, entity1: Entity, entity2: Entity):
     if entity1.velocity.second > 0:
         return False
 
     e1_next = entity1.copy()
     e2_next = entity2.copy()
 
-    e1_next.tick_pos_only()  # move to next position
-    e2_next.tick_pos_only()
+    e1_next.tick_pos_only(dt)  # move to next position
+    e2_next.tick_pos_only(dt)
 
     e1_pointer = entity1.copy()
     e2_pointer = entity2.copy()
@@ -58,23 +58,23 @@ def is_down_collision(entity1: Entity, entity2: Entity):
             if float_eq(e1_pointer.bottomLeft().second, e2_pointer.topRight().second):
                 return True
 
-        e1_pointer.tick_pos_only()
-        e2_pointer.tick_pos_only()
+        e1_pointer.tick_pos_only(dt)
+        e2_pointer.tick_pos_only(dt)
 
     return False
 
 
 # pointer moves along the vector line in normalized steps
 # from start to end
-def is_right_collision(entity1: Entity, entity2: Entity):
+def is_right_collision(dt: float, entity1: Entity, entity2: Entity):
     if entity1.velocity.first < 0:
         return False
 
     e1_next = entity1.copy()
     e2_next = entity2.copy()
 
-    e1_next.tick_pos_only()  # move to next position
-    e2_next.tick_pos_only()
+    e1_next.tick_pos_only(dt)  # move to next position
+    e2_next.tick_pos_only(dt)
 
     e1_pointer = entity1.copy()
     e2_pointer = entity2.copy()
@@ -94,21 +94,21 @@ def is_right_collision(entity1: Entity, entity2: Entity):
         ):
             if float_eq(e1_pointer.bottomRight().first, e2_pointer.bottomLeft().first):
                 return True
-        e1_pointer.tick_pos_only()
-        e2_pointer.tick_pos_only()
+        e1_pointer.tick_pos_only(dt)
+        e2_pointer.tick_pos_only(dt)
 
     return False
 
 
-def is_left_collision(entity1: Entity, entity2: Entity):
+def is_left_collision(dt: float, entity1: Entity, entity2: Entity):
     if entity1.velocity.first >= 0:
         return False
 
     e1_next = entity1.copy()
     e2_next = entity2.copy()
 
-    e1_next.tick_pos_only()  # move to next position
-    e2_next.tick_pos_only()
+    e1_next.tick_pos_only(dt)  # move to next position
+    e2_next.tick_pos_only(dt)
 
     e1_pointer = entity1.copy()
     e2_pointer = entity2.copy()
@@ -128,23 +128,23 @@ def is_left_collision(entity1: Entity, entity2: Entity):
         ):
             if float_eq(e1_pointer.bottomLeft().first, e2_pointer.bottomRight().first):
                 return True
-        e1_pointer.tick_pos_only()
-        e2_pointer.tick_pos_only()
+        e1_pointer.tick_pos_only(dt)
+        e2_pointer.tick_pos_only(dt)
 
     return False
 
 
 # pointer moves along the vector line in normalized steps
 # from start to end
-def is_up_collision(entity1: Entity, entity2: Entity):
+def is_up_collision(dt: float, entity1: Entity, entity2: Entity):
     if entity1.velocity.second <= 0:
         return False
 
     e1_next = entity1.copy()
     e2_next = entity2.copy()
 
-    e1_next.tick_pos_only()  # move to next position
-    e2_next.tick_pos_only()
+    e1_next.tick_pos_only(dt)  # move to next position
+    e2_next.tick_pos_only(dt)
 
     e1_pointer = entity1.copy()
     e2_pointer = entity2.copy()
@@ -165,13 +165,13 @@ def is_up_collision(entity1: Entity, entity2: Entity):
             if float_eq(e1_pointer.topLeft().second, e2_pointer.bottomLeft().second):
                 return True
 
-        e1_pointer.tick_pos_only()
-        e2_pointer.tick_pos_only()
+        e1_pointer.tick_pos_only(dt)
+        e2_pointer.tick_pos_only(dt)
 
     return False
 
 
-def is_overlap(entity1: Entity, entity2: Entity):
+def is_overlap(dt: float, entity1: Entity, entity2: Entity):
     return is_overlap(entity1.hitbox, entity2.hitbox)
     # if entity1.topLeft().second >= entity2.bottomRight().second:
     #     if (
@@ -189,7 +189,7 @@ def is_overlap(entity1: Entity, entity2: Entity):
 
     # return False
 
-def is_overlap(hitbox1: Hitbox, hitbox2: Hitbox):
+def is_overlap(dt: float, hitbox1: Hitbox, hitbox2: Hitbox):
     if hitbox1.topLeft().second >= hitbox2.bottomRight().second and hitbox1.bottomLeft().second <= hitbox2.topRight().second:
         if (
             hitbox1.topLeft().first <= hitbox2.bottomRight().first

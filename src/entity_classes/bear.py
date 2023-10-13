@@ -35,8 +35,8 @@ class Bear(Character):
         self.move_loop_start = time.time()
         self.left = True
 
-    def pre_tick(self):
-        super().pre_tick()
+    def pre_tick(self, dt: float):
+        super().pre_tick(dt)
         speed = self.speed * self.get_speed()
         # print(speed)
         self.velocity = Pair(self.velocity.first + speed, self.velocity.second)
