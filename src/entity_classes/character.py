@@ -194,17 +194,13 @@ class Character(Entity):
             self.velocity = Pair(self.velocity.first, 0)
 
     def interact_dangerous(self, entity: Entity, direction):
-        now = time.time()
-        if (
-            direction == Direction.OVERLAP
-            and now - self.immunity_start > self.immunity_duration_seconds
-        ):
-            print("DANGER DANGER DANGER")
-            self.takeDamage(1)
+        self.takeDamage(1)
 
     def takeDamage(self, amount):
-        self.hp = max(self.hp - amount, 0)
-        self.immunity_start = time.time()  # epoch time
+        now = time.time()
+        if (now - self.immunity_start > self.immunity_duration_seconds):
+            self.hp = max(self.hp - amount, 0)
+            self.immunity_start = time.time()  # epoch time
 
     def takeHit(self, attack: Attack):
         # when we add modifiers later we could do checking here:

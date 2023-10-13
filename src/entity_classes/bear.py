@@ -28,10 +28,10 @@ class Bear(Character):
             hitbox_width=block_width(window) * 2,
             hitbox_height=block_width(window) * 2,
             batch=batch,
-            hp=1,
+            hp=5,
         )
 
-        self.modifiers = ["dangerous"]
+        self.modifiers = []#["dangerous"]
         self.move_loop_start = time.time()
         self.left = True
 

@@ -67,8 +67,6 @@ class Entity:
         # self.velocity.add(self.acceleration)
 
     def tick(self, dt: float, camera_pos: Pair):
-        if self.acceleration.second != 0:
-            print(self.acceleration.second * dt)
         self.global_pos.add(Pair(self.velocity.first * dt, self.velocity.second * dt))
         self.velocity.add(Pair(self.acceleration.first * dt, self.acceleration.second * dt))
         # self.global_pos.add

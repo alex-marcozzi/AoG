@@ -28,7 +28,7 @@ class World:
             velocity=Pair(0, 0),
             acceleration=Pair(0, gravity(window)),
             sprite_width=self.block_w,
-            sprite_height=self.block_w * 1,
+            sprite_height=self.block_w,
             hitbox_width=self.block_w,
             hitbox_height=self.block_w,
             batch=batch,
@@ -91,6 +91,8 @@ class World:
         for character in self.characters:
             if character == entity:
                 continue
+            if abs(character.block_pos.first - entity.block_pos.first) >= entity.block_pos.first + int(entity.hitbox.width / self.block_w) + 2:
+                continue
             # print(f"Entity: {entity.global_pos.first}, {entity.global_pos.second}")
             # print(f"Charac: {character.global_pos.first}, {character.global_pos.second}")
             if is_down_collision(dt, entity, character):
@@ -110,26 +112,72 @@ class World:
                     print("CHARACTER OVERLAP")
                 collisions.append(Pair(character, Direction.OVERLAP))
 
+        # check below for collisions
         to_check = []
-
-        # check square around the entity
-        for y in range(-1, 3, 1):
-            for x in range(-1, 3, 1):
-                to_check.append(
-                    Pair(entity.block_pos.first + x, entity.block_pos.second + y)
-                )
+        for x in range(0, int(entity.hitbox.width / self.block_w) + 1):
+            to_check.append(Pair(entity.block_pos.first + x, entity.block_pos.second - 1))
 
         for loc in to_check:
             block = self.level[int(loc.first)][int(loc.second)]
             if issubclass(type(block), Entity):
                 if is_down_collision(dt, entity, block):
                     collisions.append(Pair(block, Direction.DOWN))
+
+        # check right for collisions
+        to_check = []
+        for x in range(0, 2):
+            for y in range(0, int(entity.hitbox.height / self.block_w) + 1):
+                to_check.append(Pair(entity.block_pos.first + int(entity.hitbox.width / self.block_w) + x, entity.block_pos.second + y))
+
+        for loc in to_check:
+            block = self.level[int(loc.first)][int(loc.second)]
+            if issubclass(type(block), Entity):
                 if is_right_collision(dt, entity, block):
                     collisions.append(Pair(block, Direction.RIGHT))
+
+        # check left for collisions
+        to_check = []
+        # for x in range(-1, 1, 1):
+        for y in range(0, int(entity.hitbox.height / self.block_w) + 1):
+            to_check.append(Pair(entity.block_pos.first - 1, entity.block_pos.second + y))
+
+        for loc in to_check:
+            block = self.level[int(loc.first)][int(loc.second)]
+            if issubclass(type(block), Entity):
                 if is_left_collision(dt, entity, block):
                     collisions.append(Pair(block, Direction.LEFT))
+
+        # check up for collisions
+        to_check = []
+        for y in range(int(entity.hitbox.height / self.block_w), int(entity.hitbox.height / self.block_w) + 1):
+            for x in range(0, int(entity.hitbox.width / self.block_w) + 1):
+                to_check.append(Pair(entity.block_pos.first + x, entity.block_pos.second + y))
+
+        for loc in to_check:
+            block = self.level[int(loc.first)][int(loc.second)]
+            if issubclass(type(block), Entity):
                 if is_up_collision(dt, entity, block):
                     collisions.append(Pair(block, Direction.UP))
+
+
+        # # check square around the entity
+        # for y in range(-1, 3, 1):
+        #     for x in range(-1, 3, 1):
+        #         to_check.append(
+        #             Pair(entity.block_pos.first + x, entity.block_pos.second + y)
+        #         )
+
+        # for loc in to_check:
+        #     block = self.level[int(loc.first)][int(loc.second)]
+        #     if issubclass(type(block), Entity):
+        #         if is_down_collision(dt, entity, block):
+        #             collisions.append(Pair(block, Direction.DOWN))
+        #         if is_right_collision(dt, entity, block):
+        #             collisions.append(Pair(block, Direction.RIGHT))
+        #         if is_left_collision(dt, entity, block):
+        #             collisions.append(Pair(block, Direction.LEFT))
+        #         if is_up_collision(dt, entity, block):
+        #             collisions.append(Pair(block, Direction.UP))
 
         return collisions
 
