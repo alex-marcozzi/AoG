@@ -4,7 +4,7 @@ from src.helpers.interfaces import Pair
 from src.entity import Entity
 from src.attack import Attack
 from src.hitbox import Hitbox
-from src.SpriteCollection import SpriteCollection
+from src.sprite_collection import SpriteCollection
 from src.entity_classes.character import Character
 from src.helpers.globals import Direction
 import time
@@ -24,13 +24,33 @@ class Player(Character):
         hitbox_height: float,
         batch,
     ):
-        sprites = SpriteCollection(idle=make_sprite(sprite_filename="assets/images/goose.png",
+        idle_width = block_width(window)
+        attack = Attack(
+                # hitboxes=[
+                #     Hitbox(pos=Pair(0, 0), width=hitbox_width * 2, height=hitbox_height)
+                # ],
+                range=block_width(window),
+                duration=0.1,
+                damage=1,
+                cooldown=0.10,
+            )
+        sprites = SpriteCollection(idle_right=make_sprite(sprite_filename="assets/images/goose_default/idle_right.png",
                                                     width=block_width(window),
                                                     height=block_width(window),
                                                     visible=True,
                                                     batch=batch),
-                                    attack=make_sprite(sprite_filename="assets/images/goose.png",
-                                                    width=block_width(window) * 2,
+                                    idle_left=make_sprite(sprite_filename="assets/images/goose_default/idle_left.png",
+                                                    width=block_width(window),
+                                                    height=block_width(window),
+                                                    visible=False,
+                                                    batch=batch),
+                                    attack_right=make_sprite(sprite_filename="assets/images/goose_default/idle_right.png",
+                                                    width=idle_width + attack.range,
+                                                    height=block_width(window),
+                                                    visible=False,
+                                                    batch=batch),
+                                    attack_left=make_sprite(sprite_filename="assets/images/goose_default/idle_left.png",
+                                                    width=idle_width + attack.range,
                                                     height=block_width(window),
                                                     visible=False,
                                                     batch=batch),)
@@ -44,14 +64,7 @@ class Player(Character):
             hitbox_height,
             batch,
             hp=3,
-            attack=Attack(
-                hitboxes=[
-                    Hitbox(pos=Pair(0, 0), width=hitbox_width * 2, height=hitbox_height)
-                ],
-                duration=0.1,
-                damage=1,
-                cooldown=0.10,
-            ),
+            attack=attack,
             # attack_sprite_filename="assets/images/goose.png"
         )
 
@@ -87,13 +100,15 @@ class Player(Character):
                 self.velocity = Pair(
                     self.velocity.first - self.standard_speed, self.velocity.second
                 )
+                self.direction = Direction.LEFT
             if self.keys_down.get(pyglet.window.key.D, False):
                 self.velocity = Pair(
                     self.velocity.first + self.standard_speed, self.velocity.second
                 )
+                self.direction = Direction.RIGHT
             if self.keys_down.get(pyglet.window.key.SPACE, False) and self.on_ground:
                 self.velocity = Pair(
-                    self.velocity.first, self.velocity.second + (self.standard_speed * 1.3) #(self.block_w / 5)
+                    self.velocity.first, self.velocity.second + (self.standard_speed * 1.5) #(self.block_w / 5)
                 )
             if self.keys_down.get(pyglet.window.key.F, False) and self.attack.isUsable():# and not self.attack.inProgress():
                 print(">> THROWING ATTACK")

@@ -2,7 +2,7 @@ import pyglet
 from src.helpers.utils import std_speed, block_width, gravity, make_sprite
 from src.helpers.interfaces import Pair
 from src.entity import Entity
-from src.SpriteCollection import SpriteCollection
+from src.sprite_collection import SpriteCollection
 from src.entity_classes.character import Character
 from src.helpers.globals import Direction
 import time
@@ -12,11 +12,16 @@ class Bear(Character):
     def __init__(self, window, global_pos, batch):
         self.speed = std_speed(window) / 2.0
 
-        sprites = SpriteCollection(idle=make_sprite(sprite_filename="assets/images/bear.png",
+        sprites = SpriteCollection(idle_right=make_sprite(sprite_filename="assets/images/bear.png",
                                                     width=block_width(window) * 2,
                                                     height=block_width(window) * 2,
                                                     visible=True,
-                                                    batch=batch))
+                                                    batch=batch),
+                                    idle_left=make_sprite(sprite_filename="assets/images/bear.png",
+                                                    width=block_width(window) * 2,
+                                                    height=block_width(window) * 2,
+                                                    visible=False,
+                                                    batch=batch),)
         super().__init__(
             window=window,
             sprites=sprites,
@@ -28,7 +33,7 @@ class Bear(Character):
             hitbox_width=block_width(window) * 2,
             hitbox_height=block_width(window) * 2,
             batch=batch,
-            hp=5,
+            hp=1,
         )
 
         self.modifiers = []#["dangerous"]

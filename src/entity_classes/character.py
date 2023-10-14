@@ -3,7 +3,7 @@ from src.helpers.utils import std_speed, block_width, make_sprite
 from src.helpers.interfaces import Pair
 from src.entity import Entity
 from src.attack import Attack
-from src.SpriteCollection import SpriteCollection
+from src.sprite_collection import SpriteCollection
 from src.helpers.globals import Direction
 import time
 
@@ -27,6 +27,7 @@ class Character(Entity):
     ):
         # self.sprites = SpriteCollection(idle=self.sprite)
         self.sprites = sprites
+        self.sprites.SetVisible(self.sprites.idle_right)
         
         super().__init__(
             window,
@@ -49,6 +50,7 @@ class Character(Entity):
         self.immunity_start = time.time()
         self.immunity_duration_seconds = 1
         self.attack = attack
+        self.direction = Direction.RIGHT
 
         # self.sprites = [self.sprite,
         #                 make_sprite(sprite_filename=)
@@ -103,17 +105,15 @@ class Character(Entity):
 
     def tick(self, dt: float, camera_pos: Pair):
         super().tick(dt, camera_pos)
-        
-        self.sprites.idle.x = self.global_pos.first - (
-            camera_pos.first - (self.window.width / 2)
-        )
-        self.sprites.idle.y = self.global_pos.second - (
-            camera_pos.second - (self.window.height / 2)
-        )
+
+        self.update_sprite_positions(camera_pos)
 
         if self.attack:
             if self.attack.inProgress():
-                self.sprites.SetVisible("attack")
+                if self.direction == Direction.RIGHT:
+                    self.sprites.SetVisible(self.sprites.attack_right)
+                elif self.direction == Direction.LEFT:
+                    self.sprites.SetVisible(self.sprites.attack_left)
                 # self.sprite.idle.visible = False
                 # self.sprites.attack.visible = True
                 # if self.current_sprite_filename != self.attack_sprite_filename:
@@ -127,18 +127,14 @@ class Character(Entity):
 
                 # self.attack_sprite.draw()
             else:
-                self.sprites.SetVisible("idle")
-                # self.sprite.visible = True
-                # self.attack_sprite.visible = False
+                if self.direction == Direction.RIGHT:
+                    self.sprites.SetVisible(self.sprites.idle_right)
+                elif self.direction == Direction.LEFT:
+                    self.sprites.SetVisible(self.sprites.idle_left)
+                    # self.sprite.visible = True
+                    # self.attack_sprite.visible = False
 
         
-        if self.sprites.attack:
-            self.sprites.attack.x = self.global_pos.first - (
-                camera_pos.first - (self.window.width / 2)
-            )
-            self.sprites.attack.y = self.global_pos.second - (
-                camera_pos.second - (self.window.height / 2)
-            )
 
         if self.hp <= 0:
             return False
@@ -150,6 +146,24 @@ class Character(Entity):
     #         self.attack_sprite.draw()
     #     else:
     #         super().draw()
+
+    def update_sprite_positions(self, camera_pos: Pair):
+        self.sprites.idle_right.x = self.global_pos.first - (
+            camera_pos.first - (self.window.width / 2)
+        )
+        self.sprites.idle_right.y = self.global_pos.second - (
+            camera_pos.second - (self.window.height / 2)
+        )
+        self.sprites.idle_left.x = self.sprites.idle_right.x
+        self.sprites.idle_left.y = self.sprites.idle_right.y
+        
+        if self.sprites.attack_right:
+            self.sprites.attack_right.x = self.sprites.idle_right.x
+            self.sprites.attack_right.y = self.sprites.idle_right.y
+        
+        if self.sprites.attack_left:
+            self.sprites.attack_left.x = self.sprites.idle_right.x - self.attack.range
+            self.sprites.attack_left.y = self.sprites.idle_right.y
 
     def interact(self, entity: Entity, direction):
         if "collidable" in entity.modifiers:

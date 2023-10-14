@@ -48,11 +48,12 @@ def build_level1(window, batch):
     set_line(level1, Pair(30, 2), Pair(30, 3), block, block_w, block_w)
     set_line(level1, Pair(32, 3), Pair(40, 3), block, block_w, block_w)
     set_line(level1, Pair(34, 6), Pair(36, 6), block, block_w, block_w)
+    set_line(level1, Pair(42, 5), Pair(50, 5), block, block_w, block_w)
 
-    set_bear(level1, Pair(10, 3), window, block_w, batch)
-    set_bear(level1, Pair(13, 3), window, block_w, batch)
+    # set_bear(level1, Pair(10, 3), window, block_w, batch)
+    # set_bear(level1, Pair(13, 3), window, block_w, batch)
     set_bear(level1, Pair(16, 3), window, block_w, batch)
-    set_bear(level1, Pair(19, 3), window, block_w, batch)
-    set_bear(level1, Pair(24, 3), window, block_w, batch)
+    # set_bear(level1, Pair(19, 3), window, block_w, batch)
+    # set_bear(level1, Pair(24, 3), window, block_w, batch)
 
     return level1

@@ -5,12 +5,13 @@ import time
 class Attack:
     def __init__(
         self,
-        hitboxes: list,
+        range: float,
         duration: float,
         damage: int,
         cooldown: int
     ):
-        self.hitboxes = hitboxes
+        # self.hitboxes = hitboxes
+        self.range = range
         self.duration = duration
         self.damage = damage
         self.cooldown = cooldown

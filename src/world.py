@@ -190,10 +190,18 @@ class World:
             if other_character == character:
                 continue
 
-            for attack_hitbox in character.attack.hitboxes:
-                pos = Pair(character.global_pos.first + attack_hitbox.pos.first,
-                                         character.global_pos.second + attack_hitbox.pos.second)
-                true_hitbox = Hitbox(pos=pos, width=attack_hitbox.width, height=attack_hitbox.width)
-                if is_overlap(dt, true_hitbox, other_character.hitbox):
-                    # character.attack.Hit(other_character)
-                    other_character.takeHit(character.attack)
+            attack_hitbox = Hitbox(pos=character.bottomRight(), width=character.attack.range, height=character.hitbox.height)
+            if character.direction == Direction.LEFT:
+                attack_hitbox.pos.first = character.global_pos.first - character.attack.range
+
+            if is_overlap(dt, attack_hitbox, other_character.hitbox):
+                # character.attack.Hit(other_character)
+                other_character.takeHit(character.attack)
+
+            # for attack_hitbox in character.attack.hitboxes:
+            #     pos = Pair(character.global_pos.first + attack_hitbox.pos.first,
+            #                              character.global_pos.second + attack_hitbox.pos.second)
+            #     true_hitbox = Hitbox(pos=pos, width=attack_hitbox.width, height=attack_hitbox.width)
+            #     if is_overlap(dt, true_hitbox, other_character.hitbox):
+            #         # character.attack.Hit(other_character)
+            #         other_character.takeHit(character.attack)
