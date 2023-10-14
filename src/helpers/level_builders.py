@@ -36,8 +36,8 @@ def build_level1(window, batch):
         global_pos=Pair(0, 0),
         velocity=Pair(0, 0),
         acceleration=Pair(0, 0),
-        sprite_width=window.width / 15,
-        sprite_height=window.width / 15,
+        sprite_width=block_w,
+        sprite_height=block_w,
         hitbox_width=block_w,
         hitbox_height=block_w,
         batch=batch,
@@ -46,7 +46,7 @@ def build_level1(window, batch):
     set_line(level1, Pair(0, 2), Pair(30, 2), block, block_w, block_w)
     set_line(level1, Pair(12, 2), Pair(12, 3), block, block_w, block_w)
     set_line(level1, Pair(30, 2), Pair(30, 3), block, block_w, block_w)
-    set_line(level1, Pair(32, 3), Pair(40, 3), block, block_w, block_w)
+    set_line(level1, Pair(33, 3), Pair(40, 3), block, block_w, block_w)
     set_line(level1, Pair(34, 6), Pair(36, 6), block, block_w, block_w)
     set_line(level1, Pair(42, 5), Pair(50, 5), block, block_w, block_w)
 

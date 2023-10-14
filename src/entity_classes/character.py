@@ -108,31 +108,20 @@ class Character(Entity):
 
         self.update_sprite_positions(camera_pos)
 
-        if self.attack:
-            if self.attack.inProgress():
-                if self.direction == Direction.RIGHT:
-                    self.sprites.SetVisible(self.sprites.attack_right)
-                elif self.direction == Direction.LEFT:
-                    self.sprites.SetVisible(self.sprites.attack_left)
-                # self.sprite.idle.visible = False
-                # self.sprites.attack.visible = True
-                # if self.current_sprite_filename != self.attack_sprite_filename:
-                #     if not self.attack_sprite_filename in loaded_images.keys():
-                #         loaded_images[self.attack_sprite_filename] = pyglet.resource.image(self.attack_sprite_filename)
-                #     self.sprite.image = loaded_images[self.attack_sprite_filename]
-                #     self.current_sprite_filename = self.attack_sprite_filename
-                #     self.sprite.width = self.attack.hitboxes[0].width
-                #     self.sprite.height = self.attack.hitboxes[0].height
-                #     self.sprite.visible = False
-
-                # self.attack_sprite.draw()
-            else:
-                if self.direction == Direction.RIGHT:
-                    self.sprites.SetVisible(self.sprites.idle_right)
-                elif self.direction == Direction.LEFT:
-                    self.sprites.SetVisible(self.sprites.idle_left)
-                    # self.sprite.visible = True
-                    # self.attack_sprite.visible = False
+        self.update_current_sprite()
+        # if self.attack:
+        #     if self.attack.inProgress():
+        #         if self.direction == Direction.RIGHT:
+        #             self.sprites.SetVisible(self.sprites.attack_right)
+        #         elif self.direction == Direction.LEFT:
+        #             self.sprites.SetVisible(self.sprites.attack_left)
+        #     else:
+        #         if self.direction == Direction.RIGHT:
+        #             self.sprites.SetVisible(self.sprites.idle_right)
+        #         elif self.direction == Direction.LEFT:
+        #             self.sprites.SetVisible(self.sprites.idle_left)
+        #             # self.sprite.visible = True
+        #             # self.attack_sprite.visible = False
 
         
 
@@ -157,6 +146,22 @@ class Character(Entity):
         self.sprites.idle_left.x = self.sprites.idle_right.x
         self.sprites.idle_left.y = self.sprites.idle_right.y
         
+        if self.sprites.slow_move_right:
+            self.sprites.slow_move_right.x = self.sprites.idle_right.x
+            self.sprites.slow_move_right.y = self.sprites.idle_right.y
+        
+        if self.sprites.slow_move_left:
+            self.sprites.slow_move_left.x = self.sprites.idle_right.x
+            self.sprites.slow_move_left.y = self.sprites.idle_right.y
+        
+        if self.sprites.fast_move_right:
+            self.sprites.fast_move_right.x = self.sprites.idle_right.x
+            self.sprites.fast_move_right.y = self.sprites.idle_right.y
+        
+        if self.sprites.fast_move_left:
+            self.sprites.fast_move_left.x = self.sprites.idle_right.x
+            self.sprites.fast_move_left.y = self.sprites.idle_right.y
+        
         if self.sprites.attack_right:
             self.sprites.attack_right.x = self.sprites.idle_right.x
             self.sprites.attack_right.y = self.sprites.idle_right.y
@@ -164,6 +169,29 @@ class Character(Entity):
         if self.sprites.attack_left:
             self.sprites.attack_left.x = self.sprites.idle_right.x - self.attack.range
             self.sprites.attack_left.y = self.sprites.idle_right.y
+        
+        if self.sprites.damaged_right:
+            self.sprites.damaged_right.x = self.sprites.idle_right.x
+            self.sprites.damaged_right.y = self.sprites.idle_right.y
+        
+        if self.sprites.damaged_left:
+            self.sprites.damaged_left.x = self.sprites.idle_right.x
+            self.sprites.damaged_left.y = self.sprites.idle_right.y
+    
+    def update_current_sprite(self):
+        if self.attack:
+            if self.attack.inProgress():
+                if self.direction == Direction.RIGHT:
+                    self.sprites.SetVisible(self.sprites.attack_right)
+                elif self.direction == Direction.LEFT:
+                    self.sprites.SetVisible(self.sprites.attack_left)
+            else:
+                if self.direction == Direction.RIGHT:
+                    self.sprites.SetVisible(self.sprites.idle_right)
+                elif self.direction == Direction.LEFT:
+                    self.sprites.SetVisible(self.sprites.idle_left)
+                    # self.sprite.visible = True
+                    # self.attack_sprite.visible = False
 
     def interact(self, entity: Entity, direction):
         if "collidable" in entity.modifiers:
@@ -172,7 +200,7 @@ class Character(Entity):
     def interact_collidable(self, entity: Entity, direction):
         if direction == Direction.DOWN:
             self.global_pos = Pair(
-                self.global_pos.first, entity.global_pos.second + entity.sprite.height
+                self.global_pos.first, entity.global_pos.second + entity.hitbox.height
             )
             self.velocity = Pair(self.velocity.first + entity.velocity.first, 0)
         #     self.on_ground = True
