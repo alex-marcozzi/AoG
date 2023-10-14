@@ -6,6 +6,7 @@ from src.attack import Attack
 from src.hitbox import Hitbox
 from src.sprite_collection import SpriteCollection
 from src.entity_classes.character import Character
+from src.entity_classes.projectile_classes.lightning import Lightning
 from src.helpers.globals import Direction
 import time
 
@@ -33,6 +34,7 @@ class Player(Character):
                 duration=0.1,
                 damage=1,
                 cooldown=0.10,
+                projectiles=[Lightning(window=window, global_pos=Pair(0, 0), batch=batch)]
             )
         sprites = SpriteCollection(idle_right=make_sprite(sprite_filename="assets/images/goose_default/idle_right.png",
                                                     width=block_width(window),

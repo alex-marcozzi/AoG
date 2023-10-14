@@ -34,6 +34,7 @@ class World:
             batch=batch,
         )
         self.characters = [self.player]
+        self.projectiles = []
         self.extract_characters(self.level)
 
     # def tick(self):
@@ -73,6 +74,9 @@ class World:
                     self.characters.pop(index)
             index += 1
 
+        for projectile in self.projectiles:
+            projectile.tick(dt, self.player.global_pos)
+
         for y in range(0, len(self.level[0])):
             for x in range(from_loc, to_loc):
                 block = self.level[x][y]
@@ -111,6 +115,12 @@ class World:
                 if entity == self.player:
                     print("CHARACTER OVERLAP")
                 collisions.append(Pair(character, Direction.OVERLAP))
+
+        for projectile in self.projectiles:
+            if is_overlap(dt, entity, projectile):
+                if entity == self.player:
+                    print("CHARACTER OVERLAP")
+                collisions.append(Pair(projectile, Direction.OVERLAP))
 
         # check below for collisions
         to_check = []
@@ -197,6 +207,18 @@ class World:
             if is_overlap(dt, attack_hitbox, other_character.hitbox):
                 # character.attack.Hit(other_character)
                 other_character.takeHit(character.attack)
+        
+        if character.attack.projectiles and not character.attack.has_fired_projectiles:
+            for projectile in character.attack.projectiles:
+                print("HERE")
+                new_projectile = projectile.copy()
+                new_projectile.global_pos = character.global_pos.copy()
+                new_projectile.global_pos.first += self.block_w + 10
+                new_projectile.global_pos.second += character.hitbox.height / 3  ## fix this
+                character.attack.has_fired_projectiles = True
+                self.projectiles.append(new_projectile)
+                # print(character.attack.projectiles[0].global_pos.first)
+                # print(character.attack.projectiles[0].global_pos.second)
 
             # for attack_hitbox in character.attack.hitboxes:
             #     pos = Pair(character.global_pos.first + attack_hitbox.pos.first,

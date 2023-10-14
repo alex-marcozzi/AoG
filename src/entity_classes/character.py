@@ -7,8 +7,6 @@ from src.sprite_collection import SpriteCollection
 from src.helpers.globals import Direction
 import time
 
-loaded_images = {}  # key: filename, value: image
-
 class Character(Entity):
     def __init__(
         self,
@@ -25,7 +23,6 @@ class Character(Entity):
         hp: int,
         attack: Attack = None,
     ):
-        # self.sprites = SpriteCollection(idle=self.sprite)
         self.sprites = sprites
         self.sprites.SetVisible(self.sprites.idle_right)
         
