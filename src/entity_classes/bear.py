@@ -5,20 +5,44 @@ from src.entity import Entity
 from src.sprite_collection import SpriteCollection
 from src.entity_classes.character import Character
 from src.helpers.globals import Direction
+from src.attack import Attack
+from src.entity_classes.projectile_classes.lightning import Lightning
 import time
 
 
 class Bear(Character):
     def __init__(self, window, global_pos, batch):
         self.speed = std_speed(window) / 2.0
+        attack = Attack(
+                range=block_width(window),
+                duration=0.1,
+                damage=1,
+                cooldown=0.10,
+                # projectiles=[Lightning(window=window, global_pos=Pair(0, 0), angle=0, batch=batch),]
+                            #  Lightning(window=window, global_pos=Pair(0, 0), angle=45, batch=batch),
+                            #  Lightning(window=window, global_pos=Pair(0, 0), angle=22.5, batch=batch),
+                            #  Lightning(window=window, global_pos=Pair(0, 0), angle=-45, batch=batch),
+                            #  Lightning(window=window, global_pos=Pair(0, 0), angle=-22.5, batch=batch),]
+            )
 
+        idle_width = block_width(window) * 2
         sprites = SpriteCollection(idle_right=make_sprite(sprite_filename="assets/images/bear.png",
-                                                    width=block_width(window) * 2,
+                                                    width=idle_width,
                                                     height=block_width(window) * 2,
                                                     visible=True,
                                                     batch=batch),
                                     idle_left=make_sprite(sprite_filename="assets/images/bear.png",
-                                                    width=block_width(window) * 2,
+                                                    width=idle_width,
+                                                    height=block_width(window) * 2,
+                                                    visible=False,
+                                                    batch=batch),
+                                    attack_right=make_sprite(sprite_filename="assets/images/bear.png",
+                                                    width=idle_width + attack.range,
+                                                    height=block_width(window) * 2,
+                                                    visible=False,
+                                                    batch=batch),
+                                    attack_left=make_sprite(sprite_filename="assets/images/bear.png",
+                                                    width=idle_width + attack.range,
                                                     height=block_width(window) * 2,
                                                     visible=False,
                                                     batch=batch),)
@@ -30,11 +54,13 @@ class Bear(Character):
             hitbox_height=block_width(window) * 2,
             batch=batch,
             hp=1,
+            attack=attack
         )
 
         self.modifiers = ["dangerous"]
         self.move_loop_start = time.time()
         self.left = True
+        pyglet.clock.schedule_interval(self.attack.Throw, interval=1.5)  # update at 60Hz
 
     # def pre_tick(self, dt: float):
     #     super().pre_tick(dt)

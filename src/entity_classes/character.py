@@ -83,8 +83,11 @@ class Character(Entity):
         return new_copy
 
     def pre_tick(self, dt: float):
-        
         self.calculate_velocity()
+        if self.velocity.first > 0:
+            self.direction = Direction.RIGHT
+        elif self.velocity.first < 0:
+            self.direction = Direction.LEFT
         # self.check_keys()
         # self.player.check_keys()
 

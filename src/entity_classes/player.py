@@ -27,7 +27,7 @@ class Player(Character):
                 duration=0.1,
                 damage=1,
                 cooldown=0.10,
-                projectiles=[Lightning(window=window, global_pos=Pair(0, 0), angle=0, batch=batch),]
+                # projectiles=[Lightning(window=window, global_pos=Pair(0, 0), angle=0, batch=batch),]
                             #  Lightning(window=window, global_pos=Pair(0, 0), angle=45, batch=batch),
                             #  Lightning(window=window, global_pos=Pair(0, 0), angle=22.5, batch=batch),
                             #  Lightning(window=window, global_pos=Pair(0, 0), angle=-45, batch=batch),
@@ -100,19 +100,19 @@ class Player(Character):
             self.velocity = Pair(
                 self.velocity.first - self.standard_speed, self.velocity.second
             )
-            self.direction = Direction.LEFT
+            # self.direction = Direction.LEFT
         if self.keys_down.get(pyglet.window.key.D, False):
             self.velocity = Pair(
                 self.velocity.first + self.standard_speed, self.velocity.second
             )
-            self.direction = Direction.RIGHT
+            # self.direction = Direction.RIGHT
         if self.keys_down.get(pyglet.window.key.SPACE, False) and self.on_ground:
             self.velocity = Pair(
                 self.velocity.first, self.velocity.second + (self.standard_speed * 1.5) #(self.block_w / 5)
             )
         if self.keys_down.get(pyglet.window.key.F, False) and self.attack.isUsable():# and not self.attack.inProgress():
             print(">> THROWING ATTACK")
-            self.attack.Throw()
+            self.attack.Throw(None)
 
     def can_move(self):
         if self.attack.inProgress():

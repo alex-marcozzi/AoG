@@ -22,7 +22,7 @@ class Attack:
         self.thrown_time = None
         self.has_fired_projectiles = False
 
-    def Throw(self):
+    def Throw(self, dt):
         # if attack already in progress, we have to wait until it's finished to throw again
         if self.inProgress():
             return
