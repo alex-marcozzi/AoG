@@ -1,5 +1,5 @@
 import pyglet
-from src.helpers.utils import std_speed, block_width, make_sprite
+from src.helpers.utils import std_speed, block_width, make_sprite, distance
 from src.helpers.interfaces import Pair
 from src.entity import Entity
 from src.sprite_collection import SpriteCollection
@@ -13,13 +13,15 @@ class Projectile(Entity):
         global_pos: Pair,
         velocity: Pair,
         acceleration: Pair,
+        range: float,
         hitbox_width: float,
         hitbox_height: float,
         batch,
     ):
         # self.sprites = SpriteCollection(idle=self.sprite)
         self.sprites = sprites
-        self.sprites.SetVisible(self.sprites.idle_right)
+        # self.sprites.SetVisible(self.sprites.idle_right)
+        self.sprites.SetAllInvisible()
         
         super().__init__(
             window,
@@ -35,6 +37,8 @@ class Projectile(Entity):
         )
         self.direction = Direction.RIGHT
         self.modifiers = ["dangerous"]
+        self.range = range
+        self.spawn_pos = None
 
     def copy(self):
         new_copy = Projectile(window=self.window,
@@ -102,3 +106,18 @@ class Projectile(Entity):
             self.sprites.SetVisible(self.sprites.idle_right)
         elif self.direction == Direction.LEFT:
             self.sprites.SetVisible(self.sprites.idle_left)
+
+    def spawn(self, pos: Pair, direction):
+        self.global_pos = pos.copy()
+        if direction == Direction.LEFT:
+            self.velocity.first *= -1
+        self.sprites.SetVisible(self.sprites.idle_right)
+        self.spawn_pos = pos
+
+    def isExpired(self):
+        if not self.spawn_pos:
+            return False
+        
+        dist = distance(self.spawn_pos, self.global_pos)
+        if dist >= self.range:
+            return True

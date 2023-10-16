@@ -1,5 +1,7 @@
 import pyglet
 import src.helpers.globals as globals
+from src.helpers.interfaces import Pair
+from math import sqrt
 
 loaded_images = {}  # key: filename, value: image
 
@@ -40,6 +42,13 @@ def copy_sprite(other_sprite: pyglet.sprite.Sprite):
     new_copy.height=other_sprite.height
     
     return new_copy
+
+def distance(p1: Pair, p2: Pair):
+     a = p2.first - p1.first
+     b = p2.second - p1.second
+     
+     return sqrt((a**2) + (b**2))
+
 
 
 # def normalize_vector(v: Pair):

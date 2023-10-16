@@ -13,6 +13,7 @@ from src.hitbox import Hitbox
 from src.entity_classes.character import Character
 from src.entity_classes.player import Player
 from src.helpers.globals import Direction
+from src.entity_classes.projectile import Projectile
 
 # this is basically all of the level information, like a context
 class World:
@@ -34,7 +35,7 @@ class World:
             batch=batch,
         )
         self.characters = [self.player]
-        self.projectiles = []
+        self.projectiles: list[Projectile] = []
         self.extract_characters(self.level)
 
     # def tick(self):
@@ -76,6 +77,8 @@ class World:
 
         for projectile in self.projectiles:
             projectile.tick(dt, self.player.global_pos)
+            if projectile.isExpired():
+                self.projectiles.remove(projectile)
 
         for y in range(0, len(self.level[0])):
             for x in range(from_loc, to_loc):
@@ -169,26 +172,6 @@ class World:
                 if is_up_collision(dt, entity, block):
                     collisions.append(Pair(block, Direction.UP))
 
-
-        # # check square around the entity
-        # for y in range(-1, 3, 1):
-        #     for x in range(-1, 3, 1):
-        #         to_check.append(
-        #             Pair(entity.block_pos.first + x, entity.block_pos.second + y)
-        #         )
-
-        # for loc in to_check:
-        #     block = self.level[int(loc.first)][int(loc.second)]
-        #     if issubclass(type(block), Entity):
-        #         if is_down_collision(dt, entity, block):
-        #             collisions.append(Pair(block, Direction.DOWN))
-        #         if is_right_collision(dt, entity, block):
-        #             collisions.append(Pair(block, Direction.RIGHT))
-        #         if is_left_collision(dt, entity, block):
-        #             collisions.append(Pair(block, Direction.LEFT))
-        #         if is_up_collision(dt, entity, block):
-        #             collisions.append(Pair(block, Direction.UP))
-
         return collisions
 
     def check_attacks(self, dt: float, character: Character):
@@ -210,19 +193,19 @@ class World:
         
         if character.attack.projectiles and not character.attack.has_fired_projectiles:
             for projectile in character.attack.projectiles:
-                new_projectile = projectile.copy()
-                new_projectile.global_pos = character.global_pos.copy()
-                new_projectile.global_pos.first += self.block_w + 10
-                new_projectile.global_pos.second += character.hitbox.height / 3  ## fix this
-                character.attack.has_fired_projectiles = True
-                self.projectiles.append(new_projectile)
-                # print(character.attack.projectiles[0].global_pos.first)
-                # print(character.attack.projectiles[0].global_pos.second)
+                self.spawn_projectile(projectile, character)
 
-            # for attack_hitbox in character.attack.hitboxes:
-            #     pos = Pair(character.global_pos.first + attack_hitbox.pos.first,
-            #                              character.global_pos.second + attack_hitbox.pos.second)
-            #     true_hitbox = Hitbox(pos=pos, width=attack_hitbox.width, height=attack_hitbox.width)
-            #     if is_overlap(dt, true_hitbox, other_character.hitbox):
-            #         # character.attack.Hit(other_character)
-            #         other_character.takeHit(character.attack)
+            character.attack.has_fired_projectiles = True
+
+    def spawn_projectile(self, projectile: Projectile, owner: Character):
+        new_projectile = projectile.copy()
+        spawn_pos = owner.global_pos.copy()
+        spawn_pos.second += (owner.hitbox.height / 2) - (projectile.hitbox.height / 2)
+
+        if owner.direction == Direction.RIGHT:
+            spawn_pos.first += owner.hitbox.width + (self.block_w / 4)
+        else:
+            spawn_pos.first -= projectile.hitbox.width + (self.block_w / 4)
+        
+        new_projectile.spawn(spawn_pos, direction=owner.direction)
+        self.projectiles.append(new_projectile)

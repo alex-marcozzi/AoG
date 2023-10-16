@@ -28,10 +28,9 @@ class Lightning(Projectile):
             global_pos=global_pos,
             velocity=Pair(self.speed, 0),
             acceleration=Pair(0, 0),
-            # sprite_width=block_width(window) * 2,
-            # sprite_height=block_width(window) * 2,
-            hitbox_width=block_width(window),
-            hitbox_height=block_width(window),
+            range=block_width(window) * 5,
+            hitbox_width=block_width(window) / 2,
+            hitbox_height=block_width(window) / 2,
             batch=batch,
         )
 

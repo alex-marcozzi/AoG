@@ -88,7 +88,7 @@ class Entity:
             (self.global_pos.second + 10) // self.block_w,
         )
         self.hitbox.pos = self.global_pos.copy()
-        
+
         self.update_sprite_positions(camera_pos)
         self.update_current_sprite()
 
@@ -102,8 +102,8 @@ class Entity:
         self.sprites.idle_right.y = self.global_pos.second - (
             camera_pos.second - (self.window.height / 2)
         )
-        # self.sprites.idle_left.x = self.sprites.idle_right.x
-        # self.sprites.idle_left.y = self.sprites.idle_right.y
+        self.sprites.idle_left.x = self.sprites.idle_right.x
+        self.sprites.idle_left.y = self.sprites.idle_right.y
         
         if self.sprites.slow_move_right:
             self.sprites.slow_move_right.x = self.sprites.idle_right.x

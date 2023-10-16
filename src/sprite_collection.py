@@ -45,35 +45,6 @@ class SpriteCollection():
         self.current.visible=False
         sprite.visible=True
         self.current = sprite
-        # if sprite_type.lower() == "idle":
-        #     self.idle_right.visible = True
-        #     if self.slow_move: self.slow_move.visible = False
-        #     if self.fast_move: self.fast_move.visible = False
-        #     if self.attack: self.attack.visible = False
-        #     if self.damaged: self.damaged.visible = False
-        # elif sprite_type.lower() == "slow_move":
-        #     self.idle_right.visible = False
-        #     if self.slow_move: self.slow_move.visible = True
-        #     if self.fast_move: self.fast_move.visible = False
-        #     if self.attack: self.attack.visible = False
-        #     if self.damaged: self.damaged.visible = False
-        # elif sprite_type.lower() == "fast_move":
-        #     self.idle_right.visible = False
-        #     if self.slow_move: self.slow_move.visible = False
-        #     if self.fast_move: self.fast_move.visible = True
-        #     if self.attack: self.attack.visible = False
-        #     if self.damaged: self.damaged.visible = False
-        # elif sprite_type.lower() == "attack":
-        #     self.idle_right.visible = False
-        #     if self.slow_move: self.slow_move.visible = False
-        #     if self.fast_move: self.fast_move.visible = False
-        #     if self.attack: self.attack.visible = True
-        #     if self.damaged: self.damaged.visible = False
-        # elif sprite_type.lower() == "damaged":
-        #     self.idle_right.visible = False
-        #     if self.slow_move: self.slow_move.visible = False
-        #     if self.fast_move: self.fast_move.visible = False
-        #     if self.attack: self.attack.visible = False
-        #     if self.damaged: self.damaged.visible = True
-        # else:
-        #     raise Exception(f"Exception: invalid sprite type: {sprite_type}.")
+    
+    def SetAllInvisible(self):
+        self.current.visible=False
