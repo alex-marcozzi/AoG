@@ -34,12 +34,12 @@ class Player(Character):
                             #  Lightning(window=window, global_pos=Pair(0, 0), angle=-22.5, batch=batch),]
             )
         sprites = SpriteCollection(idle_right=make_sprite(sprite_filename="assets/images/goose_default/idle_right.png",
-                                                    width=block_width(window),
+                                                    width=idle_width,
                                                     height=block_width(window),
                                                     visible=True,
                                                     batch=batch),
                                     idle_left=make_sprite(sprite_filename="assets/images/goose_default/idle_left.png",
-                                                    width=block_width(window),
+                                                    width=idle_width,
                                                     height=block_width(window),
                                                     visible=False,
                                                     batch=batch),
@@ -69,8 +69,11 @@ class Player(Character):
         self.keys_usable = {}
         self.modifiers = []
 
-    def pre_tick(self, dt: float):
-        super().pre_tick(dt)
+    # def pre_tick(self, dt: float):
+    #     super().pre_tick(dt)
+    #     self.check_keys()
+    
+    def calculate_velocity(self):
         self.check_keys()
 
     # def tick(self, camera_pos: Pair):
@@ -91,24 +94,25 @@ class Player(Character):
         self.keys_down[symbol] = False
 
     def check_keys(self):
+        super().calculate_velocity()
         # if self.can_move():
-            if self.keys_down.get(pyglet.window.key.A, False):
-                self.velocity = Pair(
-                    self.velocity.first - self.standard_speed, self.velocity.second
-                )
-                self.direction = Direction.LEFT
-            if self.keys_down.get(pyglet.window.key.D, False):
-                self.velocity = Pair(
-                    self.velocity.first + self.standard_speed, self.velocity.second
-                )
-                self.direction = Direction.RIGHT
-            if self.keys_down.get(pyglet.window.key.SPACE, False) and self.on_ground:
-                self.velocity = Pair(
-                    self.velocity.first, self.velocity.second + (self.standard_speed * 1.5) #(self.block_w / 5)
-                )
-            if self.keys_down.get(pyglet.window.key.F, False) and self.attack.isUsable():# and not self.attack.inProgress():
-                print(">> THROWING ATTACK")
-                self.attack.Throw()
+        if self.keys_down.get(pyglet.window.key.A, False):
+            self.velocity = Pair(
+                self.velocity.first - self.standard_speed, self.velocity.second
+            )
+            self.direction = Direction.LEFT
+        if self.keys_down.get(pyglet.window.key.D, False):
+            self.velocity = Pair(
+                self.velocity.first + self.standard_speed, self.velocity.second
+            )
+            self.direction = Direction.RIGHT
+        if self.keys_down.get(pyglet.window.key.SPACE, False) and self.on_ground:
+            self.velocity = Pair(
+                self.velocity.first, self.velocity.second + (self.standard_speed * 1.5) #(self.block_w / 5)
+            )
+        if self.keys_down.get(pyglet.window.key.F, False) and self.attack.isUsable():# and not self.attack.inProgress():
+            print(">> THROWING ATTACK")
+            self.attack.Throw()
 
     def can_move(self):
         if self.attack.inProgress():

@@ -82,7 +82,7 @@ class Entity:
 
     def update_sprite_positions(self, camera_pos: Pair):
         self.sprites.idle_right.x = self.global_pos.first - (
-            camera_pos.first - (self.window.width / 2)
+            camera_pos.first - (self.window.width / 2) - ((self.hitbox.width - self.sprites.idle_right.width) / 2)
         )
         self.sprites.idle_right.y = self.global_pos.second - (
             camera_pos.second - (self.window.height / 2)

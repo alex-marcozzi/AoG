@@ -36,21 +36,26 @@ class Bear(Character):
         self.move_loop_start = time.time()
         self.left = True
 
-    def pre_tick(self, dt: float):
-        super().pre_tick(dt)
-        speed = self.speed * self.get_speed()
-        # print(speed)
-        self.velocity = Pair(self.velocity.first + speed, self.velocity.second)
+    # def pre_tick(self, dt: float):
+    #     super().pre_tick(dt)
+        # self.calculate_velocity()
 
     # def tick(self, camera_pos: Pair):
     #     super().tick(camera_pos)
     #     self.velocity = Pair(self.velocity.first - self.speed, self.velocity.second)
+    
+    def calculate_velocity(self):
+        super().calculate_velocity()
+        speed = self.speed * self.get_speed()
+        # print(speed)
+        self.velocity = Pair(self.velocity.first + speed, self.velocity.second)
 
     def interact(self, entity: Entity, direction):
         if "collidable" in entity.modifiers:
             self.interact_collidable(entity, direction)
         if "dangerous" in entity.modifiers:
             self.interact_dangerous(entity, direction)
+
 
     # function: y = 1 - (2x - 1)^2
     # x: time

@@ -81,22 +81,10 @@ class Character(Entity):
                              )
         
         return new_copy
-        # (
-        #     window=self.window,
-        #     sprite_filename=self.sprite_filename,
-        #     global_pos=self.global_pos,
-        #     velocity=self.velocity,
-        #     acceleration=self.acceleration,
-        #     sprite_width=self.sprite.width,
-        #     sprite_height=self.sprite.height,
-        #     hitbox_width=self.hitbox.width,
-        #     hitbox_height=self.hitbox.height,
-        #     batch=self.batch,
-        # )
-        # return new_copy
 
     def pre_tick(self, dt: float):
-        self.velocity = Pair(0, self.velocity.second)
+        
+        self.calculate_velocity()
         # self.check_keys()
         # self.player.check_keys()
 
@@ -126,6 +114,9 @@ class Character(Entity):
             return False
 
         return True
+    
+    def calculate_velocity(self):
+        self.velocity = Pair(0, self.velocity.second)
     
     # def draw(self):
     #     if self.attack and self.attack.inProgress():
