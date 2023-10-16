@@ -1,7 +1,7 @@
 import pyglet
 import src.helpers.globals as globals
 from src.helpers.interfaces import Pair
-from math import sqrt
+from math import sqrt, cos, sin, radians
 
 loaded_images = {}  # key: filename, value: image
 
@@ -49,6 +49,16 @@ def distance(p1: Pair, p2: Pair):
      
      return sqrt((a**2) + (b**2))
 
+def angle_to_velocity(angle):
+     rad = radians(angle)
+
+     return Pair(cos(rad), sin(rad))
+
+def speed_angle_to_velocity(speed: float, angle: float):
+     unit_velocity = angle_to_velocity(angle)
+     velocity = Pair(unit_velocity.first * speed, unit_velocity.second * speed)
+
+     return velocity
 
 
 # def normalize_vector(v: Pair):

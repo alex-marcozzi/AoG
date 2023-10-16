@@ -1,5 +1,5 @@
 import pyglet
-from src.helpers.utils import std_speed, block_width, make_sprite, distance
+from src.helpers.utils import std_speed, block_width, make_sprite, distance, speed_angle_to_velocity
 from src.helpers.interfaces import Pair
 from src.entity import Entity
 from src.sprite_collection import SpriteCollection
@@ -11,8 +11,10 @@ class Projectile(Entity):
         window,
         sprites: SpriteCollection,
         global_pos: Pair,
-        velocity: Pair,   ## take in speed and angle instead of velocity and acceleration, more intuitive for projectile spawning
-        acceleration: Pair,
+        speed: float,
+        angle: float,
+        # velocity: Pair,   ## take in speed and angle instead of velocity and acceleration, more intuitive for projectile spawning
+        # acceleration: Pair,
         range: float,
         hitbox_width: float,
         hitbox_height: float,
@@ -35,8 +37,8 @@ class Projectile(Entity):
         self.modifiers = ["dangerous"]
         self.range = range
         self.spawn_pos = None
-        self.velocity = velocity
-        self.acceleration=acceleration
+        self.velocity = speed_angle_to_velocity(speed, angle)
+        # self.acceleration=Pair(0, 0)
 
     def copy(self):
         new_copy = Projectile(window=self.window,
