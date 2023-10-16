@@ -52,26 +52,16 @@ def build_level1(window, batch):
                                                       height=block_w,
                                                       visible=True,
                                                       batch=batch))
-    block = Entity(
-        window,
-        sprites,
-        global_pos=Pair(0, 0),
-        velocity=Pair(0, 0),
-        acceleration=Pair(0, 0),
-        sprite_width=block_w,
-        sprite_height=block_w,
-        hitbox_width=block_w,
-        hitbox_height=block_w,
-        batch=batch,
-    )
+    
     level1 = initialize_level_base(100, 100)
     set_line(level1, Pair(0, 2), Pair(30, 2), window, block_w, batch)
+    set_line(level1, Pair(7, 5), Pair(8, 5), window, block_w, batch)
     set_line(level1, Pair(12, 2), Pair(12, 3), window, block_w, batch)
     set_line(level1, Pair(30, 2), Pair(30, 3), window, block_w, batch)
     set_line(level1, Pair(33, 3), Pair(40, 3), window, block_w, batch)
     set_line(level1, Pair(34, 6), Pair(36, 6), window, block_w, batch)
     set_line(level1, Pair(42, 5), Pair(50, 5), window, block_w, batch)
-    
+
     # set_bear(level1, Pair(10, 3), window, block_w, batch)
     # set_bear(level1, Pair(13, 3), window, block_w, batch)
     set_bear(level1, Pair(16, 3), window, block_w, batch)

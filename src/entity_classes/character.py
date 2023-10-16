@@ -1,5 +1,5 @@
 import pyglet
-from src.helpers.utils import std_speed, block_width, make_sprite
+from src.helpers.utils import std_speed, block_width, make_sprite, gravity
 from src.helpers.interfaces import Pair
 from src.entity import Entity
 from src.attack import Attack
@@ -13,8 +13,6 @@ class Character(Entity):
         window,
         sprites: SpriteCollection,
         global_pos: Pair,
-        velocity: Pair,
-        acceleration: Pair,
         # sprite_width: float,
         # sprite_height: float,
         hitbox_width: float,
@@ -22,6 +20,8 @@ class Character(Entity):
         batch,
         hp: int,
         attack: Attack = None,
+        velocity: Pair = None,
+        acceleration: Pair = None,
     ):
         self.sprites = sprites
         self.sprites.SetVisible(self.sprites.idle_right)
@@ -30,15 +30,14 @@ class Character(Entity):
             window,
             sprites,
             global_pos,
-            velocity,
-            acceleration,
-            None,
-            None,
             hitbox_width,
             hitbox_height,
             batch,
+            velocity,
+            acceleration
         )
 
+        self.acceleration = Pair(0, gravity(window))
         self.hp = hp
         self.width_in_blocks = hitbox_width // block_width(window)
         # self.standard_speed = std_speed(window)
@@ -72,13 +71,14 @@ class Character(Entity):
         new_copy = Character(window=self.window,
                              sprites=self.sprites.copy(),
                              global_pos=self.global_pos,
-                             velocity=self.velocity,
-                             acceleration=self.acceleration,
                              hitbox_width=self.hitbox.width,
                              hitbox_height=self.hitbox.height,
                              batch=self.batch,
                              hp=self.hp,
-                             attack=self.attack)
+                             attack=self.attack,
+                             velocity=self.velocity,
+                             acceleration=self.acceleration
+                             )
         
         return new_copy
         # (

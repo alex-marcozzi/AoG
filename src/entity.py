@@ -12,42 +12,27 @@ class Entity:
     def __init__(
         self,
         window,
-        # sprite_filename: str,
         sprites: SpriteCollection,
         global_pos: Pair,
-        velocity: Pair,
-        acceleration: Pair,
-        sprite_width: float,
-        sprite_height: float,
         hitbox_width: float,
         hitbox_height: float,
         batch=None,
+        velocity=None,
+        acceleration=None,
     ):
         self.window = window
         self.standard_speed = std_speed(window)
         self.block_w = block_width(window)
         self.batch = batch
-        # if not sprite_filename in loaded_images.keys():
-        #     loaded_images[sprite_filename] = pyglet.resource.image(sprite_filename)
-        # self.sprite = pyglet.sprite.Sprite(
-        #     img=loaded_images[sprite_filename], batch=batch
-        # )
-        # if sprite_filename:
-        #     self.sprite = make_sprite(sprite_filename=sprite_filename, width=sprite_width, height=sprite_height, visible=True, batch=batch)
-        #     self.sprite_filename = sprite_filename
-        # else:
-        #     self.sprite = None
         self.sprites = sprites
-        # self.sprite.width = sprite_width
-        # self.sprite.height = sprite_height
         self.hitbox = Hitbox(pos=global_pos, width=hitbox_width, height=hitbox_height)
         self.global_pos = global_pos.copy()
         self.block_pos = Pair(
             self.global_pos.first // self.block_w,
             (self.global_pos.second + 10) // self.block_w,
         )
-        self.velocity = velocity.copy()
-        self.acceleration = acceleration.copy()
+        self.velocity = velocity if velocity else Pair(0, 0)
+        self.acceleration = acceleration if acceleration else Pair(0, 0)
         self.modifiers = ["collidable"]
         self.direction = Direction.RIGHT
 
@@ -56,13 +41,13 @@ class Entity:
             window=self.window,
             sprites=self.sprites.copy(),
             global_pos=self.global_pos,
-            velocity=self.velocity,
-            acceleration=self.acceleration,
             sprite_width=self.sprites.idle_right.width,
             sprite_height=self.sprites.idle_right.height,
             hitbox_width=self.hitbox.width,
             hitbox_height=self.hitbox.height,
             batch=self.batch,
+            velocity=self.velocity,
+            acceleration=self.acceleration,
         )
         return new_copy
 
@@ -121,13 +106,13 @@ class Entity:
             self.sprites.fast_move_left.x = self.sprites.idle_right.x
             self.sprites.fast_move_left.y = self.sprites.idle_right.y
         
-        if self.sprites.attack_right:
-            self.sprites.attack_right.x = self.sprites.idle_right.x
-            self.sprites.attack_right.y = self.sprites.idle_right.y
+        # if self.sprites.attack_right:
+        #     self.sprites.attack_right.x = self.sprites.idle_right.x
+        #     self.sprites.attack_right.y = self.sprites.idle_right.y
         
-        if self.sprites.attack_left:
-            self.sprites.attack_left.x = self.sprites.idle_right.x - self.attack.range
-            self.sprites.attack_left.y = self.sprites.idle_right.y
+        # if self.sprites.attack_left:
+        #     self.sprites.attack_left.x = self.sprites.idle_right.x - self.attack.range
+        #     self.sprites.attack_left.y = self.sprites.idle_right.y
         
         if self.sprites.damaged_right:
             self.sprites.damaged_right.x = self.sprites.idle_right.x

@@ -15,14 +15,7 @@ class Player(Character):
     def __init__(
         self,
         window,
-        sprite_filename: str,
         global_pos: Pair,
-        velocity: Pair,
-        acceleration: Pair,
-        sprite_width: float,
-        sprite_height: float,
-        hitbox_width: float,
-        hitbox_height: float,
         batch,
     ):
         idle_width = block_width(window)
@@ -60,14 +53,11 @@ class Player(Character):
             window,
             sprites,
             global_pos,
-            velocity,
-            Pair(0, gravity(window)), #acceleration,
-            hitbox_width,
-            hitbox_height,
+            block_width(window),
+            block_width(window),
             batch,
             hp=3,
             attack=attack,
-            # attack_sprite_filename="assets/images/goose.png"
         )
 
         # self.standard_speed = std_speed(window)

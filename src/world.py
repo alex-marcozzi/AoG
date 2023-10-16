@@ -24,14 +24,7 @@ class World:
         self.level = level
         self.player = Player(
             window,
-            "assets/images/goose.png",
             global_pos=Pair(0, 500),
-            velocity=Pair(0, 0),
-            acceleration=Pair(0, gravity(window)),
-            sprite_width=self.block_w,
-            sprite_height=self.block_w,
-            hitbox_width=self.block_w,
-            hitbox_height=self.block_w,
             batch=batch,
         )
         self.characters = [self.player]

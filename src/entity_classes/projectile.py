@@ -11,7 +11,7 @@ class Projectile(Entity):
         window,
         sprites: SpriteCollection,
         global_pos: Pair,
-        velocity: Pair,
+        velocity: Pair,   ## take in speed and angle instead of velocity and acceleration, more intuitive for projectile spawning
         acceleration: Pair,
         range: float,
         hitbox_width: float,
@@ -27,10 +27,6 @@ class Projectile(Entity):
             window,
             sprites,
             global_pos,
-            velocity,
-            acceleration,
-            None,
-            None,
             hitbox_width,
             hitbox_height,
             batch,
@@ -39,6 +35,8 @@ class Projectile(Entity):
         self.modifiers = ["dangerous"]
         self.range = range
         self.spawn_pos = None
+        self.velocity = velocity
+        self.acceleration=acceleration
 
     def copy(self):
         new_copy = Projectile(window=self.window,
