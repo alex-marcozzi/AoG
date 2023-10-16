@@ -3,8 +3,8 @@ import pyglet
 from src.engine import Engine
 from src.entity import Entity
 
-window = pyglet.window.Window(fullscreen=False)
-# window.set_vsync(True)
+window = pyglet.window.Window(fullscreen=True)
+window.set_vsync(True)
 fpsdisplay = pyglet.window.FPSDisplay(window=window)
 
 engine = Engine(window)

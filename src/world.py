@@ -52,28 +52,24 @@ class World:
                         level[x][y] = None
 
     def do_physics(self, dt: float, from_loc: int, to_loc: int):
-        index = 0
+        # index = 0
         for character in self.characters:
-            # if abs(character.block_pos.first - self.player.block_pos.first) >= 12:
-            #     continue
+            if abs(character.block_pos.first - self.player.block_pos.first) >= 12:
+                continue
             if issubclass(type(character), Character):
-                character.pre_tick(dt)
-                collisions = self.check_collisions(dt, character)
+                character.pre_tick(dt)  # set the character's velocity based on its movement pattern
+                collisions = self.get_collisions(dt, character)
 
-                character.on_ground = False
-                for collision in collisions:
-                    if collision.second == Direction.DOWN:
-                        character.on_ground = True
-
-                    character.interact(collision.first, collision.second)
+                self.process_collisions(character, collisions)
                 
                 # some characters don't have an attack
                 if character.attack:
                     self.check_attacks(dt, character)
 
                 if not character.tick(dt, self.player.global_pos):
-                    self.characters.pop(index)
-            index += 1
+                    character.sprites.SetAllInvisible()
+                    self.characters.remove(character)
+            # index += 1
 
         for projectile in self.projectiles:
             projectile.tick(dt, self.player.global_pos)
@@ -92,7 +88,7 @@ class World:
 
                     block.tick(dt, self.player.global_pos)
 
-    def check_collisions(self, dt: float, entity: Entity):
+    def get_collisions(self, dt: float, entity: Entity):
         collisions = []
 
         for character in self.characters:
@@ -173,6 +169,14 @@ class World:
                     collisions.append(Pair(block, Direction.UP))
 
         return collisions
+    
+    def process_collisions(self, character: Character, collisions: list[Pair]):
+        character.on_ground = False
+        for collision in collisions:
+            if collision.second == Direction.DOWN:
+                character.on_ground = True
+
+            character.interact(collision.first, collision.second)
 
     def check_attacks(self, dt: float, character: Character):
         if not character.attack.inProgress():

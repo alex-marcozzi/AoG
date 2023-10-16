@@ -36,7 +36,7 @@ class Bear(Character):
             hp=1,
         )
 
-        self.modifiers = []#["dangerous"]
+        self.modifiers = ["dangerous"]
         self.move_loop_start = time.time()
         self.left = True
 
