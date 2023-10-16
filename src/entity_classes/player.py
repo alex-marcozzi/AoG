@@ -27,11 +27,11 @@ class Player(Character):
                 duration=0.1,
                 damage=1,
                 cooldown=0.10,
-                # projectiles=[Lightning(window=window, global_pos=Pair(0, 0), angle=0, batch=batch),]
-                            #  Lightning(window=window, global_pos=Pair(0, 0), angle=45, batch=batch),
-                            #  Lightning(window=window, global_pos=Pair(0, 0), angle=22.5, batch=batch),
-                            #  Lightning(window=window, global_pos=Pair(0, 0), angle=-45, batch=batch),
-                            #  Lightning(window=window, global_pos=Pair(0, 0), angle=-22.5, batch=batch),]
+                projectiles=[Lightning(window=window, global_pos=Pair(0, 0), angle=0, batch=batch),
+                             Lightning(window=window, global_pos=Pair(0, 0), angle=45, batch=batch),
+                             Lightning(window=window, global_pos=Pair(0, 0), angle=22.5, batch=batch),
+                             Lightning(window=window, global_pos=Pair(0, 0), angle=-45, batch=batch),
+                             Lightning(window=window, global_pos=Pair(0, 0), angle=-22.5, batch=batch),]
             )
         sprites = SpriteCollection(idle_right=make_sprite(sprite_filename="assets/images/goose_default/idle_right.png",
                                                     width=idle_width,

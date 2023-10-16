@@ -13,12 +13,11 @@ class Projectile(Entity):
         global_pos: Pair,
         speed: float,
         angle: float,
-        # velocity: Pair,   ## take in speed and angle instead of velocity and acceleration, more intuitive for projectile spawning
-        # acceleration: Pair,
         range: float,
         hitbox_width: float,
         hitbox_height: float,
         batch,
+        piercing: bool = True
     ):
         # self.sprites = SpriteCollection(idle=self.sprite)
         self.sprites = sprites
@@ -39,6 +38,8 @@ class Projectile(Entity):
         self.spawn_pos = None
         self.velocity = speed_angle_to_velocity(speed, angle)
         # self.acceleration=Pair(0, 0)
+        self.piercing = piercing
+        self.owner_id = ""
 
     def copy(self):
         new_copy = Projectile(window=self.window,
@@ -107,12 +108,13 @@ class Projectile(Entity):
         elif self.direction == Direction.LEFT:
             self.sprites.SetVisible(self.sprites.idle_left)
 
-    def spawn(self, pos: Pair, direction):
+    def spawn(self, pos: Pair, direction, owner_id: str):
         self.global_pos = pos.copy()
         if direction == Direction.LEFT:
             self.velocity.first *= -1
         self.sprites.SetVisible(self.sprites.idle_right)
         self.spawn_pos = pos
+        self.owner_id = owner_id
 
     def isExpired(self):
         if not self.spawn_pos:

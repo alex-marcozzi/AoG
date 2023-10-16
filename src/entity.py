@@ -4,6 +4,7 @@ from src.helpers.utils import block_width, std_speed, make_sprite
 from src.helpers.globals import Direction
 from src.hitbox import Hitbox
 from src.sprite_collection import SpriteCollection
+import uuid
 
 # loaded_images = {}  # key: filename, value: image
 
@@ -35,6 +36,7 @@ class Entity:
         self.acceleration = acceleration if acceleration else Pair(0, 0)
         self.modifiers = ["collidable"]
         self.direction = Direction.RIGHT
+        self.id = uuid.uuid1()
 
     def copy(self):
         new_copy = Entity(

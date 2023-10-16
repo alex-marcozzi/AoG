@@ -35,6 +35,7 @@ class Lightning(Projectile):
             hitbox_width=block_width(window) / 2,
             hitbox_height=block_width(window) / 2,
             batch=batch,
+            piercing=False
         )
 
         self.modifiers = ["dangerous"]

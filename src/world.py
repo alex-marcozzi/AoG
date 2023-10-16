@@ -68,6 +68,16 @@ class World:
             projectile.tick(dt, self.player.global_pos)
             if projectile.isExpired():
                 self.projectiles.remove(projectile)
+            else:
+                if not projectile.piercing:
+                    collisions = self.get_collisions(dt, projectile)
+
+                    for collision in collisions:
+                        if not issubclass(type(collision.first), Projectile):
+                            self.projectiles.remove(projectile)
+                            break
+                    # if len(collisions) > 0:
+                    #     self.projectiles.remove(projectile)
 
         for y in range(0, len(self.level[0])):
             for x in range(from_loc, to_loc):
@@ -85,6 +95,7 @@ class World:
         collisions = []
 
         for character in self.characters:
+            # if they are on the same team, they shouldn't be able to collide
             if character == entity:
                 continue
             if abs(character.block_pos.first - entity.block_pos.first) >= entity.block_pos.first + int(entity.hitbox.width / self.block_w) + 2:
@@ -109,6 +120,8 @@ class World:
                 collisions.append(Pair(character, Direction.OVERLAP))
 
         for projectile in self.projectiles:
+            if projectile == entity or (issubclass(type(entity), Projectile) and projectile.owner_id == entity.owner_id) or entity.id == projectile.owner_id:
+                continue
             if is_overlap(dt, entity, projectile):
                 if entity == self.player:
                     print("CHARACTER OVERLAP")
@@ -204,5 +217,5 @@ class World:
         else:
             spawn_pos.first -= projectile.hitbox.width + (self.block_w / 4)
         
-        new_projectile.spawn(spawn_pos, direction=owner.direction)
+        new_projectile.spawn(spawn_pos, direction=owner.direction, owner_id=owner.id)
         self.projectiles.append(new_projectile)
