@@ -30,10 +30,15 @@ class SpriteCollection():
     
     def copy(self):
         new_copy = SpriteCollection(idle_right=copy_sprite(self.idle_right),
+                                    idle_left=copy_sprite(self.idle_left) if self.idle_left else None,
                                     slow_move_right=copy_sprite(self.slow_move_right) if self.slow_move_right else None,
+                                    slow_move_left=copy_sprite(self.slow_move_left) if self.slow_move_left else None,
                                     fast_move_right=copy_sprite(self.fast_move_right) if self.fast_move_right else None,
+                                    fast_move_left=copy_sprite(self.fast_move_left) if self.fast_move_left else None,
                                     attack_right=copy_sprite(self.attack_right) if self.attack_right else None,
-                                    damaged_right=copy_sprite(self.damaged_right) if self.damaged_right else None)
+                                    attack_left=copy_sprite(self.attack_left) if self.attack_left else None,
+                                    damaged_right=copy_sprite(self.damaged_right) if self.damaged_right else None,
+                                    damaged_left=copy_sprite(self.damaged_left) if self.damaged_left else None)
         return new_copy
 
     def SetVisible(self, sprite: pyglet.sprite.Sprite):

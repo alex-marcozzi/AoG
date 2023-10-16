@@ -23,7 +23,7 @@ class Projectile(Entity):
         
         super().__init__(
             window,
-            None,
+            sprites,
             global_pos,
             velocity,
             acceleration,

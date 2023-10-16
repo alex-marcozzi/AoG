@@ -3,6 +3,7 @@ from src.helpers.interfaces import Pair
 from src.helpers.utils import block_width, std_speed, make_sprite
 from src.helpers.globals import Direction
 from src.hitbox import Hitbox
+from src.sprite_collection import SpriteCollection
 
 # loaded_images = {}  # key: filename, value: image
 
@@ -11,7 +12,8 @@ class Entity:
     def __init__(
         self,
         window,
-        sprite_filename: str,
+        # sprite_filename: str,
+        sprites: SpriteCollection,
         global_pos: Pair,
         velocity: Pair,
         acceleration: Pair,
@@ -30,11 +32,12 @@ class Entity:
         # self.sprite = pyglet.sprite.Sprite(
         #     img=loaded_images[sprite_filename], batch=batch
         # )
-        if sprite_filename:
-            self.sprite = make_sprite(sprite_filename=sprite_filename, width=sprite_width, height=sprite_height, visible=True, batch=batch)
-            self.sprite_filename = sprite_filename
-        else:
-            self.sprite = None
+        # if sprite_filename:
+        #     self.sprite = make_sprite(sprite_filename=sprite_filename, width=sprite_width, height=sprite_height, visible=True, batch=batch)
+        #     self.sprite_filename = sprite_filename
+        # else:
+        #     self.sprite = None
+        self.sprites = sprites
         # self.sprite.width = sprite_width
         # self.sprite.height = sprite_height
         self.hitbox = Hitbox(pos=global_pos, width=hitbox_width, height=hitbox_height)
@@ -46,16 +49,17 @@ class Entity:
         self.velocity = velocity.copy()
         self.acceleration = acceleration.copy()
         self.modifiers = ["collidable"]
+        self.direction = Direction.RIGHT
 
     def copy(self):
         new_copy = Entity(
             window=self.window,
-            sprite_filename=self.sprite_filename,
+            sprites=self.sprites.copy(),
             global_pos=self.global_pos,
             velocity=self.velocity,
             acceleration=self.acceleration,
-            sprite_width=self.sprite.width,
-            sprite_height=self.sprite.height,
+            sprite_width=self.sprites.idle_right.width,
+            sprite_height=self.sprites.idle_right.height,
             hitbox_width=self.hitbox.width,
             hitbox_height=self.hitbox.height,
             batch=self.batch,
@@ -72,18 +76,21 @@ class Entity:
         # self.global_pos.add
 
         # camera_pos == player.global_pos (middle of screen)
-        if self.sprite:
-            self.sprite.x = self.global_pos.first - (
-                camera_pos.first - (self.window.width / 2)
-            )
-            self.sprite.y = self.global_pos.second - (
-                camera_pos.second - (self.window.height / 2)
-            )
+        # if self.sprites:
+        #     self.sprites.idle_right.x = self.global_pos.first - (
+        #         camera_pos.first - (self.window.width / 2)
+        #     )
+        #     self.sprites.idle_right.x = self.global_pos.second - (
+        #         camera_pos.second - (self.window.height / 2)
+        #     )
         self.block_pos = Pair(
             self.global_pos.first // self.block_w,
             (self.global_pos.second + 10) // self.block_w,
         )
         self.hitbox.pos = self.global_pos.copy()
+        
+        self.update_sprite_positions(camera_pos)
+        self.update_current_sprite()
 
     # def draw(self):
     #     self.sprite.draw()
@@ -95,8 +102,8 @@ class Entity:
         self.sprites.idle_right.y = self.global_pos.second - (
             camera_pos.second - (self.window.height / 2)
         )
-        self.sprites.idle_left.x = self.sprites.idle_right.x
-        self.sprites.idle_left.y = self.sprites.idle_right.y
+        # self.sprites.idle_left.x = self.sprites.idle_right.x
+        # self.sprites.idle_left.y = self.sprites.idle_right.y
         
         if self.sprites.slow_move_right:
             self.sprites.slow_move_right.x = self.sprites.idle_right.x
@@ -131,19 +138,12 @@ class Entity:
             self.sprites.damaged_left.y = self.sprites.idle_right.y
     
     def update_current_sprite(self):
-        if self.attack:
-            if self.attack.inProgress():
-                if self.direction == Direction.RIGHT:
-                    self.sprites.SetVisible(self.sprites.attack_right)
-                elif self.direction == Direction.LEFT:
-                    self.sprites.SetVisible(self.sprites.attack_left)
-            else:
-                if self.direction == Direction.RIGHT:
-                    self.sprites.SetVisible(self.sprites.idle_right)
-                elif self.direction == Direction.LEFT:
-                    self.sprites.SetVisible(self.sprites.idle_left)
-                    # self.sprite.visible = True
-                    # self.attack_sprite.visible = False
+        if self.direction == Direction.RIGHT:
+            self.sprites.SetVisible(self.sprites.idle_right)
+        elif self.direction == Direction.LEFT:
+            self.sprites.SetVisible(self.sprites.idle_left)
+        self.sprites.SetVisible(self.sprites.idle_right)
+
 
     def interact(self, entity: "Entity", direction):
         if "collidable" in entity.modifiers:

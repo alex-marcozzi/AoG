@@ -210,7 +210,6 @@ class World:
         
         if character.attack.projectiles and not character.attack.has_fired_projectiles:
             for projectile in character.attack.projectiles:
-                print("HERE")
                 new_projectile = projectile.copy()
                 new_projectile.global_pos = character.global_pos.copy()
                 new_projectile.global_pos.first += self.block_w + 10

@@ -1,9 +1,11 @@
 import pyglet
-from src.helpers.utils import block_width
+from src.helpers.utils import block_width, make_sprite
 from src.entity import Entity
 from src.entity_classes.character import Character
 from src.entity_classes.bear import Bear
 from src.helpers.interfaces import Pair
+from src.sprite_collection import SpriteCollection
+from src.entity_classes.block_classes.standard_block import StandardBlock
 
 
 def initialize_level_base(x_width, y_height):
@@ -12,14 +14,19 @@ def initialize_level_base(x_width, y_height):
 
 # sets the squares in "level_array" specified in a line from "from_pos" to "to_pos" to the "entity" object
 # note: inclusive beginning, inclusive end
-def set_line(
-    level_array: list, from_pos: Pair, to_pos: Pair, entity: Entity, block_w, block_h
-):
+# def set_line(
+#     level_array: list, from_pos: Pair, to_pos: Pair, entity: Entity, block_w, block_h
+# ):
+#     for x in range(from_pos.first, to_pos.first + 1):
+#         for y in range(from_pos.second, to_pos.second + 1):
+#             this_entity = entity.copy()
+#             this_entity.global_pos = Pair(x * block_w, y * block_h)
+#             level_array[x][y] = this_entity
+
+def set_line(level_array: list, from_pos: Pair, to_pos: Pair, window, block_w: float, batch):
     for x in range(from_pos.first, to_pos.first + 1):
         for y in range(from_pos.second, to_pos.second + 1):
-            this_entity = entity.copy()
-            this_entity.global_pos = Pair(x * block_w, y * block_h)
-            level_array[x][y] = this_entity
+            set_block(level_array, pos=Pair(x, y), window=window, block_w=block_w, batch=batch)
 
 
 def set_bear(level_array: list, pos: Pair, window, block_w, batch):
@@ -27,12 +34,27 @@ def set_bear(level_array: list, pos: Pair, window, block_w, batch):
     bear = Bear(window, global_pos, batch)
     level_array[pos.first][pos.second] = bear
 
+def set_block(level_array: list, pos: Pair, window, block_w, batch):
+    global_pos = Pair(pos.first * block_w, pos.second * block_w)
+    block = StandardBlock(window, global_pos, batch)
+    level_array[pos.first][pos.second] = block
+
 
 def build_level1(window, batch):
     block_w = block_width(window)
+    sprites = SpriteCollection(idle_right=make_sprite(sprite_filename="assets/images/bbox.png",
+                                                      width=block_w,
+                                                      height=block_w,
+                                                      visible=True,
+                                                      batch=batch),
+                                idle_left=make_sprite(sprite_filename="assets/images/bbox.png",
+                                                      width=block_w,
+                                                      height=block_w,
+                                                      visible=True,
+                                                      batch=batch))
     block = Entity(
         window,
-        "assets/images/bbox.png",
+        sprites,
         global_pos=Pair(0, 0),
         velocity=Pair(0, 0),
         acceleration=Pair(0, 0),
@@ -43,13 +65,13 @@ def build_level1(window, batch):
         batch=batch,
     )
     level1 = initialize_level_base(100, 100)
-    set_line(level1, Pair(0, 2), Pair(30, 2), block, block_w, block_w)
-    set_line(level1, Pair(12, 2), Pair(12, 3), block, block_w, block_w)
-    set_line(level1, Pair(30, 2), Pair(30, 3), block, block_w, block_w)
-    set_line(level1, Pair(33, 3), Pair(40, 3), block, block_w, block_w)
-    set_line(level1, Pair(34, 6), Pair(36, 6), block, block_w, block_w)
-    set_line(level1, Pair(42, 5), Pair(50, 5), block, block_w, block_w)
-
+    set_line(level1, Pair(0, 2), Pair(30, 2), window, block_w, batch)
+    set_line(level1, Pair(12, 2), Pair(12, 3), window, block_w, batch)
+    set_line(level1, Pair(30, 2), Pair(30, 3), window, block_w, batch)
+    set_line(level1, Pair(33, 3), Pair(40, 3), window, block_w, batch)
+    set_line(level1, Pair(34, 6), Pair(36, 6), window, block_w, batch)
+    set_line(level1, Pair(42, 5), Pair(50, 5), window, block_w, batch)
+    
     # set_bear(level1, Pair(10, 3), window, block_w, batch)
     # set_bear(level1, Pair(13, 3), window, block_w, batch)
     set_bear(level1, Pair(16, 3), window, block_w, batch)
