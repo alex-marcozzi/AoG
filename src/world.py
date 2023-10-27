@@ -77,7 +77,7 @@ class World:
                     collisions = self.get_collisions(dt, projectile)
 
                     for collision in collisions:
-                        if not issubclass(type(collision.first), Projectile) and collision.first.id != projectile.owner_id:
+                        if not issubclass(type(collision.first), Projectile) and collision.second == Direction.OVERLAP and collision.first.id != projectile.owner_id:
                             # self.projectiles.remove(projectile)
                             projectile.collided = True
                             break
@@ -200,8 +200,12 @@ class World:
                 character.on_ground = True
 
             if collision.second == Direction.UP and collision.first.id == self.player.id:
-                character.interact_dangerous(collision.first, collision.second)
-                self.player.jump()
+                if "bouncy" in character.modifiers:
+                    self.player.jump()
+                if "vulnerable_top" in character.modifiers:
+                    character.interact_dangerous(collision.first, collision.second)
+                else:
+                    character.interact(collision.first, collision.second)
             else:
                 character.interact(collision.first, collision.second)
 

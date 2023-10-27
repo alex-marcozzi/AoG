@@ -10,7 +10,7 @@ import time
 
 class Lightning(Projectile):
     def __init__(self, window, global_pos, angle: float, batch):
-        self.speed = std_speed(window)
+        self.speed = std_speed(window) * 2
         self.angle = angle
 
         sprites = SpriteCollection(idle_right=make_sprite(sprite_filename="assets/images/orange.png",
@@ -31,7 +31,7 @@ class Lightning(Projectile):
             angle=angle,
             # velocity=Pair(self.speed, 0),
             # acceleration=Pair(0, 0),
-            range=block_width(window) * 5,
+            range=block_width(window) * 10,
             hitbox_width=block_width(window) / 2,
             hitbox_height=block_width(window) / 2,
             batch=batch,

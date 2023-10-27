@@ -57,7 +57,7 @@ class Bear(Character):
             attack=attack
         )
 
-        self.modifiers = ["dangerous"]#, "collidable"]
+        self.modifiers = ["dangerous", "bouncy"]#, "collidable"]
         self.move_loop_start = time.time()
         # self.left = True
         self.direction = Direction.LEFT
