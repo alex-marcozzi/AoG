@@ -30,5 +30,5 @@ def on_draw():
 def update(dt: float):
     engine.tick(dt)
 
-pyglet.clock.schedule_interval(update, 1/120.0)
+pyglet.clock.schedule_interval(update, 1/30.0)
 pyglet.app.run()

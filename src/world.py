@@ -169,7 +169,7 @@ class World:
 
         # check up for collisions
         to_check = []
-        for y in range(int(entity.hitbox.height / self.block_w), int(entity.hitbox.height / self.block_w) + 1):
+        for y in range(int(entity.hitbox.height / self.block_w), int(entity.hitbox.height / self.block_w) + 2):
             for x in range(0, int(entity.hitbox.width / self.block_w) + 1):
                 to_check.append(Pair(entity.block_pos.first + x, entity.block_pos.second + y))
 

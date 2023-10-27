@@ -33,7 +33,7 @@ def is_down_collision(dt: float, entity1: Entity, entity2: Entity):
     e2_next = entity2.copy()
 
     e1_next.tick_pos_only(dt)  # move to next position
-    # e2_next.tick_pos_only(dt)
+    e2_next.tick_pos_only(dt)
 
     crossed_y = entity1.bottomLeft().second >= entity2.topLeft().second and e1_next.bottomLeft().second <= e2_next.topLeft().second
     x_is_in_line = e1_next.bottomLeft().first < e2_next.topRight().first and e1_next.bottomRight().first > e2_next.topLeft().first
@@ -51,7 +51,7 @@ def is_right_collision(dt: float, entity1: Entity, entity2: Entity):
     e2_next = entity2.copy()
 
     e1_next.tick_pos_only(dt)  # move to next position
-    # e2_next.tick_pos_only(dt)
+    e2_next.tick_pos_only(dt)
 
     crossed_x = entity1.bottomRight().first <= entity2.bottomLeft().first and e1_next.bottomRight().first >= e2_next.bottomLeft().first
     y_is_in_line = e1_next.bottomRight().second < e2_next.topLeft().second and e1_next.topRight().second > e2_next.bottomLeft().second
@@ -67,7 +67,7 @@ def is_left_collision(dt: float, entity1: Entity, entity2: Entity):
     e2_next = entity2.copy()
 
     e1_next.tick_pos_only(dt)  # move to next position
-    # e2_next.tick_pos_only(dt)
+    e2_next.tick_pos_only(dt)
 
     crossed_x = entity1.bottomLeft().first >= entity2.bottomRight().first and e1_next.bottomLeft().first <= e2_next.bottomRight().first
     y_is_in_line = e1_next.bottomLeft().second < e2_next.topRight().second and e1_next.topLeft().second > e2_next.bottomRight().second
@@ -85,7 +85,7 @@ def is_up_collision(dt: float, entity1: Entity, entity2: Entity):
     e2_next = entity2.copy()
 
     e1_next.tick_pos_only(dt)  # move to next position
-    # e2_next.tick_pos_only(dt)
+    e2_next.tick_pos_only(dt)
 
     crossed_y = entity1.topLeft().second <= entity2.bottomLeft().second and e1_next.topLeft().second >= e2_next.bottomLeft().second
     x_is_in_line = e1_next.topLeft().first < e2_next.bottomRight().first and e1_next.topRight().first > e2_next.bottomLeft().first
