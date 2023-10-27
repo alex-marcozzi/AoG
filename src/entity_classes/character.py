@@ -154,6 +154,7 @@ class Character(Entity):
 
     def interact(self, entity: Entity, direction):
         if "collidable" in entity.modifiers:
+            print("HEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEERE")
             self.interact_collidable(entity, direction)
 
     def interact_collidable(self, entity: Entity, direction):

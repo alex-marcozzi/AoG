@@ -7,7 +7,7 @@ from src.sprite_collection import SpriteCollection
 from src.helpers.globals import Direction
 import time
 
-class Block(Entity):
+class Pickup(Entity):
     def __init__(
         self,
         window,
@@ -29,10 +29,10 @@ class Block(Entity):
             batch,
         )
         self.direction = Direction.RIGHT
-        self.modifiers = ["collidable"]
+        self.modifiers = []
 
     def copy(self):
-        new_copy = Block(window=self.window,
+        new_copy = Pickup(window=self.window,
                              sprites=self.sprites.copy(),
                              global_pos=self.global_pos,
                              hitbox_width=self.hitbox.width,

@@ -6,6 +6,8 @@ from src.entity_classes.bear import Bear
 from src.helpers.interfaces import Pair
 from src.sprite_collection import SpriteCollection
 from src.entity_classes.block_classes.standard_block import StandardBlock
+from src.entity_classes.pickup_classes.wizard_pickup import WizardPickup
+from src.entity_classes.pickup import Pickup
 
 
 def initialize_level_base(x_width, y_height):
@@ -28,6 +30,10 @@ def set_line(level_array: list, from_pos: Pair, to_pos: Pair, window, block_w: f
         for y in range(from_pos.second, to_pos.second + 1):
             set_block(level_array, pos=Pair(x, y), window=window, block_w=block_w, batch=batch)
 
+def set_wizard_pickup(level_array: list, pos: Pair, window, block_w, batch):
+    global_pos = Pair(pos.first * block_w, pos.second * block_w)
+    bear = WizardPickup(window, global_pos, batch)
+    level_array[pos.first][pos.second] = bear
 
 def set_bear(level_array: list, pos: Pair, window, block_w, batch):
     global_pos = Pair(pos.first * block_w, pos.second * block_w)
@@ -67,5 +73,7 @@ def build_level1(window, batch):
     set_bear(level1, Pair(16, 3), window, block_w, batch)
     # set_bear(level1, Pair(19, 3), window, block_w, batch)
     # set_bear(level1, Pair(24, 3), window, block_w, batch)
+
+    set_wizard_pickup(level1, Pair(10, 3), window, block_w, batch)
 
     return level1

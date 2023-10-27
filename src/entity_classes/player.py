@@ -81,6 +81,7 @@ class Player(Character):
     #     super().tick(camera_pos)
 
     def interact(self, entity: Entity, direction):
+        print(entity.modifiers)
         if "collidable" in entity.modifiers:
             self.interact_collidable(entity, direction)
             if direction == Direction.DOWN:
