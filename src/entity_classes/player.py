@@ -27,11 +27,11 @@ class Player(Character):
                 duration=0.1,
                 damage=1,
                 cooldown=0.10,
-                projectiles=[Lightning(window=window, global_pos=Pair(0, 0), angle=0, batch=batch),
-                             Lightning(window=window, global_pos=Pair(0, 0), angle=45, batch=batch),
-                             Lightning(window=window, global_pos=Pair(0, 0), angle=22.5, batch=batch),
-                             Lightning(window=window, global_pos=Pair(0, 0), angle=-45, batch=batch),
-                             Lightning(window=window, global_pos=Pair(0, 0), angle=-22.5, batch=batch),]
+                projectiles=[Lightning(window=window, global_pos=Pair(0, 0), angle=0, batch=batch),]
+                            #  Lightning(window=window, global_pos=Pair(0, 0), angle=45, batch=batch),
+                            #  Lightning(window=window, global_pos=Pair(0, 0), angle=22.5, batch=batch),
+                            #  Lightning(window=window, global_pos=Pair(0, 0), angle=-45, batch=batch),
+                            #  Lightning(window=window, global_pos=Pair(0, 0), angle=-22.5, batch=batch),]
             )
         sprites = SpriteCollection(idle_right=make_sprite(sprite_filename="assets/images/goose_default/idle_right.png",
                                                     width=idle_width,
@@ -74,6 +74,7 @@ class Player(Character):
     #     self.check_keys()
     
     def calculate_velocity(self):
+        super().calculate_velocity()
         self.check_keys()
 
     # def tick(self, camera_pos: Pair):
@@ -93,8 +94,12 @@ class Player(Character):
     def handle_key_release(self, symbol, modifiers):
         self.keys_down[symbol] = False
 
+    def jump(self):
+        self.velocity = Pair(
+            self.velocity.first, (self.standard_speed * 1.5) #(self.block_w / 5)
+        )
+
     def check_keys(self):
-        super().calculate_velocity()
         # if self.can_move():
         if self.keys_down.get(pyglet.window.key.A, False):
             self.velocity = Pair(
@@ -107,9 +112,10 @@ class Player(Character):
             )
             # self.direction = Direction.RIGHT
         if self.keys_down.get(pyglet.window.key.SPACE, False) and self.on_ground:
-            self.velocity = Pair(
-                self.velocity.first, self.velocity.second + (self.standard_speed * 1.5) #(self.block_w / 5)
-            )
+            self.jump()
+            # self.velocity = Pair(
+            #     self.velocity.first, self.velocity.second + (self.standard_speed * 1.5) #(self.block_w / 5)
+            # )
         if self.keys_down.get(pyglet.window.key.F, False) and self.attack.isUsable():# and not self.attack.inProgress():
             print(">> THROWING ATTACK")
             self.attack.Throw(None)

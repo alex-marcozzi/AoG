@@ -41,6 +41,8 @@ class Projectile(Entity):
         self.piercing = piercing
         self.owner_id = ""
 
+        self.collided = False
+
     def copy(self):
         new_copy = Projectile(window=self.window,
                              sprites=self.sprites.copy(),

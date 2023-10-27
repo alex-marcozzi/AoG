@@ -65,6 +65,10 @@ class World:
             # index += 1
 
         for projectile in self.projectiles:
+            if not projectile.piercing and projectile.collided:
+                self.projectiles.remove(projectile)
+                continue
+
             projectile.tick(dt, self.player.global_pos)
             if projectile.isExpired():
                 self.projectiles.remove(projectile)
@@ -73,8 +77,9 @@ class World:
                     collisions = self.get_collisions(dt, projectile)
 
                     for collision in collisions:
-                        if not issubclass(type(collision.first), Projectile):
-                            self.projectiles.remove(projectile)
+                        if not issubclass(type(collision.first), Projectile) and collision.first.id != projectile.owner_id:
+                            # self.projectiles.remove(projectile)
+                            projectile.collided = True
                             break
                     # if len(collisions) > 0:
                     #     self.projectiles.remove(projectile)
@@ -98,8 +103,8 @@ class World:
             # if they are on the same team, they shouldn't be able to collide
             if character == entity:
                 continue
-            if abs(character.block_pos.first - entity.block_pos.first) >= entity.block_pos.first + int(entity.hitbox.width / self.block_w) + 2:
-                continue
+            # if abs(character.block_pos.first - entity.block_pos.first) >= entity.block_pos.first + int(entity.hitbox.width / self.block_w) + 2:
+            #     continue
             # print(f"Entity: {entity.global_pos.first}, {entity.global_pos.second}")
             # print(f"Charac: {character.global_pos.first}, {character.global_pos.second}")
             if is_down_collision(dt, entity, character):
@@ -124,7 +129,7 @@ class World:
                 continue
             if is_overlap(dt, entity, projectile):
                 if entity == self.player:
-                    print("CHARACTER OVERLAP")
+                    print("PROJECTILE OVERLAP")
                 collisions.append(Pair(projectile, Direction.OVERLAP))
 
         # check below for collisions
@@ -174,6 +179,18 @@ class World:
                 if is_up_collision(dt, entity, block):
                     collisions.append(Pair(block, Direction.UP))
 
+        # check up for collisions
+        to_check = [Pair(entity.block_pos.first, entity.block_pos.second)]
+        # for y in range(int(entity.hitbox.height / self.block_w), int(entity.hitbox.height / self.block_w) + 3):
+        #     for x in range(0, int(entity.hitbox.width / self.block_w) + 3):
+        #         to_check.append(Pair(entity.block_pos.first + x, entity.block_pos.second + y))
+
+        for loc in to_check:
+            block = self.level[int(loc.first)][int(loc.second)]
+            if issubclass(type(block), Entity):
+                if is_overlap(dt, entity, block):
+                    collisions.append(Pair(block, Direction.OVERLAP))
+
         return collisions
     
     def process_collisions(self, character: Character, collisions: list[Pair]):
@@ -182,7 +199,11 @@ class World:
             if collision.second == Direction.DOWN:
                 character.on_ground = True
 
-            character.interact(collision.first, collision.second)
+            if collision.second == Direction.UP and collision.first.id == self.player.id:
+                character.interact_dangerous(collision.first, collision.second)
+                self.player.jump()
+            else:
+                character.interact(collision.first, collision.second)
 
     def check_attacks(self, dt: float, character: Character):
         if not character.attack.inProgress():
@@ -218,4 +239,5 @@ class World:
             spawn_pos.first -= projectile.hitbox.width + (self.block_w / 4)
         
         new_projectile.spawn(spawn_pos, direction=owner.direction, owner_id=owner.id)
+        # new_projectile.velocity.add(owner.velocity)
         self.projectiles.append(new_projectile)

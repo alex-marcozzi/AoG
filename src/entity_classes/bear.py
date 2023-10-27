@@ -12,7 +12,7 @@ import time
 
 class Bear(Character):
     def __init__(self, window, global_pos, batch):
-        self.speed = std_speed(window) / 2.0
+        self.speed = std_speed(window) / 2
         attack = Attack(
                 range=block_width(window),
                 duration=0.1,
@@ -57,10 +57,11 @@ class Bear(Character):
             attack=attack
         )
 
-        self.modifiers = ["dangerous"]
+        self.modifiers = ["dangerous"]#, "collidable"]
         self.move_loop_start = time.time()
-        self.left = True
-        pyglet.clock.schedule_interval(self.attack.Throw, interval=1.5)  # update at 60Hz
+        # self.left = True
+        self.direction = Direction.LEFT
+        # pyglet.clock.schedule_interval(self.attack.Throw, interval=1.5)  # update at 60Hz
 
     # def pre_tick(self, dt: float):
     #     super().pre_tick(dt)
@@ -72,11 +73,15 @@ class Bear(Character):
     
     def calculate_velocity(self):
         super().calculate_velocity()
-        speed = self.speed * self.get_speed()
+        speed = self.get_speed()
         # print(speed)
         self.velocity = Pair(self.velocity.first + speed, self.velocity.second)
 
     def interact(self, entity: Entity, direction):
+        if direction == Direction.LEFT:
+            self.direction = Direction.RIGHT
+        elif direction == Direction.RIGHT:
+            self.direction = Direction.LEFT
         if "collidable" in entity.modifiers:
             self.interact_collidable(entity, direction)
         if "dangerous" in entity.modifiers:
@@ -87,13 +92,18 @@ class Bear(Character):
     # x: time
     # y: speed
     def get_speed(self):
-        now = time.time()
-        x = (now - self.move_loop_start) / 3.0
-        y = 1 - (((2 * x) - 1) ** 2)
-        y *= -1 if self.left else 1
+        speed = self.speed
+        if self.direction == Direction.LEFT:
+            speed = -1 * speed
+        
+        return speed
+        # now = time.time()
+        # x = (now - self.move_loop_start) / 3.0
+        # y = 1 - (((2 * x) - 1) ** 2)
+        # y *= -1 if self.left else 1
 
-        if x >= 1:
-            self.move_loop_start = now
-            self.left = not self.left
+        # if x >= 1:
+        #     self.move_loop_start = now
+        #     self.left = not self.left
 
-        return y
+        # return y

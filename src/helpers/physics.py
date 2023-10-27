@@ -33,7 +33,7 @@ def is_down_collision(dt: float, entity1: Entity, entity2: Entity):
     e2_next = entity2.copy()
 
     e1_next.tick_pos_only(dt)  # move to next position
-    e2_next.tick_pos_only(dt)
+    # e2_next.tick_pos_only(dt)
 
     crossed_y = entity1.bottomLeft().second >= entity2.topLeft().second and e1_next.bottomLeft().second <= e2_next.topLeft().second
     x_is_in_line = e1_next.bottomLeft().first < e2_next.topRight().first and e1_next.bottomRight().first > e2_next.topLeft().first
