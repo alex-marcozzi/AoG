@@ -6,6 +6,7 @@ from src.entity_classes.character_classes.bear import Bear
 from src.helpers.interfaces import Pair
 from src.sprite_collection import SpriteCollection
 from src.entity_classes.block_classes.standard_block import StandardBlock
+from src.entity_classes.block_classes.moving_block import MovingBlock
 from src.entity_classes.pickup_classes.wizard_pickup import WizardPickup
 from src.entity_classes.pickup import Pickup
 
@@ -45,6 +46,11 @@ def set_block(level_array: list, pos: Pair, window, block_w, batch):
     block = StandardBlock(window, global_pos, batch)
     level_array[pos.first][pos.second] = block
 
+def set_moving_block(level_array: list, pos: Pair, window, block_w, batch):
+    global_pos = Pair(pos.first * block_w, pos.second * block_w)
+    block = MovingBlock(window, global_pos, 10, 3, batch)
+    level_array[pos.first][pos.second] = block
+
 
 def build_level1(window, batch):
     block_w = block_width(window)
@@ -62,6 +68,7 @@ def build_level1(window, batch):
     level1 = initialize_level_base(100, 100)
     set_line(level1, Pair(0, 2), Pair(30, 2), window, block_w, batch)
     set_line(level1, Pair(7, 5), Pair(8, 5), window, block_w, batch)
+    set_moving_block(level1, Pair(10, 7), window, block_w, batch)
     set_line(level1, Pair(12, 2), Pair(12, 3), window, block_w, batch)
     set_line(level1, Pair(30, 2), Pair(30, 3), window, block_w, batch)
     set_line(level1, Pair(33, 3), Pair(40, 3), window, block_w, batch)

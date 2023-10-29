@@ -18,6 +18,7 @@ from src.helpers.globals import Direction
 from src.entity_classes.projectile import Projectile
 from src.entity_classes.pickup_classes.wizard_pickup import Pickup
 from src.entity_classes.pickup_classes.wizard_pickup import WizardPickup
+from src.entity_classes.block_classes.moving_block import MovingBlock
 
 # this is basically all of the level information, like a context
 class World:
@@ -33,6 +34,7 @@ class World:
         )
         self.characters = [self.player]
         self.projectiles: list[Projectile] = []
+        self.moving_blocks: list[MovingBlock] = []
         self.extract_characters(self.level)
         self.frozen = False
 
@@ -46,6 +48,9 @@ class World:
                     level[x][y].tick(0, self.player.global_pos)  # first tick is necessary to set the entities' positions
                     if issubclass(type(level[x][y]), Character):
                         self.characters.append(level[x][y])
+                        level[x][y] = None
+                    if issubclass(type(level[x][y]), MovingBlock):
+                        self.moving_blocks.append(level[x][y])
                         level[x][y] = None
 
     def do_physics(self, dt: float, from_loc: int, to_loc: int):
@@ -99,6 +104,13 @@ class World:
                             break
                     # if len(collisions) > 0:
                     #     self.projectiles.remove(projectile)
+        
+        for moving_block in self.moving_blocks:
+            # print(moving_block.velocity.first)
+            moving_block.pre_tick(dt)
+            # collisions = self.get_collisions(dt, character)
+            # self.process_collisions(character, collisions)
+            moving_block.tick(dt, self.player.global_pos)
 
         for y in range(0, len(self.level[0])):
             for x in range(from_loc, to_loc):
@@ -118,30 +130,36 @@ class World:
     def get_collisions(self, dt: float, entity: Entity):
         collisions = []
 
+        entities_to_check = []
         for character in self.characters:
+            entities_to_check.append(character)
+        for moving_block in self.moving_blocks:
+            entities_to_check.append(moving_block)
+
+        for entity_to_check in entities_to_check:
             # if they are on the same team, they shouldn't be able to collide
-            if character == entity:
+            if entity_to_check == entity:
                 continue
             # if abs(character.block_pos.first - entity.block_pos.first) >= entity.block_pos.first + int(entity.hitbox.width / self.block_w) + 2:
             #     continue
             # print(f"Entity: {entity.global_pos.first}, {entity.global_pos.second}")
             # print(f"Charac: {character.global_pos.first}, {character.global_pos.second}")
-            if is_down_collision(dt, entity, character):
+            if is_down_collision(dt, entity, entity_to_check):
                 print("CHARACTER DOWN COLLISION")
-                collisions.append(Pair(character, Direction.DOWN))
-            if is_right_collision(dt, entity, character):
+                collisions.append(Pair(entity_to_check, Direction.DOWN))
+            if is_right_collision(dt, entity, entity_to_check):
                 print("CHARACTER RIGHT COLLISION")
-                collisions.append(Pair(character, Direction.RIGHT))
-            if is_left_collision(dt, entity, character):
+                collisions.append(Pair(entity_to_check, Direction.RIGHT))
+            if is_left_collision(dt, entity, entity_to_check):
                 print("CHARACTER LEFT COLLISION")
-                collisions.append(Pair(character, Direction.LEFT))
-            if is_up_collision(dt, entity, character):
+                collisions.append(Pair(entity_to_check, Direction.LEFT))
+            if is_up_collision(dt, entity, entity_to_check):
                 print("CHARACTER UP COLLISION")
-                collisions.append(Pair(character, Direction.UP))
-            if is_overlap(dt, entity, character):
+                collisions.append(Pair(entity_to_check, Direction.UP))
+            if is_overlap(dt, entity, entity_to_check):
                 if entity == self.player:
                     print("CHARACTER OVERLAP")
-                collisions.append(Pair(character, Direction.OVERLAP))
+                collisions.append(Pair(entity_to_check, Direction.OVERLAP))
 
         for projectile in self.projectiles:
             if projectile == entity or (issubclass(type(entity), Projectile) and projectile.owner_id == entity.owner_id) or entity.id == projectile.owner_id:
