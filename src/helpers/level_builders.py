@@ -2,7 +2,7 @@ import pyglet
 from src.helpers.utils import block_width, make_sprite
 from src.entity import Entity
 from src.entity_classes.character import Character
-from src.entity_classes.bear import Bear
+from src.entity_classes.character_classes.bear import Bear
 from src.helpers.interfaces import Pair
 from src.sprite_collection import SpriteCollection
 from src.entity_classes.block_classes.standard_block import StandardBlock
@@ -74,6 +74,6 @@ def build_level1(window, batch):
     # set_bear(level1, Pair(19, 3), window, block_w, batch)
     # set_bear(level1, Pair(24, 3), window, block_w, batch)
 
-    set_wizard_pickup(level1, Pair(10, 3), window, block_w, batch)
+    set_wizard_pickup(level1, Pair(11, 3), window, block_w, batch)
 
     return level1

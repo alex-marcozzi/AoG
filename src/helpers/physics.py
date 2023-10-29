@@ -88,7 +88,7 @@ def is_up_collision(dt: float, entity1: Entity, entity2: Entity):
     e2_next.tick_pos_only(dt)
 
     crossed_y = entity1.topLeft().second <= entity2.bottomLeft().second and e1_next.topLeft().second >= e2_next.bottomLeft().second
-    x_is_in_line = e1_next.topLeft().first < e2_next.bottomRight().first and e1_next.topRight().first > e2_next.bottomLeft().first
+    x_is_in_line = e1_next.topLeft().first <= e2_next.bottomRight().first and e1_next.topRight().first >= e2_next.bottomLeft().first
 
     if crossed_y and x_is_in_line:
         return True

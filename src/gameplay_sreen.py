@@ -9,7 +9,7 @@ from src.helpers.physics import (
 )
 from src.helpers.interfaces import Pair
 from src.entity import Entity
-from src.entity_classes.player import Player
+from src.entity_classes.character_classes.player import Player
 from src.world import World
 import time
 
@@ -75,7 +75,7 @@ class GameplayScreen:
         )
         label.draw()
 
-        if self.world.player.attack.thrown_time:
+        if self.world.player.attack and self.world.player.attack.thrown_time:
             cd = int((self.world.player.attack.thrown_time + self.world.player.attack.duration + self.world.player.attack.cooldown) - time.time())
 
             if cd <= 0:

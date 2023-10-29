@@ -1,5 +1,5 @@
 import pyglet
-from src.helpers.utils import std_speed, gravity, block_width
+from src.helpers.utils import std_speed, gravity, block_width, make_sprite
 from src.helpers.physics import (
     is_down_collision,
     is_right_collision,
@@ -11,9 +11,13 @@ from src.helpers.interfaces import Pair
 from src.entity import Entity
 from src.hitbox import Hitbox
 from src.entity_classes.character import Character
-from src.entity_classes.player import Player
+from src.entity_classes.character_classes.player import Player
+from src.entity_classes.character_classes.player_classes.player_wizard import PlayerWizard
+from src.entity_classes.character_classes.player_classes.player_standard import PlayerStandard
 from src.helpers.globals import Direction
 from src.entity_classes.projectile import Projectile
+from src.entity_classes.pickup_classes.wizard_pickup import Pickup
+from src.entity_classes.pickup_classes.wizard_pickup import WizardPickup
 
 # this is basically all of the level information, like a context
 class World:
@@ -22,7 +26,7 @@ class World:
         self.block_w = block_width(window)
         self.standard_speed = std_speed(window)
         self.level = level
-        self.player = Player(
+        self.player = PlayerStandard(
             window,
             global_pos=Pair(0, 500),
             batch=batch,
@@ -30,6 +34,7 @@ class World:
         self.characters = [self.player]
         self.projectiles: list[Projectile] = []
         self.extract_characters(self.level)
+        self.frozen = False
 
     # def tick(self):
     #     self.do_physics
@@ -40,14 +45,19 @@ class World:
                 if issubclass(type(level[x][y]), Entity):
                     level[x][y].tick(0, self.player.global_pos)  # first tick is necessary to set the entities' positions
                     if issubclass(type(level[x][y]), Character):
-                        # print("HERE")
                         self.characters.append(level[x][y])
                         level[x][y] = None
 
     def do_physics(self, dt: float, from_loc: int, to_loc: int):
         # index = 0
+        if self.frozen:
+            for character in self.characters:
+                character.update_current_sprite()
+            return
         for character in self.characters:
-            if abs(character.block_pos.first - self.player.block_pos.first) >= 12:
+            if character.dead:
+                character.sprites.SetAllInvisible()
+                self.characters.remove(character)
                 continue
             if issubclass(type(character), Character):
                 character.pre_tick(dt)  # set the character's velocity based on its movement pattern
@@ -59,10 +69,16 @@ class World:
                 if character.attack:
                     self.check_attacks(dt, character)
 
-                if not character.tick(dt, self.player.global_pos):
-                    character.sprites.SetAllInvisible()
-                    self.characters.remove(character)
-            # index += 1
+                # if character.dead:
+                #     self.characters.remove(character)
+                if character.took_damage:
+                    if issubclass(type(character), Player):
+                        self.freeze(1)
+                        character.setFlicker(["assets/images/orange.png"], duration=character.immunity_duration_seconds, flicker_rate=0.1)
+                    else:
+                        character.setFlicker(["assets/images/orange.png"], duration=character.immunity_duration_seconds, flicker_rate=0.1)
+
+                character.tick(dt, self.player.global_pos)
 
         for projectile in self.projectiles:
             if not projectile.piercing and projectile.collided:
@@ -88,6 +104,9 @@ class World:
             for x in range(from_loc, to_loc):
                 block = self.level[x][y]
                 if issubclass(type(block), Entity):
+                    if block.dead:
+                        self.level[x][y] = None
+                        continue
                     # collisions = self.check_collisions(block)
 
                     # for collision in collisions:
@@ -179,11 +198,8 @@ class World:
                 if is_up_collision(dt, entity, block):
                     collisions.append(Pair(block, Direction.UP))
 
-        # check up for collisions
+        # check overlap collisions
         to_check = [Pair(entity.block_pos.first, entity.block_pos.second)]
-        # for y in range(int(entity.hitbox.height / self.block_w), int(entity.hitbox.height / self.block_w) + 3):
-        #     for x in range(0, int(entity.hitbox.width / self.block_w) + 3):
-        #         to_check.append(Pair(entity.block_pos.first + x, entity.block_pos.second + y))
 
         for loc in to_check:
             block = self.level[int(loc.first)][int(loc.second)]
@@ -199,6 +215,7 @@ class World:
             if collision.second == Direction.DOWN:
                 character.on_ground = True
 
+
             if collision.second == Direction.UP and collision.first.id == self.player.id:
                 if "bouncy" in character.modifiers:
                     self.player.jump()
@@ -208,6 +225,34 @@ class World:
                     character.interact(collision.first, collision.second)
             else:
                 character.interact(collision.first, collision.second)
+
+            if issubclass(type(character), Player):
+                if issubclass(type(collision.first), WizardPickup):
+                    self.characters.remove(self.player)
+                    new_player = PlayerWizard(self.window, self.player.global_pos, self.player.batch)
+                    new_player.keys_down = self.player.keys_down
+                    new_player.keys_usable = self.player.keys_usable
+                    self.player = new_player
+                    self.player.update_sprite_positions(self.player.global_pos)
+                    self.player.update_current_sprite()
+                    self.player.setFlicker(["assets/images/sprites/goose_default/idle_right.png"], 1, 0.1)
+
+                    # images = [pyglet.resource.image("assets/images/wizard_pickup.png"), 
+                    #           pyglet.resource.image("assets/images/sprites/goose_default/idle_right.png")]
+                    # ani = pyglet.image.Animation.from_image_sequence(images, duration=0.1, loop=True)
+                    # sprite = pyglet.sprite.Sprite(
+                    #     img=ani, batch=self.player.batch
+                    # )
+                    # sprite.width = self.player.sprites.current.width
+                    # sprite.height = self.player.sprites.current.height
+                    # sprite.x = self.player.sprites.current.x
+                    # sprite.y = self.player.sprites.current.y
+                    # self.player.sprites.SetVisible(sprite)
+                    # self.characters.append(self.player)
+                    self.characters = [self.player] + self.characters  # player should be first in the list
+                    collision.first.dead = True
+                    self.freeze(1)
+                    # self.level[int(collision.first.block_pos.first)][int(collision.first.block_pos.second)] = None
 
     def check_attacks(self, dt: float, character: Character):
         if not character.attack.inProgress():
@@ -245,3 +290,27 @@ class World:
         new_projectile.spawn(spawn_pos, direction=owner.direction, owner_id=owner.id)
         # new_projectile.velocity.add(owner.velocity)
         self.projectiles.append(new_projectile)
+    
+    # def flicker(self, entity: Entity, image_filenames: list[str], duration: float, flicker_rate: float):
+    #     images = []
+    #     for filename in image_filenames:
+    #         images.append(pyglet.resource.image(filename))
+    #     # images = [pyglet.resource.image("assets/images/wizard_pickup.png"), 
+    #     #             pyglet.resource.image("assets/images/sprites/goose_default/idle_right.png")]
+    #     ani = pyglet.image.Animation.from_image_sequence(images, duration=flicker_rate, loop=True)
+    #     sprite = pyglet.sprite.Sprite(
+    #         img=ani, batch=self.player.batch
+    #     )
+    #     sprite.width = self.player.sprites.current.width
+    #     sprite.height = self.player.sprites.current.height
+    #     sprite.x = self.player.sprites.current.x
+    #     sprite.y = self.player.sprites.current.y
+    #     self.player.sprites.SetVisible(sprite)
+    
+    def freeze(self, duration: float):
+        print(f"FREEZING FOR {duration} SECONDS")
+        self.frozen = True
+        pyglet.clock.schedule_once(self.unfreeze, duration)
+
+    def unfreeze(self, dt):
+        self.frozen = False

@@ -45,6 +45,16 @@ class Bear(Character):
                                                     width=idle_width + attack.range,
                                                     height=block_width(window) * 2,
                                                     visible=False,
+                                                    batch=batch),
+                                    damaged_right=make_sprite(sprite_filename="assets/images/orange.png",
+                                                    width=idle_width,
+                                                    height=block_width(window) * 2,
+                                                    visible=False,
+                                                    batch=batch),
+                                    damaged_left=make_sprite(sprite_filename="assets/images/orange.png",
+                                                    width=idle_width,
+                                                    height=block_width(window) * 2,
+                                                    visible=False,
                                                     batch=batch),)
         super().__init__(
             window=window,
@@ -53,14 +63,15 @@ class Bear(Character):
             hitbox_width=block_width(window) * 2,
             hitbox_height=block_width(window) * 2,
             batch=batch,
-            hp=1,
+            hp=3,
             attack=attack
         )
 
-        self.modifiers = ["dangerous", "bouncy"]#, "collidable"]
+        self.modifiers = ["dangerous", "bouncy", "vulnerable_top"]#, "collidable"]
         self.move_loop_start = time.time()
         # self.left = True
         self.direction = Direction.LEFT
+        self.flicker_filename = "assets/images/bear.png"
         # pyglet.clock.schedule_interval(self.attack.Throw, interval=1.5)  # update at 60Hz
 
     # def pre_tick(self, dt: float):

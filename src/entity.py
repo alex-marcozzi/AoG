@@ -37,6 +37,11 @@ class Entity:
         self.modifiers = ["collidable"]
         self.direction = Direction.RIGHT
         self.id = uuid.uuid1()
+        self.dead = False
+        self.flickering = False
+        self.flicker_flag = False
+        self.flicker_filename = ""
+        self.flicker_sprite = None
 
     def copy(self):
         new_copy = Entity(
@@ -123,24 +128,32 @@ class Entity:
         if self.sprites.damaged_left:
             self.sprites.damaged_left.x = self.sprites.idle_right.x
             self.sprites.damaged_left.y = self.sprites.idle_right.y
+            
+        if self.flickering:
+            self.flicker_sprite.x = self.sprites.idle_right.x
+            self.flicker_sprite.y = self.sprites.idle_right.y
     
     def update_current_sprite(self):
-        if self.direction == Direction.RIGHT:
+        if self.flickering and self.flicker_flag:
+            print("IN HERE")
+            self.sprites.SetVisible(self.flicker_sprite)
+            self.flicker_flag = False
+        else:
+            if self.direction == Direction.RIGHT:
+                self.sprites.SetVisible(self.sprites.idle_right)
+            elif self.direction == Direction.LEFT:
+                self.sprites.SetVisible(self.sprites.idle_left)
             self.sprites.SetVisible(self.sprites.idle_right)
-        elif self.direction == Direction.LEFT:
-            self.sprites.SetVisible(self.sprites.idle_left)
-        self.sprites.SetVisible(self.sprites.idle_right)
+            self.flicker_flag = True
 
 
     def interact(self, entity: "Entity", direction):
         if "collidable" in entity.modifiers:
-            if direction == Direction.DOWN:
-                self.global_pos = Pair(
-                    self.global_pos.first,
-                    entity.global_pos.second + entity.sprite.height,
-                )
-                self.velocity = Pair(self.velocity.first, 0)
+            self.interact_collidable(entity, direction)
 
+        pass
+
+    def interact_collidable(self, entity: "Entity", direction):
         pass
 
     def nextPos(self):
@@ -163,3 +176,27 @@ class Entity:
             self.global_pos.first + self.hitbox.width,
             self.global_pos.second + self.hitbox.height,
         )
+    
+    def setFlicker(self, image_filenames: list[str], duration: float, flicker_rate: float):
+        # images = [pyglet.resource.image(self.flicker_filename)]
+        # for filename in image_filenames:
+        #     images.append(pyglet.resource.image(filename))
+        
+        # ani = pyglet.image.Animation.from_image_sequence(images, duration=flicker_rate, loop=True)
+        sprite = pyglet.sprite.Sprite(
+            img=pyglet.resource.image(image_filenames[0]), batch=self.batch
+        )
+        sprite.width = self.sprites.current.width
+        sprite.height = self.sprites.current.height
+        sprite.x = self.sprites.current.x
+        sprite.y = self.sprites.current.y
+        sprite.visible = False
+        # self.sprites.SetVisible(sprite)
+        self.flicker_sprite = sprite
+        self.flickering = True
+        self.flicker_flag = True
+
+        pyglet.clock.schedule_once(self.unsetFlicker, duration)
+    
+    def unsetFlicker(self, dt):
+        self.flickering = False

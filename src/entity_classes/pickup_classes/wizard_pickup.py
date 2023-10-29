@@ -27,8 +27,8 @@ class WizardPickup(Pickup):
             window,
             sprites,
             global_pos,
-            block_width(window),
-            block_width(window),
+            block_width(window) / 2,
+            block_width(window) / 2,
             batch,
         )
         self.direction = Direction.RIGHT
@@ -47,6 +47,13 @@ class WizardPickup(Pickup):
 
 ####################################################################################################################
 # TODO:
-#       1. add different player classes for powerups (have default one, one that can hit, one that can shoot, etc.)
-#       2. make it so player can pick up powerups
+#       1. 
+#
+#
+#
+# IDEAS:
+#       1. charge attack for Wizard powerup: can charge for like 10 seconds to shoot a massive projectile, but lost powerup after
+#
+#
+#
 ####################################################################################################################

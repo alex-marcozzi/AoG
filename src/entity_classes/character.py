@@ -13,8 +13,6 @@ class Character(Entity):
         window,
         sprites: SpriteCollection,
         global_pos: Pair,
-        # sprite_width: float,
-        # sprite_height: float,
         hitbox_width: float,
         hitbox_height: float,
         batch,
@@ -37,16 +35,19 @@ class Character(Entity):
             acceleration
         )
 
-        self.acceleration = Pair(0, gravity(window))
+        self.normal_acceleration = Pair(0, gravity(window))
+        self.acceleration = Pair(0, 0)
         self.hp = hp
         self.width_in_blocks = hitbox_width // block_width(window)
         # self.standard_speed = std_speed(window)
         # self.block_below = None
         self.on_ground = False
-        self.immunity_start = time.time()
+        self.immune = False
         self.immunity_duration_seconds = 1
         self.attack = attack
         self.direction = Direction.RIGHT
+        self.flicker_filename = ""
+        self.took_damage = False
 
         # self.sprites = [self.sprite,
         #                 make_sprite(sprite_filename=)
@@ -94,9 +95,17 @@ class Character(Entity):
     def tick(self, dt: float, camera_pos: Pair):
         super().tick(dt, camera_pos)
 
-        self.update_sprite_positions(camera_pos)
+        if self.took_damage:
+            self.took_damage = False
 
-        self.update_current_sprite()
+        if self.on_ground:
+            self.acceleration.second = 0
+        else:
+            self.acceleration.second = self.normal_acceleration.second
+
+        # self.update_sprite_positions(camera_pos)
+
+        # self.update_current_sprite()
         # if self.attack:
         #     if self.attack.inProgress():
         #         if self.direction == Direction.RIGHT:
@@ -114,9 +123,10 @@ class Character(Entity):
         
 
         if self.hp <= 0:
-            return False
+            self.dead = True
+            # return False
 
-        return True
+        # return True
     
     def calculate_velocity(self):
         self.velocity = Pair(0, self.velocity.second)
@@ -138,8 +148,11 @@ class Character(Entity):
             self.sprites.attack_left.y = self.sprites.idle_right.y
     
     def update_current_sprite(self):
-        if self.attack:
-            if self.attack.inProgress():
+        if self.flickering and self.flicker_flag:
+            self.sprites.SetVisible(self.flicker_sprite)
+            pyglet.clock.schedule_once(self.unsetFlickerFlag, 0.1)
+        else:
+            if self.attack and self.attack.inProgress():
                 if self.direction == Direction.RIGHT:
                     self.sprites.SetVisible(self.sprites.attack_right)
                 elif self.direction == Direction.LEFT:
@@ -149,12 +162,24 @@ class Character(Entity):
                     self.sprites.SetVisible(self.sprites.idle_right)
                 elif self.direction == Direction.LEFT:
                     self.sprites.SetVisible(self.sprites.idle_left)
+            
+            pyglet.clock.schedule_once(self.setFlickerFlag, 0.1)
+        # if not (self.flickering and self.flicker_flag):
+        #     if self.attack and self.attack.inProgress():
+        #         if self.direction == Direction.RIGHT:
+        #             self.sprites.SetVisible(self.sprites.attack_right)
+        #         elif self.direction == Direction.LEFT:
+        #             self.sprites.SetVisible(self.sprites.attack_left)
+        #     else:
+        #         if self.direction == Direction.RIGHT:
+        #             self.sprites.SetVisible(self.sprites.idle_right)
+        #         elif self.direction == Direction.LEFT:
+        #             self.sprites.SetVisible(self.sprites.idle_left)
                     # self.sprite.visible = True
                     # self.attack_sprite.visible = False
 
     def interact(self, entity: Entity, direction):
         if "collidable" in entity.modifiers:
-            print("HEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEERE")
             self.interact_collidable(entity, direction)
 
     def interact_collidable(self, entity: Entity, direction):
@@ -199,10 +224,12 @@ class Character(Entity):
         self.takeDamage(1)
 
     def takeDamage(self, amount):
-        now = time.time()
-        if (now - self.immunity_start > self.immunity_duration_seconds):
+        if not self.immune:
             self.hp = max(self.hp - amount, 0)
-            self.immunity_start = time.time()  # epoch time
+            self.immune = True
+            pyglet.clock.schedule_once(self.endImmunity, self.immunity_duration_seconds)
+            # self.setFlicker(["assets/images/orange.png"], duration=self.immunity_duration_seconds, flicker_rate=0.1)
+            self.took_damage = True
 
     def takeHit(self, attack: Attack):
         # when we add modifiers later we could do checking here:
@@ -210,6 +237,17 @@ class Character(Entity):
         #       etc.
 
         self.takeDamage(amount=attack.damage)
+
+    def endImmunity(self, dt):
+        self.immune = False
+
+    def setFlickerFlag(self, dt):
+        self.flicker_flag = True
+
+    def unsetFlickerFlag(self, dt):
+        self.flicker_flag = False
+
+    
 
     # # sprite_data:
     # #       key: filename

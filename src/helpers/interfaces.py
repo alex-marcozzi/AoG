@@ -2,7 +2,7 @@ import pyglet
 
 
 class Pair:
-    def __init__(self, first: float, second: float):
+    def __init__(self, first: any, second: any):
         self.first = first
         self.second = second
 
