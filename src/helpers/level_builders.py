@@ -46,9 +46,9 @@ def set_block(level_array: list, pos: Pair, window, block_w, batch):
     block = StandardBlock(window, global_pos, batch)
     level_array[pos.first][pos.second] = block
 
-def set_moving_block(level_array: list, pos: Pair, window, block_w, batch):
+def set_moving_block(level_array: list, pos: Pair, window, block_w, batch, start_right: bool = False):
     global_pos = Pair(pos.first * block_w, pos.second * block_w)
-    block = MovingBlock(window, global_pos, 10, 3, batch)
+    block = MovingBlock(window, global_pos, 10, 3, batch, start_right)
     level_array[pos.first][pos.second] = block
 
 
@@ -68,7 +68,8 @@ def build_level1(window, batch):
     level1 = initialize_level_base(100, 100)
     set_line(level1, Pair(0, 2), Pair(30, 2), window, block_w, batch)
     set_line(level1, Pair(7, 5), Pair(8, 5), window, block_w, batch)
-    set_moving_block(level1, Pair(10, 7), window, block_w, batch)
+    set_moving_block(level1, Pair(10, 7), window, block_w, batch, False)
+    set_moving_block(level1, Pair(10, 10), window, block_w, batch, True)
     set_line(level1, Pair(12, 2), Pair(12, 3), window, block_w, batch)
     set_line(level1, Pair(30, 2), Pair(30, 3), window, block_w, batch)
     set_line(level1, Pair(33, 3), Pair(40, 3), window, block_w, batch)

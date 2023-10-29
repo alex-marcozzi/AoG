@@ -9,7 +9,7 @@ import time
 
 
 class MovingBlock(Block):
-    def __init__(self, window, global_pos, distance, time, batch):
+    def __init__(self, window, global_pos, distance, time, batch, start_right: bool = False):
         sprites = SpriteCollection(idle_right=make_sprite(sprite_filename="assets/images/bbox.png",
                                                     width=block_width(window) * 2,
                                                     height=block_width(window),
@@ -32,6 +32,10 @@ class MovingBlock(Block):
         self.speed = (block_width(window) * distance) / time  # we want to move one block per second
         self.starting_block_pos = self.block_pos
         self.distance = distance
+
+        if start_right:
+            self.global_pos.first += distance * block_width(window)
+            self.direction = Direction.LEFT
     
     def pre_tick(self, dt: float):
         self.calculate_velocity()
