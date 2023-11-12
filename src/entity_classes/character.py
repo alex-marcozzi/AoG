@@ -102,6 +102,7 @@ class Character(Entity):
             self.acceleration.second = 0
         else:
             self.acceleration.second = self.normal_acceleration.second
+            print("HERE")
 
         # self.update_sprite_positions(camera_pos)
 
@@ -192,25 +193,27 @@ class Character(Entity):
         # else:
         #     self.on_ground = False
         if direction == Direction.RIGHT:
-            if (
-                not issubclass(type(entity), Character)
-                and self.block_pos.second - 1 == entity.block_pos.second
-            ):
-                return
+            # if (
+            #     not issubclass(type(entity), Character)
+            #     and self.block_pos.second - 1 == entity.block_pos.second
+            # ):
+            #     return
             print("! RIGHT COLLISION")
+            offset = (entity.velocity.first * 1/15) if entity.velocity.first < 0 else 0
             self.global_pos = Pair(
-                entity.hitbox.pos.first - self.hitbox.width, self.global_pos.second
+                (entity.hitbox.pos.first + offset) - self.hitbox.width, self.global_pos.second
             )
             self.velocity = Pair(0, self.velocity.second)
         if direction == Direction.LEFT:
-            if (
-                not issubclass(type(entity), Character)
-                and self.block_pos.second - 1 == entity.block_pos.second
-            ):
-                return
+            # if (
+            #     not issubclass(type(entity), Character)
+            #     and self.block_pos.second - 1 == entity.block_pos.second
+            # ):
+            #     return
             print("! LEFT COLLISION")
+            offset = (entity.velocity.first * 1/15) if entity.velocity.first > 0 else 0
             self.global_pos = Pair(
-                entity.global_pos.first + entity.hitbox.width, self.global_pos.second
+                entity.global_pos.first + entity.hitbox.width + offset, self.global_pos.second
             )
             self.velocity = Pair(0, self.velocity.second)
         if direction == Direction.UP:
