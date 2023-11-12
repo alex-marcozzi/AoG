@@ -42,6 +42,7 @@ class Entity:
         self.flicker_flag = False
         self.flicker_filename = ""
         self.flicker_sprite = None
+        self.prev_dt = 0
 
     def copy(self):
         new_copy = Entity(
@@ -59,6 +60,11 @@ class Entity:
         return new_copy
 
     def tick_pos_only(self, dt: float):
+        # if self.id == "999":
+        #     print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+        #     print(self.velocity.first)
+        #     print(self.velocity.first * dt)
+        #     print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
         self.global_pos.add(Pair(self.velocity.first * dt, self.velocity.second * dt))
         # self.velocity.add(self.acceleration)
 
@@ -83,6 +89,7 @@ class Entity:
 
         self.update_sprite_positions(camera_pos)
         self.update_current_sprite()
+        self.prev_dt = dt
 
     # def draw(self):
     #     self.sprite.draw()

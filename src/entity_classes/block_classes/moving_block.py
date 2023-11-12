@@ -31,11 +31,23 @@ class MovingBlock(Block):
 
         self.speed = (block_width(window) * distance) / time  # we want to move one block per second
         self.starting_block_pos = self.block_pos
+        self.time = time
         self.distance = distance
+        self.start_right = start_right
 
         if start_right:
             self.global_pos.first += distance * block_width(window)
             self.direction = Direction.LEFT
+
+    def copy(self):
+        new_copy = MovingBlock(window=self.window,
+                             global_pos=self.global_pos,
+                             distance=self.distance,
+                             time=self.time,
+                             batch=self.batch,
+                             start_right=self.start_right)
+        
+        return new_copy
     
     def pre_tick(self, dt: float):
         self.calculate_velocity()

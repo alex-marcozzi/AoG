@@ -36,6 +36,7 @@ class World:
         self.projectiles: list[Projectile] = []
         self.moving_blocks: list[MovingBlock] = []
         self.extract_characters(self.level)
+        self.moving_blocks[0].id = "999"
         self.frozen = False
 
     # def tick(self):
@@ -59,6 +60,7 @@ class World:
             for character in self.characters:
                 character.update_current_sprite()
             return
+            
         for character in self.characters:
             if character.dead:
                 character.sprites.SetAllInvisible()
@@ -171,7 +173,7 @@ class World:
 
         # check below for collisions
         to_check = []
-        for x in range(0, int(entity.hitbox.width / self.block_w) + 1):
+        for x in range(0, int(entity.hitbox.width / self.block_w) + 2):
             to_check.append(Pair(entity.block_pos.first + x, entity.block_pos.second - 1))
 
         for loc in to_check:
@@ -183,7 +185,7 @@ class World:
         # check right for collisions
         to_check = []
         for x in range(0, 2):
-            for y in range(0, int(entity.hitbox.height / self.block_w) + 1):
+            for y in range(-1, int(entity.hitbox.height / self.block_w) + 1):
                 to_check.append(Pair(entity.block_pos.first + int(entity.hitbox.width / self.block_w) + x, entity.block_pos.second + y))
 
         for loc in to_check:
@@ -195,7 +197,7 @@ class World:
         # check left for collisions
         to_check = []
         # for x in range(-1, 1, 1):
-        for y in range(0, int(entity.hitbox.height / self.block_w) + 1):
+        for y in range(-1, int(entity.hitbox.height / self.block_w) + 1):
             to_check.append(Pair(entity.block_pos.first - 1, entity.block_pos.second + y))
 
         for loc in to_check:

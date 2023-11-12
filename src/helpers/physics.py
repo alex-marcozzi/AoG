@@ -2,6 +2,8 @@ import pyglet
 from src.helpers.interfaces import Pair
 from src.entity import Entity
 from src.hitbox import Hitbox
+from src.entity_classes.character_classes.player import Player
+from src.entity_classes.block_classes.moving_block import MovingBlock
 
 
 def normalize_vector(v: Pair):
@@ -32,8 +34,10 @@ def is_down_collision(dt: float, entity1: Entity, entity2: Entity):
     e1_next = entity1.copy()
     e2_next = entity2.copy()
 
-    e1_next.tick_pos_only(dt)  # move to next position
-    e2_next.tick_pos_only(dt)
+    # e1_next.tick_pos_only(dt)  # move to next position
+    # e2_next.tick_pos_only(dt)
+    e1_next.global_pos.add(Pair(entity1.velocity.first * dt, entity1.velocity.second * dt))
+    e2_next.global_pos.add(Pair(entity2.velocity.first * dt, entity2.velocity.second * dt))
 
     crossed_y = entity1.bottomLeft().second >= entity2.topLeft().second and e1_next.bottomLeft().second <= e2_next.topLeft().second
     x_is_in_line = e1_next.bottomLeft().first < e2_next.topRight().first and e1_next.bottomRight().first > e2_next.topLeft().first
@@ -49,12 +53,22 @@ def is_down_collision(dt: float, entity1: Entity, entity2: Entity):
 def is_right_collision(dt: float, entity1: Entity, entity2: Entity):
     e1_next = entity1.copy()
     e2_next = entity2.copy()
+    # e2_next.id = "999"
 
-    e1_next.tick_pos_only(dt)  # move to next position
-    e2_next.tick_pos_only(dt)
+    # if issubclass(type(entity1), Player) and issubclass(type(entity2), MovingBlock):
+    #     print("------------")
+    #     print(entity2.velocity.first)
+    #     print(e2_next.velocity.first)
+    #     print("------------")
+    # e1_next.tick_pos_only(dt)  # move to next position
+    
+    # e2_next.tick_pos_only(dt)
+    e1_next.global_pos.add(Pair(entity1.velocity.first * dt, entity1.velocity.second * dt))
+    e2_next.global_pos.add(Pair(entity2.velocity.first * dt, entity2.velocity.second * dt))
 
     crossed_x = entity1.bottomRight().first <= entity2.bottomLeft().first and e1_next.bottomRight().first >= e2_next.bottomLeft().first
     y_is_in_line = e1_next.bottomRight().second < e2_next.topLeft().second and e1_next.topRight().second > e2_next.bottomLeft().second
+
 
     if crossed_x and y_is_in_line:
         return True
@@ -66,8 +80,10 @@ def is_left_collision(dt: float, entity1: Entity, entity2: Entity):
     e1_next = entity1.copy()
     e2_next = entity2.copy()
 
-    e1_next.tick_pos_only(dt)  # move to next position
-    e2_next.tick_pos_only(dt)
+    # e1_next.tick_pos_only(dt)  # move to next position
+    # e2_next.tick_pos_only(dt)
+    e1_next.global_pos.add(Pair(entity1.velocity.first * dt, entity1.velocity.second * dt))
+    e2_next.global_pos.add(Pair(entity2.velocity.first * dt, entity2.velocity.second * dt))
 
     crossed_x = entity1.bottomLeft().first >= entity2.bottomRight().first and e1_next.bottomLeft().first <= e2_next.bottomRight().first
     y_is_in_line = e1_next.bottomLeft().second < e2_next.topRight().second and e1_next.topLeft().second > e2_next.bottomRight().second
@@ -84,8 +100,10 @@ def is_up_collision(dt: float, entity1: Entity, entity2: Entity):
     e1_next = entity1.copy()
     e2_next = entity2.copy()
 
-    e1_next.tick_pos_only(dt)  # move to next position
-    e2_next.tick_pos_only(dt)
+    # e1_next.tick_pos_only(dt)  # move to next position
+    # e2_next.tick_pos_only(dt)
+    e1_next.global_pos.add(Pair(entity1.velocity.first * dt, entity1.velocity.second * dt))
+    e2_next.global_pos.add(Pair(entity2.velocity.first * dt, entity2.velocity.second * dt))
 
     crossed_y = entity1.topLeft().second <= entity2.bottomLeft().second and e1_next.topLeft().second >= e2_next.bottomLeft().second
     x_is_in_line = e1_next.topLeft().first <= e2_next.bottomRight().first and e1_next.topRight().first >= e2_next.bottomLeft().first
