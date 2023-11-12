@@ -175,6 +175,7 @@ class World:
         to_check = []
         for x in range(0, int(entity.hitbox.width / self.block_w) + 2):
             to_check.append(Pair(entity.block_pos.first + x, entity.block_pos.second - 1))
+            to_check.append(Pair(entity.block_pos.first + x, entity.block_pos.second))
 
         for loc in to_check:
             block = self.level[int(loc.first)][int(loc.second)]
