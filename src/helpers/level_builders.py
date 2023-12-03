@@ -7,6 +7,7 @@ from src.helpers.interfaces import Pair
 from src.sprite_collection import SpriteCollection
 from src.entity_classes.block_classes.standard_block import StandardBlock
 from src.entity_classes.block_classes.moving_block import MovingBlock
+from src.entity_classes.block_classes.moving_block_new import MovingBlockNew
 from src.entity_classes.pickup_classes.wizard_pickup import WizardPickup
 from src.entity_classes.pickup import Pickup
 
@@ -52,6 +53,12 @@ def set_moving_block(level_array: list, pos: Pair, window, block_w, batch, start
     # block.id = 999
     level_array[pos.first][pos.second] = block
 
+def set_moving_block_new(level_array: list, pivots: list[Pair], window, block_w, batch, starting_pivot):
+    # global_pos = Pair(pos.first * block_w, pos.second * block_w)
+    block = MovingBlockNew(window, pivots, batch, starting_pivot)
+    # block.id = 999
+    level_array[pivots[0].first][pivots[0].second] = block
+
 
 def build_level1(window, batch):
     block_w = block_width(window)
@@ -69,7 +76,12 @@ def build_level1(window, batch):
     level1 = initialize_level_base(100, 100)
     set_line(level1, Pair(0, 2), Pair(30, 2), window, block_w, batch)
     set_line(level1, Pair(7, 5), Pair(8, 5), window, block_w, batch)
-    set_moving_block(level1, Pair(10, 7), window, block_w, batch, False)
+    # set_moving_block(level1, Pair(10, 7), window, block_w, batch, False)
+    pivots = [
+        Pair(10, 7),
+        Pair(15, 7)
+    ]
+    # set_moving_block_new(level1, pivots, window, block_w, batch, 1)
     # set_moving_block(level1, Pair(10, 10), window, block_w, batch, True)
     set_line(level1, Pair(12, 2), Pair(12, 3), window, block_w, batch)
     set_line(level1, Pair(30, 2), Pair(30, 3), window, block_w, batch)
@@ -78,11 +90,13 @@ def build_level1(window, batch):
     set_line(level1, Pair(42, 5), Pair(50, 5), window, block_w, batch)
 
     # set_bear(level1, Pair(10, 3), window, block_w, batch)
-    # set_bear(level1, Pair(13, 3), window, block_w, batch)
+    set_bear(level1, Pair(13, 3), window, block_w, batch)
     set_bear(level1, Pair(16, 3), window, block_w, batch)
+    set_bear(level1, Pair(20, 3), window, block_w, batch)
+    # set_bear(level1, Pair(18, 3), window, block_w, batch)
     # set_bear(level1, Pair(19, 3), window, block_w, batch)
     # set_bear(level1, Pair(24, 3), window, block_w, batch)
 
-    set_wizard_pickup(level1, Pair(11, 3), window, block_w, batch)
+    set_wizard_pickup(level1, Pair(7, 6), window, block_w, batch)
 
     return level1

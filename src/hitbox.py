@@ -8,7 +8,7 @@ class Hitbox:
         self.height = height
 
     def copy(self):
-        new_copy = Hitbox(pos=self.pos, width=self.width, height=self.height)
+        new_copy = Hitbox(pos=self.pos.copy(), width=self.width, height=self.height)
 
         return new_copy
 

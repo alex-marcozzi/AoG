@@ -19,6 +19,7 @@ from src.entity_classes.projectile import Projectile
 from src.entity_classes.pickup_classes.wizard_pickup import Pickup
 from src.entity_classes.pickup_classes.wizard_pickup import WizardPickup
 from src.entity_classes.block_classes.moving_block import MovingBlock
+from src.entity_classes.block_classes.moving_block_new import MovingBlockNew
 
 # this is basically all of the level information, like a context
 class World:
@@ -36,7 +37,6 @@ class World:
         self.projectiles: list[Projectile] = []
         self.moving_blocks: list[MovingBlock] = []
         self.extract_characters(self.level)
-        self.moving_blocks[0].id = "999"
         self.frozen = False
 
     # def tick(self):
@@ -51,6 +51,9 @@ class World:
                         self.characters.append(level[x][y])
                         level[x][y] = None
                     if issubclass(type(level[x][y]), MovingBlock):
+                        self.moving_blocks.append(level[x][y])
+                        level[x][y] = None
+                    if issubclass(type(level[x][y]), MovingBlockNew):
                         self.moving_blocks.append(level[x][y])
                         level[x][y] = None
 

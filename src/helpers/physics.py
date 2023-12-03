@@ -31,6 +31,8 @@ def float_eq(f1: float, f2: float, margin: float = 1):
 # pointer moves along the vector line in normalized steps
 # from start to end
 def is_down_collision(dt: float, entity1: Entity, entity2: Entity):
+    return is_hitbox_down_collision(dt, entity1.hitbox, entity2.hitbox, entity1.velocity, entity2.velocity)
+
     e1_next = entity1.copy()
     e2_next = entity2.copy()
 
@@ -47,22 +49,29 @@ def is_down_collision(dt: float, entity1: Entity, entity2: Entity):
         
     return False
 
+def is_hitbox_down_collision(dt: float, hitbox1: Hitbox, hitbox2: Hitbox, velocity1: Pair, velocity2: Pair):
+    h1_next = hitbox1.copy()
+    h1_next.pos.add(Pair(velocity1.first * dt, velocity1.second * dt))
+    h2_next = hitbox2.copy()
+    h2_next.pos.add(Pair(velocity2.first * dt, velocity2.second * dt))
+
+    crossed_y = hitbox1.bottomLeft().second >= hitbox2.topLeft().second and h1_next.bottomLeft().second <= h2_next.topLeft().second
+    x_is_in_line = h1_next.bottomLeft().first < h2_next.topRight().first and h1_next.bottomRight().first > h2_next.topLeft().first
+
+    if crossed_y and x_is_in_line:
+        return True
+        
+    return False
+
 
 # pointer moves along the vector line in normalized steps
 # from start to end
 def is_right_collision(dt: float, entity1: Entity, entity2: Entity):
+    return is_hitbox_right_collision(dt, entity1.hitbox, entity2.hitbox, entity1.velocity, entity2.velocity)
+
     e1_next = entity1.copy()
     e2_next = entity2.copy()
-    # e2_next.id = "999"
 
-    # if issubclass(type(entity1), Player) and issubclass(type(entity2), MovingBlock):
-    #     print("------------")
-    #     print(entity2.velocity.first)
-    #     print(e2_next.velocity.first)
-    #     print("------------")
-    # e1_next.tick_pos_only(dt)  # move to next position
-    
-    # e2_next.tick_pos_only(dt)
     e1_next.global_pos.add(Pair(entity1.velocity.first * dt, entity1.velocity.second * dt))
     e2_next.global_pos.add(Pair(entity2.velocity.first * dt, entity2.velocity.second * dt))
 
@@ -76,7 +85,26 @@ def is_right_collision(dt: float, entity1: Entity, entity2: Entity):
     return False
 
 
+# pointer moves along the vector line in normalized steps
+# from start to end
+def is_hitbox_right_collision(dt: float, hitbox1: Hitbox, hitbox2: Hitbox, velocity1: Pair, velocity2: Pair):
+    h1_next = hitbox1.copy()
+    h1_next.pos.add(Pair(velocity1.first * dt, velocity1.second * dt))
+    h2_next = hitbox2.copy()
+    h2_next.pos.add(Pair(velocity2.first * dt, velocity2.second * dt))
+
+    crossed_x = hitbox1.bottomRight().first <= hitbox2.bottomLeft().first and h1_next.bottomRight().first >= h2_next.bottomLeft().first
+    y_is_in_line = h1_next.bottomRight().second < h2_next.topLeft().second and h1_next.topRight().second > h2_next.bottomLeft().second
+
+
+    if crossed_x and y_is_in_line:
+        return True
+        
+    return False
+
+
 def is_left_collision(dt: float, entity1: Entity, entity2: Entity):
+    return is_hitbox_left_collision(dt, entity1.hitbox, entity2.hitbox, entity1.velocity, entity2.velocity)
     e1_next = entity1.copy()
     e2_next = entity2.copy()
 
@@ -96,7 +124,25 @@ def is_left_collision(dt: float, entity1: Entity, entity2: Entity):
 
 # pointer moves along the vector line in normalized steps
 # from start to end
+def is_hitbox_left_collision(dt: float, hitbox1: Hitbox, hitbox2: Hitbox, velocity1: Pair, velocity2: Pair):
+    h1_next = hitbox1.copy()
+    h1_next.pos.add(Pair(velocity1.first * dt, velocity1.second * dt))
+    h2_next = hitbox2.copy()
+    h2_next.pos.add(Pair(velocity2.first * dt, velocity2.second * dt))
+
+    crossed_x = hitbox1.bottomLeft().first >= hitbox2.bottomRight().first and h1_next.bottomLeft().first <= h2_next.bottomRight().first
+    y_is_in_line = h1_next.bottomLeft().second < h2_next.topRight().second and h1_next.topLeft().second > h2_next.bottomRight().second
+
+    if crossed_x and y_is_in_line:
+        return True
+        
+    return False
+
+
+# pointer moves along the vector line in normalized steps
+# from start to end
 def is_up_collision(dt: float, entity1: Entity, entity2: Entity):
+    return is_hitbox_up_collision(dt, entity1.hitbox, entity2.hitbox, entity1.velocity, entity2.velocity)
     e1_next = entity1.copy()
     e2_next = entity2.copy()
 
@@ -107,6 +153,23 @@ def is_up_collision(dt: float, entity1: Entity, entity2: Entity):
 
     crossed_y = entity1.topLeft().second <= entity2.bottomLeft().second and e1_next.topLeft().second >= e2_next.bottomLeft().second
     x_is_in_line = e1_next.topLeft().first <= e2_next.bottomRight().first and e1_next.topRight().first >= e2_next.bottomLeft().first
+
+    if crossed_y and x_is_in_line:
+        return True
+        
+    return False
+
+
+# pointer moves along the vector line in normalized steps
+# from start to end
+def is_hitbox_up_collision(dt: float, hitbox1: Hitbox, hitbox2: Hitbox, velocity1: Pair, velocity2: Pair):
+    h1_next = hitbox1.copy()
+    h1_next.pos.add(Pair(velocity1.first * dt, velocity1.second * dt))
+    h2_next = hitbox2.copy()
+    h2_next.pos.add(Pair(velocity2.first * dt, velocity2.second * dt))
+
+    crossed_y = hitbox1.topLeft().second <= hitbox2.bottomLeft().second and h1_next.topLeft().second >= h2_next.bottomLeft().second
+    x_is_in_line = h1_next.topLeft().first <= h2_next.bottomRight().first and h1_next.topRight().first >= h2_next.bottomLeft().first
 
     if crossed_y and x_is_in_line:
         return True
