@@ -79,9 +79,10 @@ def build_level1(window, batch):
     # set_moving_block(level1, Pair(10, 7), window, block_w, batch, False)
     pivots = [
         Pair(10, 7),
-        Pair(15, 7)
+        Pair(15, 7),
+        Pair(12, 12)
     ]
-    # set_moving_block_new(level1, pivots, window, block_w, batch, 1)
+    set_moving_block_new(level1, pivots, window, block_w, batch, 0)
     # set_moving_block(level1, Pair(10, 10), window, block_w, batch, True)
     set_line(level1, Pair(12, 2), Pair(12, 3), window, block_w, batch)
     set_line(level1, Pair(30, 2), Pair(30, 3), window, block_w, batch)
@@ -90,9 +91,9 @@ def build_level1(window, batch):
     set_line(level1, Pair(42, 5), Pair(50, 5), window, block_w, batch)
 
     # set_bear(level1, Pair(10, 3), window, block_w, batch)
-    set_bear(level1, Pair(13, 3), window, block_w, batch)
-    set_bear(level1, Pair(16, 3), window, block_w, batch)
-    set_bear(level1, Pair(20, 3), window, block_w, batch)
+    # set_bear(level1, Pair(13, 3), window, block_w, batch)
+    # set_bear(level1, Pair(16, 3), window, block_w, batch)
+    # set_bear(level1, Pair(20, 3), window, block_w, batch)
     # set_bear(level1, Pair(18, 3), window, block_w, batch)
     # set_bear(level1, Pair(19, 3), window, block_w, batch)
     # set_bear(level1, Pair(24, 3), window, block_w, batch)

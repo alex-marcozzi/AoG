@@ -185,9 +185,12 @@ class Character(Entity):
     def interact_collidable(self, entity: Entity, direction):
         if direction == Direction.DOWN:
             self.global_pos = Pair(
-                self.global_pos.first, entity.global_pos.second + entity.hitbox.height
+                self.global_pos.first, entity.hitbox.pos.second + entity.hitbox.height# + 0.0000001
             )
-            self.velocity = Pair(self.velocity.first + entity.velocity.first, 0)
+            # if entity.velocity.second > 0:
+            #     self.global_pos.second += (entity.velocity.second * self.prev_dt) + 1
+
+            self.velocity = Pair(self.velocity.first + entity.velocity.first, entity.velocity.second)
         #     self.on_ground = True
         # else:
         #     self.on_ground = False
@@ -218,7 +221,7 @@ class Character(Entity):
             self.global_pos = Pair(
                 self.global_pos.first, entity.hitbox.pos.second - self.hitbox.height
             )
-            self.velocity = Pair(self.velocity.first, 0)
+            self.velocity = Pair(self.velocity.first, entity.velocity.second)
 
     def interact_dangerous(self, entity: Entity, direction):
         self.takeDamage(1)

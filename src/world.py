@@ -35,8 +35,9 @@ class World:
         )
         self.characters = [self.player]
         self.projectiles: list[Projectile] = []
-        self.moving_blocks: list[MovingBlock] = []
+        self.moving_blocks: list[MovingBlockNew] = []
         self.extract_characters(self.level)
+        self.moving_blocks[0].id = "101"
         self.frozen = False
 
     # def tick(self):
@@ -238,6 +239,8 @@ class World:
         for collision in collisions:
             if collision.second == Direction.DOWN:
                 character.on_ground = True
+                if isinstance(type(collision.first), MovingBlockNew):
+                    character.bound = collision.first
 
 
             if collision.second == Direction.UP and collision.first.id == self.player.id:
@@ -277,6 +280,9 @@ class World:
                     collision.first.dead = True
                     self.freeze(1)
                     # self.level[int(collision.first.block_pos.first)][int(collision.first.block_pos.second)] = None
+            
+            if not character.on_ground:
+                character.bound = None
 
     def check_attacks(self, dt: float, character: Character):
         if not character.attack.inProgress():

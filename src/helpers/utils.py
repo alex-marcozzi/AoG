@@ -72,6 +72,9 @@ def speed_angle_to_velocity(speed: float, angle: float):
 def float_eq(f1: float, f2: float, margin: float = 1):
     return (abs(f1 - f2) <= margin)
 
+def float_eq_pair(p1: Pair, p2: Pair, margin: float = 1):
+    return float_eq(p1.first, p2.first, margin) and float_eq(p1.second, p2.second, margin)
+
 # ############################################################
 # #                                                          #
 # #  ---------       ---------       ---------       ------  #

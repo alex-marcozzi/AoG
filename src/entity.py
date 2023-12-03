@@ -142,7 +142,6 @@ class Entity:
     
     def update_current_sprite(self):
         if self.flickering and self.flicker_flag:
-            print("IN HERE")
             self.sprites.SetVisible(self.flicker_sprite)
             self.flicker_flag = False
         else:

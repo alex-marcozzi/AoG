@@ -1,5 +1,5 @@
 import pyglet
-from src.helpers.utils import std_speed, block_width, gravity, make_sprite, float_eq
+from src.helpers.utils import std_speed, block_width, gravity, make_sprite, float_eq_pair
 from src.helpers.interfaces import Pair
 from src.entity import Entity
 from src.sprite_collection import SpriteCollection
@@ -25,7 +25,7 @@ class MovingBlockNew(Block):
         self.block_w = block_width(window)
         self.pivots = pivots
         global_pos = Pair(self.block_w * pivots[starting_pivot].first, self.block_w * pivots[starting_pivot].second)
-        self.times = [3, 3]
+        self.times = [2, 2, 2]
 
         super().__init__(
             window=window,
@@ -37,7 +37,7 @@ class MovingBlockNew(Block):
         )
 
         self.current = starting_pivot
-        # self.next()
+        self.next()
 
         # self.speed = (block_width(window) * distance) / time  # we want to move one block per second
         # self.starting_block_pos = self.block_pos
@@ -58,26 +58,23 @@ class MovingBlockNew(Block):
         return new_copy
     
     def next(self):
+        print("SNAP****************************************************************************************************************")
         self.current = (self.current + 1) % len(self.pivots)
-        print(self.current)
 
         dist_x = (self.block_w * self.pivots[self.current].first) - self.global_pos.first
         dist_y = (self.block_w * self.pivots[self.current].second) - self.global_pos.second
-        print(dist_x)
-        print(dist_y)
-        print("_________________")
-        self.velocity = Pair(0, 0)
-        # self.velocity = Pair(dist_x / self.times[self.current], dist_y / self.times[self.current])
+        # self.velocity = Pair(0, 0)
+        self.velocity = Pair(dist_x / self.times[self.current], dist_y / self.times[self.current])
 
     def reached_pivot(self):
-        target_pos = Pair(self.block_w * self.current.first, self.block_w * self.current.second)
+        target_pos = Pair(self.block_w * self.pivots[self.current].first, self.block_w * self.pivots[self.current].second)
 
-        if float_eq(self.global_pos, Pair(self.block_w * target_pos.first, self.block_w * target_pos.second), 50):
-            print("HERE")
-            self.next()
+        return float_eq_pair(self.global_pos, target_pos, 5)
     
     def pre_tick(self, dt: float):
         pass
+        # if self.reached_pivot():
+        #     self.next()
         # self.calculate_velocity()
         # if self.velocity.first > 0:
         #     self.direction = Direction.RIGHT
@@ -86,6 +83,8 @@ class MovingBlockNew(Block):
 
     def tick(self, dt: float, camera_pos: Pair):
         super().tick(dt, camera_pos)
+        if self.reached_pivot():
+            self.next()
 
         # if self.direction == Direction.RIGHT and self.block_pos.first - self.starting_block_pos.first >= self.distance:
         #     self.direction = Direction.LEFT
