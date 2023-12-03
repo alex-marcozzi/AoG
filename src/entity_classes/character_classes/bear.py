@@ -95,8 +95,8 @@ class Bear(Character):
             self.direction = Direction.LEFT
         if "collidable" in entity.modifiers:
             self.interact_collidable(entity, direction)
-        if "dangerous" in entity.modifiers:
-            self.interact_dangerous(entity, direction)
+        # if "dangerous" in entity.modifiers:
+        #     self.interact_dangerous(entity, direction)
 
 
     # function: y = 1 - (2x - 1)^2

@@ -7,7 +7,9 @@ from src.helpers.interfaces import Pair
 from src.sprite_collection import SpriteCollection
 from src.entity_classes.block_classes.standard_block import StandardBlock
 from src.entity_classes.block_classes.moving_block import MovingBlock
-from src.entity_classes.block_classes.moving_block_new import MovingBlockNew
+from src.entity_classes.block_classes.moving_block_classes.moving_block_hline import MovingBlockHLine
+from src.entity_classes.block_classes.moving_block_classes.moving_block_vline import MovingBlockVLine
+from src.entity_classes.block_classes.moving_block_classes.moving_block_rect import MovingBlockRect
 from src.entity_classes.pickup_classes.wizard_pickup import WizardPickup
 from src.entity_classes.pickup import Pickup
 
@@ -47,17 +49,35 @@ def set_block(level_array: list, pos: Pair, window, block_w, batch):
     block = StandardBlock(window, global_pos, batch)
     level_array[pos.first][pos.second] = block
 
-def set_moving_block(level_array: list, pos: Pair, window, block_w, batch, start_right: bool = False):
-    global_pos = Pair(pos.first * block_w, pos.second * block_w)
-    block = MovingBlock(window, global_pos, 10, 3, batch, start_right)
+# def set_moving_block(level_array: list, pos: Pair, window, block_w, batch, start_right: bool = False):
+#     global_pos = Pair(pos.first * block_w, pos.second * block_w)
+#     block = MovingBlock(window, global_pos, 10, 3, batch, start_right)
+#     # block.id = 999
+#     level_array[pos.first][pos.second] = block
+
+def set_moving_block(level_array: list, pivots: list[Pair], times: list[float], window, block_w, batch, starting_pivot):
+    # global_pos = Pair(pos.first * block_w, pos.second * block_w)
+    block = MovingBlock(window, pivots, times, batch, starting_pivot)
+    # block.id = 999
+    level_array[pivots[0].first][pivots[0].second] = block
+
+def set_moving_block_hline(level_array: list, pos, dist, time, window, block_w, batch, starting_pivot):
+    # global_pos = Pair(pos.first * block_w, pos.second * block_w)
+    block = MovingBlockHLine(window, batch, pos, dist, time, starting_pivot)
     # block.id = 999
     level_array[pos.first][pos.second] = block
 
-def set_moving_block_new(level_array: list, pivots: list[Pair], window, block_w, batch, starting_pivot):
+def set_moving_block_vline(level_array: list, pos, dist, time, window, block_w, batch, starting_pivot):
     # global_pos = Pair(pos.first * block_w, pos.second * block_w)
-    block = MovingBlockNew(window, pivots, batch, starting_pivot)
+    block = MovingBlockVLine(window, batch, pos, dist, time, starting_pivot)
     # block.id = 999
-    level_array[pivots[0].first][pivots[0].second] = block
+    level_array[pos.first][pos.second] = block
+
+def set_moving_block_rect(level_array: list, pos, width, height, time, window, block_w, batch, starting_pivot, clockwise):
+    # global_pos = Pair(pos.first * block_w, pos.second * block_w)
+    block = MovingBlockRect(window, batch, pos, width, height, time, starting_pivot, clockwise)
+    # block.id = 999
+    level_array[pos.first][pos.second] = block
 
 
 def build_level1(window, batch):
@@ -76,13 +96,14 @@ def build_level1(window, batch):
     level1 = initialize_level_base(100, 100)
     set_line(level1, Pair(0, 2), Pair(30, 2), window, block_w, batch)
     set_line(level1, Pair(7, 5), Pair(8, 5), window, block_w, batch)
-    # set_moving_block(level1, Pair(10, 7), window, block_w, batch, False)
-    pivots = [
-        Pair(10, 7),
-        Pair(15, 7),
-        Pair(12, 12)
-    ]
-    set_moving_block_new(level1, pivots, window, block_w, batch, 0)
+
+
+    set_moving_block_vline(level1, Pair(10, 7), 5, 2, window, block_w, batch, 0)
+    set_line(level1, Pair(7, 13), Pair(8, 13), window, block_w, batch)
+
+    set_wizard_pickup(level1, Pair(7, 14), window, block_w, batch)
+    
+    # set_moving_block_rect(level1, Pair(10, 7), 5, 5, 10, window, block_w, batch, 0, False)
     # set_moving_block(level1, Pair(10, 10), window, block_w, batch, True)
     set_line(level1, Pair(12, 2), Pair(12, 3), window, block_w, batch)
     set_line(level1, Pair(30, 2), Pair(30, 3), window, block_w, batch)
@@ -90,14 +111,16 @@ def build_level1(window, batch):
     set_line(level1, Pair(34, 6), Pair(36, 6), window, block_w, batch)
     set_line(level1, Pair(42, 5), Pair(50, 5), window, block_w, batch)
 
+    set_moving_block_hline(level1, Pair(13, 6), 15, 15, window, block_w, batch, 0)
+
+    set_moving_block_rect(level1, Pair(22, 7), 5, 5, 5, window, block_w, batch, 2, True)
+
     # set_bear(level1, Pair(10, 3), window, block_w, batch)
     # set_bear(level1, Pair(13, 3), window, block_w, batch)
-    # set_bear(level1, Pair(16, 3), window, block_w, batch)
-    # set_bear(level1, Pair(20, 3), window, block_w, batch)
-    # set_bear(level1, Pair(18, 3), window, block_w, batch)
-    # set_bear(level1, Pair(19, 3), window, block_w, batch)
-    # set_bear(level1, Pair(24, 3), window, block_w, batch)
-
-    set_wizard_pickup(level1, Pair(7, 6), window, block_w, batch)
+    set_bear(level1, Pair(16, 3), window, block_w, batch)
+    set_bear(level1, Pair(20, 3), window, block_w, batch)
+    set_bear(level1, Pair(18, 3), window, block_w, batch)
+    set_bear(level1, Pair(19, 3), window, block_w, batch)
+    set_bear(level1, Pair(24, 3), window, block_w, batch)
 
     return level1

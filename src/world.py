@@ -19,7 +19,6 @@ from src.entity_classes.projectile import Projectile
 from src.entity_classes.pickup_classes.wizard_pickup import Pickup
 from src.entity_classes.pickup_classes.wizard_pickup import WizardPickup
 from src.entity_classes.block_classes.moving_block import MovingBlock
-from src.entity_classes.block_classes.moving_block_new import MovingBlockNew
 
 # this is basically all of the level information, like a context
 class World:
@@ -35,7 +34,7 @@ class World:
         )
         self.characters = [self.player]
         self.projectiles: list[Projectile] = []
-        self.moving_blocks: list[MovingBlockNew] = []
+        self.moving_blocks: list[MovingBlock] = []
         self.extract_characters(self.level)
         self.moving_blocks[0].id = "101"
         self.frozen = False
@@ -52,9 +51,6 @@ class World:
                         self.characters.append(level[x][y])
                         level[x][y] = None
                     if issubclass(type(level[x][y]), MovingBlock):
-                        self.moving_blocks.append(level[x][y])
-                        level[x][y] = None
-                    if issubclass(type(level[x][y]), MovingBlockNew):
                         self.moving_blocks.append(level[x][y])
                         level[x][y] = None
 
@@ -239,9 +235,6 @@ class World:
         for collision in collisions:
             if collision.second == Direction.DOWN:
                 character.on_ground = True
-                if isinstance(type(collision.first), MovingBlockNew):
-                    character.bound = collision.first
-
 
             if collision.second == Direction.UP and collision.first.id == self.player.id:
                 if "bouncy" in character.modifiers:

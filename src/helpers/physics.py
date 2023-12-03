@@ -2,8 +2,6 @@ import pyglet
 from src.helpers.interfaces import Pair
 from src.entity import Entity
 from src.hitbox import Hitbox
-from src.entity_classes.character_classes.player import Player
-from src.entity_classes.block_classes.moving_block_new import MovingBlockNew
 
 
 def normalize_vector(v: Pair):
@@ -32,8 +30,8 @@ def float_eq(f1: float, f2: float, margin: float = 1):
 # from start to end
 def is_down_collision(dt: float, entity1: Entity, entity2: Entity):
     debug = False
-    if entity2.id == "101":
-        debug = True
+    # if entity2.id == "101":
+    #     debug = True
     return is_hitbox_down_collision(dt, entity1.hitbox, entity2.hitbox, entity1.velocity, entity2.velocity, debug)
 
 
