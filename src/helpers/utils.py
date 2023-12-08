@@ -1,6 +1,7 @@
 import pyglet
 import src.helpers.globals as globals
 from src.helpers.interfaces import Pair
+from src.hitbox import Hitbox
 from math import sqrt, cos, sin, radians
 
 loaded_images = {}  # key: filename, value: image
@@ -48,6 +49,12 @@ def distance(p1: Pair, p2: Pair):
      b = p2.second - p1.second
      
      return sqrt((a**2) + (b**2))
+
+def hb_distance(h1: Hitbox, h2: Hitbox):
+     h1_center = Pair(h1.pos.first + (h1.width // 2), h1.pos.second + (h1.width // 2))
+     h2_center = Pair(h2.pos.first + (h2.width // 2), h2.pos.second + (h2.width // 2))
+     
+     return distance(h1_center, h2_center)
 
 def angle_to_velocity(angle):
      rad = radians(angle)

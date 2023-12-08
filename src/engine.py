@@ -22,9 +22,11 @@ class Engine:
         self.screen_mapping[self.current_screen].draw()
 
     def handle_key_press(self, symbol, modifiers):
+        print(f"* pressing key {symbol}")
         self.context.keys_down[symbol] = True
         # self.screen_mapping[self.current_screen].handle_key_press(symbol, modifiers)
 
     def handle_key_release(self, symbol, modifiers):
+        print(f"^ releasing key {symbol}")
         self.context.keys_down[symbol] = False
         # self.screen_mapping[self.current_screen].handle_key_release(symbol, modifiers)

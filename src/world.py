@@ -1,5 +1,5 @@
 import pyglet
-from src.helpers.utils import std_speed, gravity, block_width, make_sprite
+from src.helpers.utils import std_speed, gravity, block_width, make_sprite, hb_distance
 from src.helpers.physics import (
     is_down_collision,
     is_right_collision,
@@ -35,7 +35,7 @@ class World:
         self.characters = [self.player]
         self.projectiles: list[Projectile] = []
         self.moving_blocks: list[MovingBlock] = []
-        self.interactable: list[Entity] = []
+        self.interactables: list[Entity] = []
         self.extract_characters(self.level)
         self.moving_blocks[0].id = "101"
         self.frozen = False
@@ -51,8 +51,8 @@ class World:
                     if issubclass(type(entity), Entity):
                         entity.tick(0, self.player.global_pos)  # first tick is necessary to set the entities' positions
 
-                        if "interactable" in entity.modifiers:
-                            self.interactable.append(entity)
+                        if entity.interaction_radius:
+                            self.interactables.append(entity)
                         if issubclass(type(entity), Character):
                             self.characters.append(entity)
                             to_remove.append(entity)
@@ -69,6 +69,8 @@ class World:
             for character in self.characters:
                 character.update_current_sprite()
             return
+        
+        self.check_keys()
             
         for character in self.characters:
             if character.dead:
@@ -354,6 +356,23 @@ class World:
 
     def unfreeze(self, dt):
         self.frozen = False
+
+    def check_keys(self):
+        if self.context.keys_down.get(pyglet.window.key.E, False) and self.context.keys_usable.get(pyglet.window.key.E, False):
+            self.context.keys_usable[pyglet.window.key.E] = False
+            print("PRESSING E")
+            for entity in self.interactables:
+                if hb_distance(self.player.hitbox, entity.hitbox) <= entity.interaction_radius:
+                    print("&& INTERACTION GOES HERE")
+                    entity.dead = True
+
+                    ########################################################################
+                    # TODO: figure out a way to indicate that you are in interaction range #
+                    ########################################################################
+        elif not self.context.keys_down.get(pyglet.window.key.E, False):
+            self.context.keys_usable[pyglet.window.key.E] = True
+            # self.direction = Direction.LEFT
+
 
     # def handle_key_press(self, symbol, modifiers):
     #     # print(f"* pressing key {symbol}")

@@ -40,6 +40,7 @@ class Entity:
         self.flicker_filename = ""
         self.flicker_sprite = None
         self.prev_dt = 0
+        self.interaction_radius = None
 
     def copy(self):
         new_copy = Entity(
