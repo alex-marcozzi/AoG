@@ -45,14 +45,19 @@ class World:
     def extract_characters(self, level: list):
         for x in range(len(level)):
             for y in range(len(level[x])):
-                if issubclass(type(level[x][y]), Entity):
-                    level[x][y].tick(0, self.player.global_pos)  # first tick is necessary to set the entities' positions
-                    if issubclass(type(level[x][y]), Character):
-                        self.characters.append(level[x][y])
-                        level[x][y] = None
-                    if issubclass(type(level[x][y]), MovingBlock):
-                        self.moving_blocks.append(level[x][y])
-                        level[x][y] = None
+                to_remove = []
+                for entity in level[x][y]:
+                    if issubclass(type(entity), Entity):
+                        entity.tick(0, self.player.global_pos)  # first tick is necessary to set the entities' positions
+                        if issubclass(type(entity), Character):
+                            self.characters.append(entity)
+                            to_remove.append(entity)
+                        if issubclass(type(entity), MovingBlock):
+                            self.moving_blocks.append(entity)
+                            to_remove.append(entity)
+
+                for entity in to_remove:
+                    level[x][y].remove(entity)
 
     def do_physics(self, dt: float, from_loc: int, to_loc: int):
         # index = 0
@@ -107,6 +112,7 @@ class World:
                     # if len(collisions) > 0:
                     #     self.projectiles.remove(projectile)
         
+        count = 1
         for moving_block in self.moving_blocks:
             # print(moving_block.velocity.first)
             moving_block.pre_tick(dt)
@@ -116,18 +122,20 @@ class World:
 
         for y in range(0, len(self.level[0])):
             for x in range(from_loc, to_loc):
-                block = self.level[x][y]
-                if issubclass(type(block), Entity):
-                    if block.dead:
-                        self.level[x][y] = None
-                        continue
-                    # collisions = self.check_collisions(block)
+                for block in self.level[x][y]:
+                    #continue here
+                    # block = self.level[x][y]
+                    if issubclass(type(block), Entity):
+                        if block.dead:
+                            self.level[x][y].remove(block)
+                            continue
+                        # collisions = self.check_collisions(block)
 
-                    # for collision in collisions:
-                    #     # self.handle_collision(block, collision.first, collision.second)
-                    #     block.interact(collision.first, collision.second)
+                        # for collision in collisions:
+                        #     # self.handle_collision(block, collision.first, collision.second)
+                        #     block.interact(collision.first, collision.second)
 
-                    block.tick(dt, self.player.global_pos)
+                        block.tick(dt, self.player.global_pos)
 
     def get_collisions(self, dt: float, entity: Entity):
         collisions = []
@@ -178,10 +186,11 @@ class World:
             to_check.append(Pair(entity.block_pos.first + x, entity.block_pos.second))
 
         for loc in to_check:
-            block = self.level[int(loc.first)][int(loc.second)]
-            if issubclass(type(block), Entity):
-                if is_down_collision(dt, entity, block):
-                    collisions.append(Pair(block, Direction.DOWN))
+            for block in self.level[int(loc.first)][int(loc.second)]:
+            # block = self.level[int(loc.first)][int(loc.second)]
+                if issubclass(type(block), Entity):
+                    if is_down_collision(dt, entity, block):
+                        collisions.append(Pair(block, Direction.DOWN))
 
         # check right for collisions
         to_check = []
@@ -190,10 +199,11 @@ class World:
                 to_check.append(Pair(entity.block_pos.first + int(entity.hitbox.width / self.block_w) + x, entity.block_pos.second + y))
 
         for loc in to_check:
-            block = self.level[int(loc.first)][int(loc.second)]
-            if issubclass(type(block), Entity):
-                if is_right_collision(dt, entity, block):
-                    collisions.append(Pair(block, Direction.RIGHT))
+            for block in self.level[int(loc.first)][int(loc.second)]:
+                # block = self.level[int(loc.first)][int(loc.second)]
+                if issubclass(type(block), Entity):
+                    if is_right_collision(dt, entity, block):
+                        collisions.append(Pair(block, Direction.RIGHT))
 
         # check left for collisions
         to_check = []
@@ -202,10 +212,11 @@ class World:
             to_check.append(Pair(entity.block_pos.first - 1, entity.block_pos.second + y))
 
         for loc in to_check:
-            block = self.level[int(loc.first)][int(loc.second)]
-            if issubclass(type(block), Entity):
-                if is_left_collision(dt, entity, block):
-                    collisions.append(Pair(block, Direction.LEFT))
+            for block in self.level[int(loc.first)][int(loc.second)]:
+                # block = self.level[int(loc.first)][int(loc.second)]
+                if issubclass(type(block), Entity):
+                    if is_left_collision(dt, entity, block):
+                        collisions.append(Pair(block, Direction.LEFT))
 
         # check up for collisions
         to_check = []
@@ -214,19 +225,21 @@ class World:
                 to_check.append(Pair(entity.block_pos.first + x, entity.block_pos.second + y))
 
         for loc in to_check:
-            block = self.level[int(loc.first)][int(loc.second)]
-            if issubclass(type(block), Entity):
-                if is_up_collision(dt, entity, block):
-                    collisions.append(Pair(block, Direction.UP))
+            for block in self.level[int(loc.first)][int(loc.second)]:
+                # block = self.level[int(loc.first)][int(loc.second)]
+                if issubclass(type(block), Entity):
+                    if is_up_collision(dt, entity, block):
+                        collisions.append(Pair(block, Direction.UP))
 
         # check overlap collisions
         to_check = [Pair(entity.block_pos.first, entity.block_pos.second)]
 
         for loc in to_check:
-            block = self.level[int(loc.first)][int(loc.second)]
-            if issubclass(type(block), Entity):
-                if is_overlap(dt, entity, block):
-                    collisions.append(Pair(block, Direction.OVERLAP))
+            for block in self.level[int(loc.first)][int(loc.second)]:
+                # block = self.level[int(loc.first)][int(loc.second)]
+                if issubclass(type(block), Entity):
+                    if is_overlap(dt, entity, block):
+                        collisions.append(Pair(block, Direction.OVERLAP))
 
         return collisions
     
