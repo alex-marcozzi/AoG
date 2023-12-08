@@ -1,6 +1,7 @@
 import pyglet
 from src.helpers.utils import std_speed, block_width, make_sprite, distance, speed_angle_to_velocity
 from src.helpers.interfaces import Pair
+from src.helpers.context import Context
 from src.entity import Entity
 from src.sprite_collection import SpriteCollection
 from src.helpers.globals import Direction
@@ -8,7 +9,7 @@ from src.helpers.globals import Direction
 class Projectile(Entity):
     def __init__(
         self,
-        window,
+        context: Context,
         sprites: SpriteCollection,
         global_pos: Pair,
         speed: float,
@@ -16,7 +17,6 @@ class Projectile(Entity):
         range: float,
         hitbox_width: float,
         hitbox_height: float,
-        batch,
         piercing: bool = True
     ):
         # self.sprites = SpriteCollection(idle=self.sprite)
@@ -25,12 +25,11 @@ class Projectile(Entity):
         self.sprites.SetAllInvisible()
         
         super().__init__(
-            window,
+            context,
             sprites,
             global_pos,
             hitbox_width,
             hitbox_height,
-            batch,
         )
         self.direction = Direction.RIGHT
         self.modifiers = ["dangerous"]
@@ -44,14 +43,13 @@ class Projectile(Entity):
         self.collided = False
 
     def copy(self):
-        new_copy = Projectile(window=self.window,
+        new_copy = Projectile(context=self.context,
                              sprites=self.sprites.copy(),
                              global_pos=self.global_pos,
                              velocity=self.velocity,
                              acceleration=self.acceleration,
                              hitbox_width=self.hitbox.width,
-                             hitbox_height=self.hitbox.height,
-                             batch=self.batch,)
+                             hitbox_height=self.hitbox.height,)
         
         return new_copy
     
@@ -64,10 +62,10 @@ class Projectile(Entity):
 
     def update_sprite_positions(self, camera_pos: Pair):
         self.sprites.idle_right.x = self.global_pos.first - (
-            camera_pos.first - (self.window.width / 2)
+            camera_pos.first - (self.context.window.width / 2)
         )
         self.sprites.idle_right.y = self.global_pos.second - (
-            camera_pos.second - (self.window.height / 2)
+            camera_pos.second - (self.context.window.height / 2)
         )
         self.sprites.idle_left.x = self.sprites.idle_right.x
         self.sprites.idle_left.y = self.sprites.idle_right.y

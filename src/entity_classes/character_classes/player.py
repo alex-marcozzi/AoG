@@ -1,6 +1,7 @@
 import pyglet
 from src.helpers.utils import block_width, std_speed, make_sprite, gravity
 from src.helpers.interfaces import Pair
+from src.helpers.context import Context
 from src.entity import Entity
 from src.attack import Attack
 from src.hitbox import Hitbox
@@ -13,13 +14,14 @@ import time
 class Player(Character):
     def __init__(
         self,
-        window,
+        context: Context,
         sprites: SpriteCollection,
         global_pos: Pair,
         hitbox_width: float,
         hitbox_height: float,
-        batch,
         hp: int,
+        # keys_down: list,
+        # keys_usable: list,
         attack: Attack = None,
     ):
         # idle_width = block_width(window)
@@ -59,19 +61,20 @@ class Player(Character):
         #                                             visible=False,
         #                                             batch=batch),)
         super().__init__(
-            window,
+            context,
             sprites,
             global_pos,
             hitbox_width,
             hitbox_height,
-            batch,
             hp=hp,
             attack=attack,
         )
 
         # self.standard_speed = std_speed(window)
-        self.keys_down = {}
-        self.keys_usable = {}
+        # self.keys_down = {}
+        # self.keys_usable = {}
+        # self.keys_down = keys_down
+        # self.keys_usable = keys_usable
         self.modifiers = []
         self.immunity_duration_seconds = 1.5
 
@@ -90,40 +93,40 @@ class Player(Character):
         if "collidable" in entity.modifiers:
             self.interact_collidable(entity, direction)
             if direction == Direction.DOWN:
-                self.keys_usable[pyglet.window.key.SPACE] = True
+                self.context.keys_usable[pyglet.window.key.SPACE] = True
         if "dangerous" in entity.modifiers:
             self.interact_dangerous(entity, direction)
 
-    def handle_key_press(self, symbol, modifiers):
-        self.keys_down[symbol] = True
+    # def handle_key_press(self, symbol, modifiers):
+    #     self.keys_down[symbol] = True
 
-    def handle_key_release(self, symbol, modifiers):
-        self.keys_down[symbol] = False
+    # def handle_key_release(self, symbol, modifiers):
+    #     self.keys_down[symbol] = False
 
     def jump(self, scaler: float = 1):
         self.velocity = Pair(
-            self.velocity.first, (self.standard_speed * 1.5) * scaler #(self.block_w / 5)
+            self.velocity.first, (self.context.std_speed * 1.5) * scaler #(self.block_w / 5)
         )
 
     def check_keys(self):
         # if self.can_move():
-        if self.keys_down.get(pyglet.window.key.A, False):
+        if self.context.keys_down.get(pyglet.window.key.A, False):
             self.velocity = Pair(
-                self.velocity.first - self.standard_speed, self.velocity.second
+                self.velocity.first - self.context.std_speed, self.velocity.second
             )
             # self.direction = Direction.LEFT
-        if self.keys_down.get(pyglet.window.key.D, False):
+        if self.context.keys_down.get(pyglet.window.key.D, False):
             self.velocity = Pair(
-                self.velocity.first + self.standard_speed, self.velocity.second
+                self.velocity.first + self.context.std_speed, self.velocity.second
             )
             # self.direction = Direction.RIGHT
-        if self.keys_down.get(pyglet.window.key.SPACE, False) and self.on_ground:
+        if self.context.keys_down.get(pyglet.window.key.SPACE, False) and self.on_ground:
             self.jump()
-            self.keys_down[pyglet.window.key.SPACE] = False
+            self.context.keys_down[pyglet.window.key.SPACE] = False
             # self.velocity = Pair(
             #     self.velocity.first, self.velocity.second + (self.standard_speed * 1.5) #(self.block_w / 5)
             # )
-        if self.keys_down.get(pyglet.window.key.F, False) and self.attack and self.attack.isUsable():# and not self.attack.inProgress():
+        if self.context.keys_down.get(pyglet.window.key.F, False) and self.attack and self.attack.isUsable():# and not self.attack.inProgress():
             print(">> THROWING ATTACK")
             self.attack.Throw(None)
 

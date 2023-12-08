@@ -1,6 +1,7 @@
 import pyglet
 from src.helpers.utils import std_speed, block_width, gravity, make_sprite
 from src.helpers.interfaces import Pair
+from src.helpers.context import Context
 from src.entity import Entity
 from src.sprite_collection import SpriteCollection
 from src.entity_classes.character import Character
@@ -11,10 +12,10 @@ import time
 
 
 class Bear(Character):
-    def __init__(self, window, global_pos, batch):
-        self.speed = std_speed(window) / 2
+    def __init__(self, context: Context, global_pos):
+        self.speed = context.std_speed / 2
         attack = Attack(
-                range=block_width(window),
+                range=context.block_w,
                 duration=0.1,
                 damage=1,
                 cooldown=0.10,
@@ -25,44 +26,43 @@ class Bear(Character):
                             #  Lightning(window=window, global_pos=Pair(0, 0), angle=-22.5, batch=batch),]
             )
 
-        idle_width = block_width(window) * 2
+        idle_width = context.block_w * 2
         sprites = SpriteCollection(idle_right=make_sprite(sprite_filename="assets/images/bear.png",
                                                     width=idle_width,
-                                                    height=block_width(window) * 2,
+                                                    height=context.block_w * 2,
                                                     visible=True,
-                                                    batch=batch),
+                                                    batch=context.batch),
                                     idle_left=make_sprite(sprite_filename="assets/images/bear.png",
                                                     width=idle_width,
-                                                    height=block_width(window) * 2,
+                                                    height=context.block_w * 2,
                                                     visible=False,
-                                                    batch=batch),
+                                                    batch=context.batch),
                                     attack_right=make_sprite(sprite_filename="assets/images/bear.png",
                                                     width=idle_width + attack.range,
-                                                    height=block_width(window) * 2,
+                                                    height=context.block_w * 2,
                                                     visible=False,
-                                                    batch=batch),
+                                                    batch=context.batch),
                                     attack_left=make_sprite(sprite_filename="assets/images/bear.png",
                                                     width=idle_width + attack.range,
-                                                    height=block_width(window) * 2,
+                                                    height=context.block_w * 2,
                                                     visible=False,
-                                                    batch=batch),
+                                                    batch=context.batch),
                                     damaged_right=make_sprite(sprite_filename="assets/images/orange.png",
                                                     width=idle_width,
-                                                    height=block_width(window) * 2,
+                                                    height=context.block_w * 2,
                                                     visible=False,
-                                                    batch=batch),
+                                                    batch=context.batch),
                                     damaged_left=make_sprite(sprite_filename="assets/images/orange.png",
                                                     width=idle_width,
-                                                    height=block_width(window) * 2,
+                                                    height=context.block_w * 2,
                                                     visible=False,
-                                                    batch=batch),)
+                                                    batch=context.batch),)
         super().__init__(
-            window=window,
+            context=context,
             sprites=sprites,
             global_pos=global_pos,
-            hitbox_width=block_width(window) * 2,
-            hitbox_height=block_width(window) * 2,
-            batch=batch,
+            hitbox_width=context.block_w * 2,
+            hitbox_height=context.block_w * 2,
             hp=3,
             attack=attack
         )

@@ -1,6 +1,7 @@
 import pyglet
 from src.helpers.utils import std_speed, block_width, make_sprite
 from src.helpers.interfaces import Pair
+from src.helpers.context import Context
 from src.entity import Entity
 from src.attack import Attack
 from src.sprite_collection import SpriteCollection
@@ -10,34 +11,31 @@ import time
 class Block(Entity):
     def __init__(
         self,
-        window,
+        context: Context,
         sprites: SpriteCollection,
         global_pos: Pair,
         hitbox_width: float,
         hitbox_height: float,
-        batch,
     ):
         self.sprites = sprites
         self.sprites.SetVisible(self.sprites.idle_right)
         
         super().__init__(
-            window,
+            context,
             sprites,
             global_pos,
             hitbox_width,
             hitbox_height,
-            batch,
         )
         self.direction = Direction.RIGHT
         self.modifiers = ["collidable"]
 
     def copy(self):
-        new_copy = Block(window=self.window,
+        new_copy = Block(context=self.context,
                              sprites=self.sprites.copy(),
                              global_pos=self.global_pos,
                              hitbox_width=self.hitbox.width,
-                             hitbox_height=self.hitbox.height,
-                             batch=self.batch)
+                             hitbox_height=self.hitbox.height,)
         
         return new_copy
 

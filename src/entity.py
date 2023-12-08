@@ -1,5 +1,6 @@
 import pyglet
 from src.helpers.interfaces import Pair
+from src.helpers.context import Context
 from src.helpers.utils import block_width, std_speed, make_sprite
 from src.helpers.globals import Direction
 from src.hitbox import Hitbox
@@ -12,25 +13,21 @@ import uuid
 class Entity:
     def __init__(
         self,
-        window,
+        context: Context,
         sprites: SpriteCollection,
         global_pos: Pair,
         hitbox_width: float,
         hitbox_height: float,
-        batch=None,
         velocity=None,
         acceleration=None,
     ):
-        self.window = window
-        self.standard_speed = std_speed(window)
-        self.block_w = block_width(window)
-        self.batch = batch
+        self.context = context
         self.sprites = sprites
         self.hitbox = Hitbox(pos=global_pos, width=hitbox_width, height=hitbox_height)
         self.global_pos = global_pos.copy()
         self.block_pos = Pair(
-            self.global_pos.first // self.block_w,
-            (self.global_pos.second + 10) // self.block_w,
+            self.global_pos.first // self.context.block_w,
+            (self.global_pos.second + 10) // self.context.block_w,
         )
         self.velocity = velocity if velocity else Pair(0, 0)
         self.acceleration = acceleration if acceleration else Pair(0, 0)
@@ -46,14 +43,13 @@ class Entity:
 
     def copy(self):
         new_copy = Entity(
-            window=self.window,
+            context=self.context,
             sprites=self.sprites.copy(),
             global_pos=self.global_pos,
             sprite_width=self.sprites.idle_right.width,
             sprite_height=self.sprites.idle_right.height,
             hitbox_width=self.hitbox.width,
             hitbox_height=self.hitbox.height,
-            batch=self.batch,
             velocity=self.velocity,
             acceleration=self.acceleration,
         )
@@ -82,8 +78,8 @@ class Entity:
         #         camera_pos.second - (self.window.height / 2)
         #     )
         self.block_pos = Pair(
-            self.global_pos.first // self.block_w,
-            (self.global_pos.second + 10) // self.block_w,
+            self.global_pos.first // self.context.block_w,
+            (self.global_pos.second + 10) // self.context.block_w,
         )
         self.hitbox.pos = self.global_pos.copy()
 
@@ -96,10 +92,10 @@ class Entity:
 
     def update_sprite_positions(self, camera_pos: Pair):
         self.sprites.idle_right.x = self.global_pos.first - (
-            camera_pos.first - (self.window.width / 2) - ((self.hitbox.width - self.sprites.idle_right.width) / 2)
+            camera_pos.first - (self.context.window.width / 2) - ((self.hitbox.width - self.sprites.idle_right.width) / 2)
         )
         self.sprites.idle_right.y = self.global_pos.second - (
-            camera_pos.second - (self.window.height / 2)
+            camera_pos.second - (self.context.window.height / 2)
         )
         self.sprites.idle_left.x = self.sprites.idle_right.x
         self.sprites.idle_left.y = self.sprites.idle_right.y
@@ -190,7 +186,7 @@ class Entity:
         
         # ani = pyglet.image.Animation.from_image_sequence(images, duration=flicker_rate, loop=True)
         sprite = pyglet.sprite.Sprite(
-            img=pyglet.resource.image(image_filenames[0]), batch=self.batch
+            img=pyglet.resource.image(image_filenames[0]), batch=self.context.batch
         )
         sprite.width = self.sprites.current.width
         sprite.height = self.sprites.current.height

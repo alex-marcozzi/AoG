@@ -1,6 +1,7 @@
 import pyglet
 from src.helpers.utils import std_speed, block_width, make_sprite, gravity
 from src.helpers.interfaces import Pair
+from src.helpers.context import Context
 from src.entity import Entity
 from src.attack import Attack
 from src.sprite_collection import SpriteCollection
@@ -10,12 +11,11 @@ import time
 class Character(Entity):
     def __init__(
         self,
-        window,
+        context: Context,
         sprites: SpriteCollection,
         global_pos: Pair,
         hitbox_width: float,
         hitbox_height: float,
-        batch,
         hp: int,
         attack: Attack = None,
         velocity: Pair = None,
@@ -25,20 +25,19 @@ class Character(Entity):
         self.sprites.SetVisible(self.sprites.idle_right)
         
         super().__init__(
-            window,
+            context,
             sprites,
             global_pos,
             hitbox_width,
             hitbox_height,
-            batch,
             velocity,
             acceleration
         )
 
-        self.normal_acceleration = Pair(0, gravity(window))
+        self.normal_acceleration = Pair(0, context.gravity)
         self.acceleration = Pair(0, 0)
         self.hp = hp
-        self.width_in_blocks = hitbox_width // block_width(window)
+        self.width_in_blocks = hitbox_width // context.block_w
         # self.standard_speed = std_speed(window)
         # self.block_below = None
         self.on_ground = False
@@ -69,12 +68,11 @@ class Character(Entity):
         #     self.attack_sprite.visible = False
 
     def copy(self):
-        new_copy = Character(window=self.window,
+        new_copy = Character(context=self.context,
                              sprites=self.sprites.copy(),
                              global_pos=self.global_pos,
                              hitbox_width=self.hitbox.width,
                              hitbox_height=self.hitbox.height,
-                             batch=self.batch,
                              hp=self.hp,
                              attack=self.attack,
                              velocity=self.velocity,

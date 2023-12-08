@@ -1,6 +1,5 @@
 import pyglet
 
-
 class Pair:
     def __init__(self, first: any, second: any):
         self.first = first

@@ -1,18 +1,19 @@
 import pyglet
 from src.gameplay_sreen import GameplayScreen
+from src.helpers.context import Context
 
 
 class Engine:
-    def __init__(self, window):
+    def __init__(self, context: Context):
         self.screen_mapping = {
             "STARTUP": "startup_screen_class_goes_here",
             "TITLE": "title_screen_class_goes_here",
             "PAUSE": "pause_screen_class_goes_here",
-            "GAME": GameplayScreen(window),
+            "GAME": GameplayScreen(context),
         }
 
         self.current_screen = "GAME"
-        self.window = window
+        self.context = context
 
     def tick(self, dt: float):
         self.screen_mapping[self.current_screen].tick(dt)
@@ -21,7 +22,9 @@ class Engine:
         self.screen_mapping[self.current_screen].draw()
 
     def handle_key_press(self, symbol, modifiers):
-        self.screen_mapping[self.current_screen].handle_key_press(symbol, modifiers)
+        self.context.keys_down[symbol] = True
+        # self.screen_mapping[self.current_screen].handle_key_press(symbol, modifiers)
 
     def handle_key_release(self, symbol, modifiers):
-        self.screen_mapping[self.current_screen].handle_key_release(symbol, modifiers)
+        self.context.keys_down[symbol] = False
+        # self.screen_mapping[self.current_screen].handle_key_release(symbol, modifiers)

@@ -1,6 +1,7 @@
 import pyglet
 from src.helpers.utils import std_speed, block_width, gravity, make_sprite, float_eq_pair
 from src.helpers.interfaces import Pair
+from src.helpers.context import Context
 from src.entity import Entity
 from src.sprite_collection import SpriteCollection
 from src.entity_classes.block import Block
@@ -11,29 +12,27 @@ import time
 class MovingBlock(Block):
     # a pivot is a block_pos where the moving block will change course once it is reached
     # ex: a block moving in a square would have four pivots, one in each corner
-    def __init__(self, window, pivots: list[Pair], times: list[float], batch, starting_pivot: int = 0):
+    def __init__(self, context: Context, pivots: list[Pair], times: list[float], starting_pivot: int = 0):
         sprites = SpriteCollection(idle_right=make_sprite(sprite_filename="assets/images/bbox.png",
-                                                    width=block_width(window) * 2,
-                                                    height=block_width(window),
+                                                    width=context.block_w * 2,
+                                                    height=context.block_w,
                                                     visible=True,
-                                                    batch=batch),
+                                                    batch=context.batch),
                                     idle_left=make_sprite(sprite_filename="assets/images/bbox.png",
-                                                    width=block_width(window) * 2,
-                                                    height=block_width(window),
+                                                    width=context.block_w * 2,
+                                                    height=context.block_w,
                                                     visible=False,
-                                                    batch=batch),)
-        self.block_w = block_width(window)
+                                                    batch=context.batch),)
         self.pivots = pivots
-        global_pos = Pair(self.block_w * pivots[starting_pivot].first, self.block_w * pivots[starting_pivot].second)
+        global_pos = Pair(context.block_w * pivots[starting_pivot].first, context.block_w * pivots[starting_pivot].second)
         self.times = times
 
         super().__init__(
-            window=window,
+            context=context,
             sprites=sprites,
             global_pos=global_pos,
-            hitbox_width=block_width(window) * 2,
-            hitbox_height=block_width(window),
-            batch=batch,
+            hitbox_width=context.block_w * 2,
+            hitbox_height=context.block_w,
         )
 
         self.current = starting_pivot
@@ -50,26 +49,25 @@ class MovingBlock(Block):
         #     self.direction = Direction.LEFT
 
     def copy(self):
-        new_copy = MovingBlock(window=self.window,
+        new_copy = MovingBlock(context=self.context,
                              pivots=self.pivots.copy(),
-                             batch=self.batch,
                              starting_pivot=self.current)
         
         return new_copy
     
     def next(self):
-        print("SNAP****************************************************************************************************************")
+        # print("SNAP****************************************************************************************************************")
         self.current = (self.current + 1) % len(self.pivots)
 
-        dist_x = (self.block_w * self.pivots[self.current].first) - self.global_pos.first
-        dist_y = (self.block_w * self.pivots[self.current].second) - self.global_pos.second
+        dist_x = (self.context.block_w * self.pivots[self.current].first) - self.global_pos.first
+        dist_y = (self.context.block_w * self.pivots[self.current].second) - self.global_pos.second
         # self.velocity = Pair(0, 0)
         self.velocity = Pair(dist_x / self.times[self.current], dist_y / self.times[self.current])
 
     def reached_pivot(self):
-        target_pos = Pair(self.block_w * self.pivots[self.current].first, self.block_w * self.pivots[self.current].second)
+        target_pos = Pair(self.context.block_w * self.pivots[self.current].first, self.context.block_w * self.pivots[self.current].second)
 
-        return float_eq_pair(self.global_pos, target_pos, self.block_w / 4)
+        return float_eq_pair(self.global_pos, target_pos, self.context.block_w / 4)
     
     def pre_tick(self, dt: float):
         pass

@@ -8,6 +8,7 @@ from src.helpers.physics import (
     is_overlap,
 )
 from src.helpers.interfaces import Pair
+from src.helpers.context import Context
 from src.entity import Entity
 from src.hitbox import Hitbox
 from src.entity_classes.character import Character
@@ -22,19 +23,19 @@ from src.entity_classes.block_classes.moving_block import MovingBlock
 
 # this is basically all of the level information, like a context
 class World:
-    def __init__(self, window: pyglet.window.Window, level: list, batch) -> None:
-        self.window = window
-        self.block_w = block_width(window)
-        self.standard_speed = std_speed(window)
+    def __init__(self, context: Context, level: list) -> None:
+        # self.keys_down = {}
+        # self.keys_usable = {}
+        self.context = context
         self.level = level
         self.player = PlayerStandard(
-            window,
+            context,
             global_pos=Pair(0, 500),
-            batch=batch,
         )
         self.characters = [self.player]
         self.projectiles: list[Projectile] = []
         self.moving_blocks: list[MovingBlock] = []
+        self.interactable: list[Entity] = []
         self.extract_characters(self.level)
         self.moving_blocks[0].id = "101"
         self.frozen = False
@@ -49,6 +50,9 @@ class World:
                 for entity in level[x][y]:
                     if issubclass(type(entity), Entity):
                         entity.tick(0, self.player.global_pos)  # first tick is necessary to set the entities' positions
+
+                        if "interactable" in entity.modifiers:
+                            self.interactable.append(entity)
                         if issubclass(type(entity), Character):
                             self.characters.append(entity)
                             to_remove.append(entity)
@@ -181,7 +185,7 @@ class World:
 
         # check below for collisions
         to_check = []
-        for x in range(0, int(entity.hitbox.width / self.block_w) + 2):
+        for x in range(0, int(entity.hitbox.width / self.context.block_w) + 2):
             to_check.append(Pair(entity.block_pos.first + x, entity.block_pos.second - 1))
             to_check.append(Pair(entity.block_pos.first + x, entity.block_pos.second))
 
@@ -195,8 +199,8 @@ class World:
         # check right for collisions
         to_check = []
         for x in range(0, 2):
-            for y in range(-1, int(entity.hitbox.height / self.block_w) + 1):
-                to_check.append(Pair(entity.block_pos.first + int(entity.hitbox.width / self.block_w) + x, entity.block_pos.second + y))
+            for y in range(-1, int(entity.hitbox.height / self.context.block_w) + 1):
+                to_check.append(Pair(entity.block_pos.first + int(entity.hitbox.width / self.context.block_w) + x, entity.block_pos.second + y))
 
         for loc in to_check:
             for block in self.level[int(loc.first)][int(loc.second)]:
@@ -208,7 +212,7 @@ class World:
         # check left for collisions
         to_check = []
         # for x in range(-1, 1, 1):
-        for y in range(-1, int(entity.hitbox.height / self.block_w) + 1):
+        for y in range(-1, int(entity.hitbox.height / self.context.block_w) + 1):
             to_check.append(Pair(entity.block_pos.first - 1, entity.block_pos.second + y))
 
         for loc in to_check:
@@ -220,8 +224,8 @@ class World:
 
         # check up for collisions
         to_check = []
-        for y in range(int(entity.hitbox.height / self.block_w), int(entity.hitbox.height / self.block_w) + 2):
-            for x in range(0, int(entity.hitbox.width / self.block_w) + 1):
+        for y in range(int(entity.hitbox.height / self.context.block_w), int(entity.hitbox.height / self.context.block_w) + 2):
+            for x in range(0, int(entity.hitbox.width / self.context.block_w) + 1):
                 to_check.append(Pair(entity.block_pos.first + x, entity.block_pos.second + y))
 
         for loc in to_check:
@@ -262,9 +266,9 @@ class World:
             if issubclass(type(character), Player):
                 if issubclass(type(collision.first), WizardPickup):
                     self.characters.remove(self.player)
-                    new_player = PlayerWizard(self.window, self.player.global_pos, self.player.batch)
-                    new_player.keys_down = self.player.keys_down
-                    new_player.keys_usable = self.player.keys_usable
+                    new_player = PlayerWizard(self.context, self.player.global_pos)
+                    # new_player.keys_down = self.player.keys_down
+                    # new_player.keys_usable = self.player.keys_usable
                     self.player = new_player
                     self.player.update_sprite_positions(self.player.global_pos)
                     self.player.update_current_sprite()
@@ -319,9 +323,9 @@ class World:
         spawn_pos.second += (owner.hitbox.height / 2) - (projectile.hitbox.height / 2)
 
         if owner.direction == Direction.RIGHT:
-            spawn_pos.first += owner.hitbox.width + (self.block_w / 4)
+            spawn_pos.first += owner.hitbox.width + (self.context.block_w / 4)
         else:
-            spawn_pos.first -= projectile.hitbox.width + (self.block_w / 4)
+            spawn_pos.first -= projectile.hitbox.width + (self.context.block_w / 4)
         
         new_projectile.spawn(spawn_pos, direction=owner.direction, owner_id=owner.id)
         # new_projectile.velocity.add(owner.velocity)
@@ -350,3 +354,13 @@ class World:
 
     def unfreeze(self, dt):
         self.frozen = False
+
+    # def handle_key_press(self, symbol, modifiers):
+    #     # print(f"* pressing key {symbol}")
+    #     self.keys_down[symbol] = True
+    #     # self.player.handle_key_press(symbol, modifiers)
+
+    # def handle_key_release(self, symbol, modifiers):
+    #     # print(f"^ releasing key {symbol}")
+    #     self.keys_down[symbol] = False
+    #     # self.player.handle_key_release(symbol, modifiers)

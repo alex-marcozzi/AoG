@@ -8,6 +8,7 @@ from src.helpers.physics import (
     is_left_collision,
 )
 from src.helpers.interfaces import Pair
+from src.helpers.context import Context
 from src.entity import Entity
 from src.entity_classes.character_classes.player import Player
 from src.world import World
@@ -15,12 +16,14 @@ import time
 
 
 class GameplayScreen:
-    def __init__(self, window: pyglet.window.Window):
-        self.batch = pyglet.graphics.Batch()
+    def __init__(self, context: Context):
+        # self.batch = pyglet.graphics.Batch()
 
-        self.window = window
-        self.block_w = block_width(window)
-        self.standard_speed = std_speed(window)
+        self.context = context
+        self.context.batch = pyglet.graphics.Batch()
+        # self.window = context.window
+        # self.block_w = block_width(window)
+        # self.standard_speed = std_speed(window)
         # self.level = build_level1(window)
         # self.player = Player(window,
         #                      "assets/images/goose.png",
@@ -30,7 +33,7 @@ class GameplayScreen:
         #                      width=self.block_w,
         #                      height=self.block_w * 2,
         #                      batch=self.batch)
-        self.world = World(window, build_level1(window, self.batch), self.batch)
+        self.world = World(context, build_level1(context))
         self.loaded_indexes = Pair(int(0), int(30))
         self.background = pyglet.sprite.Sprite(
             pyglet.image.load("assets/images/background.png")
@@ -62,14 +65,14 @@ class GameplayScreen:
         #     for y in range(len(self.world.level[0])):
         #         if issubclass(type(self.world.level[x][y]), Entity):
         #             self.world.level[x][y].draw()
-        self.batch.draw()
+        self.context.batch.draw()
 
         label = pyglet.text.Label(
             str(self.world.player.hp),
             font_name="Times New Roman",
             font_size=36,
-            x=self.block_w * 3,
-            y=self.window.height - self.block_w,
+            x=self.context.block_w * 3,
+            y=self.context.window.height - self.context.block_w,
             anchor_x="center",
             anchor_y="center",
         )
@@ -85,8 +88,8 @@ class GameplayScreen:
                 str(cd),
                 font_name="Times New Roman",
                 font_size=36,
-                x=self.block_w * 3,
-                y=self.window.height - (self.block_w * 3),
+                x=self.context.block_w * 3,
+                y=self.context.window.height - (self.context.block_w * 3),
                 anchor_x="center",
                 anchor_y="center",
             )
@@ -94,13 +97,13 @@ class GameplayScreen:
 
         pass
 
-    def handle_key_press(self, symbol, modifiers):
-        print(f"* pressing key {symbol}")
-        self.world.player.handle_key_press(symbol, modifiers)
+    # def handle_key_press(self, symbol, modifiers):
+    #     print(f"* pressing key {symbol}")
+    #     self.world.handle_key_press(symbol, modifiers)
 
-    def handle_key_release(self, symbol, modifiers):
-        print(f"^ releasing key {symbol}")
-        self.world.player.handle_key_release(symbol, modifiers)
+    # def handle_key_release(self, symbol, modifiers):
+    #     print(f"^ releasing key {symbol}")
+    #     self.world.handle_key_release(symbol, modifiers)
 
     # TODO:
     #   X0. make a "globals" file where you define our constants, like block_width, speed ratios (have a normalized system), etc.

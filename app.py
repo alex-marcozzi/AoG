@@ -1,13 +1,15 @@
 import os
 import pyglet
 from src.engine import Engine
-from src.entity import Entity
+from src.helpers.context import Context
 
 window = pyglet.window.Window(fullscreen=False)
 # window.set_vsync(True)
 fpsdisplay = pyglet.window.FPSDisplay(window=window)
 
-engine = Engine(window)
+context = Context(window)
+
+engine = Engine(context)
 
 
 @window.event

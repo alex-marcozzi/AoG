@@ -1,14 +1,13 @@
 import pyglet
 from src.helpers.utils import std_speed, block_width, gravity, make_sprite
 from src.helpers.interfaces import Pair
+from src.helpers.context import Context
 from src.entity_classes.block_classes.moving_block import MovingBlock
 
-# block that moves in a horizontal line
+# block that moves in a rectangle pattern
 class MovingBlockRect(MovingBlock):
     
-    def __init__(self, window, batch, block_pos, width, height, cycle_time: float = 5, starting_pivot: int = 0, clockwise: bool = False):
-        self.block_w = block_width(window)
-        print(block_pos)
+    def __init__(self, context: Context, block_pos: Pair, width, height, cycle_time: float = 5, starting_pivot: int = 0, clockwise: bool = False):
         if clockwise:
             pivots = [
                 block_pos,
@@ -31,12 +30,9 @@ class MovingBlockRect(MovingBlock):
             cycle_time / 4.0,
         ]
 
-        print(cycle_time)
-
         super().__init__(
-            window=window,
+            context=context,
             pivots=pivots,
             times=times,
-            batch=batch,
             starting_pivot=starting_pivot,
         )

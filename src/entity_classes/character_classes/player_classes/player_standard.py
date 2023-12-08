@@ -1,6 +1,7 @@
 import pyglet
 from src.helpers.utils import block_width, std_speed, make_sprite, gravity
 from src.helpers.interfaces import Pair
+from src.helpers.context import Context
 from src.entity import Entity
 from src.attack import Attack
 from src.hitbox import Hitbox
@@ -15,38 +16,38 @@ import time
 class PlayerStandard(Player):
     def __init__(
         self,
-        window,
+        context: Context,
         global_pos: Pair,
-        batch,
+        # keys_down,
+        # keys_usable,
     ):
-        idle_width = block_width(window)
+        idle_width = context.block_w
         sprites = SpriteCollection(idle_right=make_sprite(sprite_filename="assets/images/sprites/goose_default/idle_right.png",
                                                     width=idle_width,
-                                                    height=block_width(window),
+                                                    height=context.block_w,
                                                     visible=True,
-                                                    batch=batch),
+                                                    batch=context.batch),
                                     idle_left=make_sprite(sprite_filename="assets/images/sprites/goose_default/idle_left.png",
                                                     width=idle_width,
-                                                    height=block_width(window),
+                                                    height=context.block_w,
                                                     visible=False,
-                                                    batch=batch),
+                                                    batch=context.batch),
                                     damaged_right=make_sprite(sprite_filename="assets/images/orange.png",
                                                     width=idle_width,
-                                                    height=block_width(window),
+                                                    height=context.block_w,
                                                     visible=False,
-                                                    batch=batch),
+                                                    batch=context.batch),
                                     damaged_left=make_sprite(sprite_filename="assets/images/orange.png",
                                                     width=idle_width,
-                                                    height=block_width(window),
+                                                    height=context.block_w,
                                                     visible=False,
-                                                    batch=batch),)
+                                                    batch=context.batch),)
         super().__init__(
-            window,
+            context,
             sprites,
             global_pos,
-            block_width(window),
-            block_width(window),
-            batch,
+            context.block_w,
+            context.block_w,
             hp=3,
         )
 
