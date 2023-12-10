@@ -1,4 +1,5 @@
 import pyglet
+import sys
 from src.helpers.utils import std_speed, gravity, block_width, make_sprite, hb_distance
 from src.helpers.physics import (
     is_down_collision,
@@ -11,6 +12,7 @@ from src.helpers.interfaces import Pair
 from src.helpers.context import Context
 from src.entity import Entity
 from src.hitbox import Hitbox
+from src.conditional_label import ConditionalLabel
 from src.entity_classes.character import Character
 from src.entity_classes.character_classes.player import Player
 from src.entity_classes.character_classes.player_classes.player_wizard import PlayerWizard
@@ -36,9 +38,11 @@ class World:
         self.projectiles: list[Projectile] = []
         self.moving_blocks: list[MovingBlock] = []
         self.interactables: list[Entity] = []
+        self.closest_interactable: Entity = None
         self.extract_characters(self.level)
         self.moving_blocks[0].id = "101"
         self.frozen = False
+        self.interaction_prompt = ConditionalLabel(self.context, text="E")
 
     # def tick(self):
     #     self.do_physics
@@ -70,12 +74,15 @@ class World:
                 character.update_current_sprite()
             return
         
+        self.get_closest_interactable()
         self.check_keys()
             
         for character in self.characters:
             if character.dead:
                 character.sprites.SetAllInvisible()
                 self.characters.remove(character)
+                if character in self.interactables:
+                    self.interactables.remove(character)
                 continue
             if issubclass(type(character), Character):
                 character.pre_tick(dt)  # set the character's velocity based on its movement pattern
@@ -97,6 +104,8 @@ class World:
                         character.setFlicker(["assets/images/orange.png"], duration=character.immunity_duration_seconds, flicker_rate=0.1)
 
                 character.tick(dt, self.player.global_pos)
+
+        self.interaction_prompt.update(self.closest_interactable)
 
         for projectile in self.projectiles:
             if not projectile.piercing and projectile.collided:
@@ -356,19 +365,36 @@ class World:
 
     def unfreeze(self, dt):
         self.frozen = False
+    
+    def get_closest_interactable(self):
+        smallest_dist = sys.maxsize
+        closest = None
+        for entity in self.interactables:
+            dist = hb_distance(self.player.hitbox, entity.hitbox)
+            # print(entity.interaction_radius)
+            # print(dist)
+            if dist <= entity.interaction_radius and dist < smallest_dist:
+                smallest_dist = dist
+                closest = entity
+        
+        self.closest_interactable = closest
+                
 
     def check_keys(self):
         if self.context.keys_down.get(pyglet.window.key.E, False) and self.context.keys_usable.get(pyglet.window.key.E, False):
             self.context.keys_usable[pyglet.window.key.E] = False
             print("PRESSING E")
-            for entity in self.interactables:
-                if hb_distance(self.player.hitbox, entity.hitbox) <= entity.interaction_radius:
-                    print("&& INTERACTION GOES HERE")
-                    entity.dead = True
+            if self.closest_interactable:
+                print("&& INTERACTION GOES HERE")
+                self.closest_interactable.dead = True
+            # for entity in self.interactables:
+            #     if hb_distance(self.player.hitbox, entity.hitbox) <= entity.interaction_radius:
+            #         print("&& INTERACTION GOES HERE")
+            #         entity.dead = True
 
-                    ########################################################################
-                    # TODO: figure out a way to indicate that you are in interaction range #
-                    ########################################################################
+            #         ########################################################################
+            #         # TODO: figure out a way to indicate that you are in interaction range #
+            #         ########################################################################
         elif not self.context.keys_down.get(pyglet.window.key.E, False):
             self.context.keys_usable[pyglet.window.key.E] = True
             # self.direction = Direction.LEFT

@@ -68,7 +68,7 @@ class Bear(Character):
         )
 
         self.modifiers = ["dangerous", "bouncy", "vulnerable_top"]#, "collidable"]
-        self.interaction_radius = context.block_w *  10
+        self.interaction_radius = context.block_w * 3
         self.move_loop_start = time.time()
         # self.left = True
         self.direction = Direction.LEFT

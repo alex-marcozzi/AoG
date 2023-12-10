@@ -121,6 +121,7 @@ def build_level1(context: Context):
     # set_bear(level1, Pair(10, 3), window, block_w, batch)
     # set_bear(level1, Pair(13, 3), window, block_w, batch)
     set_bear(context, level1, Pair(16, 3))
+    set_bear(context, level1, Pair(20, 3))
     # set_bear(level1, Pair(20, 3), window, block_w, batch)
     # set_bear(level1, Pair(18, 3), window, block_w, batch)
     # set_bear(level1, Pair(19, 3), window, block_w, batch)
