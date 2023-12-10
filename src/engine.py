@@ -29,4 +29,5 @@ class Engine:
     def handle_key_release(self, symbol, modifiers):
         print(f"^ releasing key {symbol}")
         self.context.keys_down[symbol] = False
+        self.context.keys_usable[symbol] = True
         # self.screen_mapping[self.current_screen].handle_key_release(symbol, modifiers)

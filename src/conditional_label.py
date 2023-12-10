@@ -13,6 +13,7 @@ class ConditionalLabel:
                 font_size=24,
                 x=0,
                 y=0,
+                z=1, # figure out how to get this to not show up infront of popup
                 anchor_x="center",
                 anchor_y="center",
                 batch=context.batch,

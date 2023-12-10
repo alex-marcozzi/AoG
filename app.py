@@ -3,7 +3,7 @@ import pyglet
 from src.engine import Engine
 from src.helpers.context import Context
 
-window = pyglet.window.Window(fullscreen=False)
+window = pyglet.window.Window(fullscreen=True)
 # window.set_vsync(True)
 fpsdisplay = pyglet.window.FPSDisplay(window=window)
 

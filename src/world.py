@@ -13,6 +13,10 @@ from src.helpers.context import Context
 from src.entity import Entity
 from src.hitbox import Hitbox
 from src.conditional_label import ConditionalLabel
+from src.dialogue import Dialogue
+from src.conversation import Conversation
+from src.popup import Popup
+from src.popup_classes.dialogue_popup import DialoguePopup
 from src.entity_classes.character import Character
 from src.entity_classes.character_classes.player import Player
 from src.entity_classes.character_classes.player_classes.player_wizard import PlayerWizard
@@ -43,6 +47,8 @@ class World:
         self.moving_blocks[0].id = "101"
         self.frozen = False
         self.interaction_prompt = ConditionalLabel(self.context, text="E")
+        conversation: Conversation = Conversation()
+        self.popup = DialoguePopup(context, conversation.root)
 
     # def tick(self):
     #     self.do_physics
@@ -69,13 +75,15 @@ class World:
 
     def do_physics(self, dt: float, from_loc: int, to_loc: int):
         # index = 0
+        self.get_closest_interactable()
+        self.check_keys()
         if self.frozen:
             for character in self.characters:
                 character.update_current_sprite()
             return
         
-        self.get_closest_interactable()
-        self.check_keys()
+        # self.popup.tick()
+        
             
         for character in self.characters:
             if character.dead:
@@ -381,12 +389,43 @@ class World:
                 
 
     def check_keys(self):
+        # print(pyglet.window.key._1)
+        # print(self.context.keys_usable.get(pyglet.window.key._1, False))
+        if self.context.keys_down.get(pyglet.window.key._1, False) and self.context.keys_usable.get(pyglet.window.key._1, False):
+            self.context.keys_usable[pyglet.window.key._1] = False
+            self.popup.handle_key_press(pyglet.window.key._1)
+        elif not self.context.keys_down.get(pyglet.window.key._1, False):
+            self.context.keys_usable[pyglet.window.key._1] = True
+        if self.context.keys_down.get(pyglet.window.key._2, False) and self.context.keys_usable.get(pyglet.window.key._2, False):
+            self.context.keys_usable[pyglet.window.key._2] = False
+            self.popup.handle_key_press(pyglet.window.key._2)
+        elif not self.context.keys_down.get(pyglet.window.key._2, False):
+            self.context.keys_usable[pyglet.window.key._2] = True
+        if self.context.keys_down.get(pyglet.window.key._3, False) and self.context.keys_usable.get(pyglet.window.key._3, False):
+            self.context.keys_usable[pyglet.window.key._3] = False
+            self.popup.handle_key_press(pyglet.window.key._3)
+        elif not self.context.keys_down.get(pyglet.window.key._3, False):
+            self.context.keys_usable[pyglet.window.key._3] = True
+        if self.context.keys_down.get(pyglet.window.key._4, False) and self.context.keys_usable.get(pyglet.window.key._4, False):
+            self.context.keys_usable[pyglet.window.key._4] = False
+            self.popup.handle_key_press(pyglet.window.key._4)
+        elif not self.context.keys_down.get(pyglet.window.key._4, False):
+            self.context.keys_usable[pyglet.window.key._4] = True
+        if self.context.keys_down.get(pyglet.window.key.Q, False) and self.context.keys_usable.get(pyglet.window.key.Q, False):
+            self.context.keys_usable[pyglet.window.key.Q] = False
+            if self.popup.active:
+                print("in here")
+                self.popup.deactivate()
+                self.frozen = False
+        elif not self.context.keys_down.get(pyglet.window.key.Q, False):
+            self.context.keys_usable[pyglet.window.key.Q] = True
         if self.context.keys_down.get(pyglet.window.key.E, False) and self.context.keys_usable.get(pyglet.window.key.E, False):
             self.context.keys_usable[pyglet.window.key.E] = False
-            print("PRESSING E")
             if self.closest_interactable:
                 print("&& INTERACTION GOES HERE")
-                self.closest_interactable.dead = True
+                self.popup.activate()
+                self.frozen = True
+                # self.closest_interactable.dead = True
             # for entity in self.interactables:
             #     if hb_distance(self.player.hitbox, entity.hitbox) <= entity.interaction_radius:
             #         print("&& INTERACTION GOES HERE")
@@ -398,6 +437,9 @@ class World:
         elif not self.context.keys_down.get(pyglet.window.key.E, False):
             self.context.keys_usable[pyglet.window.key.E] = True
             # self.direction = Direction.LEFT
+        if self.context.keys_down.get(pyglet.window.key.T, False):
+            self.popup.activate()
+            self.frozen = True
 
 
     # def handle_key_press(self, symbol, modifiers):
